@@ -191,16 +191,16 @@ const OngoingActivities = () => {
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className={`text-[11px] font-bold truncate max-w-[80px] ${
+                          <p className={`text-sm font-bold truncate max-w-[120px] ${
                              match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : (setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'text-primary' : 'text-text-emphasis')
                           }`}>
                              {match.player1Id.fullName}
                           </p>
-                          <p className="text-[8px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
+                          <p className="text-[10px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
                              Won: {match.setsResults?.filter(s => s.winnerId === (match.player1Id._id || match.player1Id)).length || 0}/{match.setsCount}
                           </p>
                           {match.winnerId && (
-                             <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
+                             <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
                                 match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : 'text-red/40 line-through'
                              }`}>
                                 {match.winnerId === (match.player1Id._id || match.player1Id) ? 'WON' : 'LOST'}
@@ -210,7 +210,7 @@ const OngoingActivities = () => {
                       </div>
 
                       <div className="flex flex-col items-center gap-2">
-                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
+                         <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
                             {match.title || 'Exhibition Match'}
                          </div>
                          <div className="text-xl font-black text-primary/10 italic">VS</div>
@@ -243,16 +243,16 @@ const OngoingActivities = () => {
                           </div>
                         </div>
                         <div className="text-center">
-                          <p className={`text-[11px] font-bold truncate max-w-[80px] ${
+                          <p className={`text-sm font-bold truncate max-w-[120px] ${
                              match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : (setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'text-violet' : 'text-text-emphasis')
                           }`}>
                              {match.player2Id.fullName}
                           </p>
-                          <p className="text-[8px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
+                          <p className="text-[10px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
                              Won: {match.setsResults?.filter(s => s.winnerId === (match.player2Id._id || match.player2Id)).length || 0}/{match.setsCount}
                           </p>
                           {match.winnerId && (
-                             <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
+                             <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
                                 match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : 'text-red/40 line-through'
                              }`}>
                                 {match.winnerId === (match.player2Id._id || match.player2Id) ? 'WON' : 'LOST'}
@@ -293,13 +293,13 @@ const OngoingActivities = () => {
                                         setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; });
                                      }
                                   }}
-                                  className={`w-full px-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
+                                  className={`w-full px-1 py-3 rounded-xl text-xs font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
                                     isActive 
                                       ? 'bg-primary text-base3 border-primary shadow-md' 
                                       : (sRes ? 'bg-primary/5 text-primary border-primary/10 opacity-80' : 'bg-base2/30 text-text/30 border-base2/50 hover:bg-base2/50')
                                   } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                                 >
-                                   <span className={`truncate max-w-full ${isWon ? 'text-[9px]' : ''}`}>{tabLabel}</span>
+                                   <span className={`truncate max-w-full ${isWon ? 'text-[10px]' : ''}`}>{tabLabel}</span>
                                 </button>
                             </div>
                           );
@@ -308,17 +308,17 @@ const OngoingActivities = () => {
                         {/* Centered Overlay for Winner Selection */}
                         {selectingSetIdx !== undefined && (
                            <div className="absolute inset-x-0 inset-y-[-4px] flex justify-center z-50">
-                              <div className="w-[340px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-1.5 gap-2 animate-in zoom-in-95 duration-200">
+                              <div className="w-[380px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-2 gap-2 animate-in zoom-in-95 duration-200">
                                  <button 
                                    onClick={() => handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
-                                   className="flex-1 h-full py-2 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 text-center"
+                                   className="flex-1 h-full py-2.5 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center"
                                  >
                                     {match.player1Id.fullName}
                                  </button>
                                  <div className="w-px h-6 bg-base2"></div>
                                  <button 
                                    onClick={() => handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
-                                   className="flex-1 h-full py-2 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 text-center"
+                                   className="flex-1 h-full py-2.5 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center"
                                  >
                                     {match.player2Id.fullName}
                                  </button>
@@ -335,7 +335,7 @@ const OngoingActivities = () => {
                         {/* Pending Acceptance Message */}
                         {!isOngoing && !isMatchFinished && (
                            <div className="absolute inset-0 bg-base3/40 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-xl border border-dashed border-base2">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-text/40 animate-pulse bg-base3 px-3 py-1 rounded-full shadow-sm border border-base2">
+                              <p className="text-xs font-black uppercase tracking-widest text-text/40 animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-sm border border-base2">
                                  Waiting for players to accept
                               </p>
                            </div>
@@ -343,8 +343,8 @@ const OngoingActivities = () => {
                      </div>
 
                      {isMatchFinished && (
-                        <div className="p-2 bg-green/5 border border-green/20 rounded-lg text-center">
-                           <p className="text-[9px] font-black text-green uppercase tracking-widest">Match Completed: {match.scorePlayer1} - {match.scorePlayer2}</p>
+                        <div className="p-2.5 bg-green/5 border border-green/20 rounded-lg text-center">
+                           <p className="text-[10px] font-black text-green uppercase tracking-widest">Match Completed: {match.scorePlayer1} - {match.scorePlayer2}</p>
                         </div>
                      )}
                   </div>

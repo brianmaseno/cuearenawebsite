@@ -160,14 +160,14 @@ const PlayerDashboard = () => {
                           />
                         </div>
                         <div className="text-center">
-                          <p className="text-[11px] font-bold truncate max-w-[80px] text-text-emphasis">
+                          <p className="text-sm font-bold truncate max-w-[120px] text-text-emphasis">
                              {match.player1Id.fullName}
                           </p>
                           <div className="mt-1 flex flex-col items-center gap-0.5">
-                            <span className="text-[10px] font-black text-primary">
+                            <span className="text-xs font-black text-primary">
                               {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId).toString() === match.player1Id._id.toString()).length || 0} / {match.setsCount}
                             </span>
-                            <span className={`text-[8px] font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
+                            <span className={`text-[10px] font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
                                {match.player1Accepted ? 'Accepted' : 'Pending'}
                             </span>
                           </div>
@@ -175,13 +175,13 @@ const PlayerDashboard = () => {
                       </div>
 
                       <div className="flex flex-col items-center gap-2">
-                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
+                         <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
                             {match.title || 'Exhibition'}
                          </div>
                          <div className="text-xl font-black text-primary/10 italic">VS</div>
                          <div className="flex flex-col items-center gap-0.5">
-                            <p className="text-[8px] font-bold text-text/60">Org: {match.organizerId?.fullName}</p>
-                            <p className="text-[8px] font-bold text-text/60">{match.location || 'Cue Arena'}</p>
+                            <p className="text-[10px] font-bold text-text/60">Org: {match.organizerId?.fullName}</p>
+                            <p className="text-[10px] font-bold text-text/60">{match.location || 'Cue Arena'}</p>
                          </div>
                       </div>
 
@@ -197,14 +197,14 @@ const PlayerDashboard = () => {
                           />
                         </div>
                         <div className="text-center">
-                          <p className="text-[11px] font-bold truncate max-w-[80px] text-text-emphasis">
+                          <p className="text-sm font-bold truncate max-w-[120px] text-text-emphasis">
                              {match.player2Id.fullName}
                           </p>
                           <div className="mt-1 flex flex-col items-center gap-0.5">
-                            <span className="text-[10px] font-black text-primary">
+                            <span className="text-xs font-black text-primary">
                               {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId).toString() === match.player2Id._id.toString()).length || 0} / {match.setsCount}
                             </span>
-                            <span className={`text-[8px] font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
+                            <span className={`text-[10px] font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
                                {match.player2Accepted ? 'Accepted' : 'Pending'}
                             </span>
                           </div>

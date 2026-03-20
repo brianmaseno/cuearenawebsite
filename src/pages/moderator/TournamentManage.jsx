@@ -183,13 +183,13 @@ const TournamentManage = () => {
                                       }`}>
                                          {match.player1Id?.fullName[0]}
                                       </div>
-                                      <span className={`text-sm font-bold truncate max-w-[120px] ${
+                                      <span className={`text-base font-bold truncate max-w-[120px] ${
                                          match.winnerId === match.player1Id?._id ? 'text-primary' : 'text-text'
                                       }`}>
                                          {match.player1Id?.fullName}
                                       </span>
                                    </div>
-                                   <span className="text-lg font-black">{match.scorePlayer1}</span>
+                                   <span className="text-xl font-black">{match.scorePlayer1}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                    <div className="flex items-center gap-3">
@@ -198,13 +198,13 @@ const TournamentManage = () => {
                                       }`}>
                                          {match.player2Id?.fullName[0]}
                                       </div>
-                                      <span className={`text-sm font-bold truncate max-w-[120px] ${
+                                      <span className={`text-base font-bold truncate max-w-[120px] ${
                                          match.winnerId === match.player2Id?._id ? 'text-violet' : 'text-text'
                                       }`}>
                                          {match.player2Id?.fullName}
                                       </span>
                                    </div>
-                                   <span className="text-lg font-black">{match.scorePlayer2}</span>
+                                   <span className="text-xl font-black">{match.scorePlayer2}</span>
                                 </div>
                              </div>
                           </div>
@@ -281,8 +281,8 @@ const TournamentManage = () => {
                   <div className="flex items-center gap-4">
                      <img src="/favicon.png" alt="7 Ball" className="w-10 h-10 drop-shadow-md" />
                      <div>
-                        <h3 className="text-2xl font-black text-text-emphasis tracking-tight">Cue Arena</h3>
-                        <p className="text-[10px] font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
+                        <h3 className="text-3xl font-black text-text-emphasis tracking-tight">Cue Arena</h3>
+                        <p className="text-xs font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
                      </div>
                   </div>
                   <button 
@@ -297,24 +297,24 @@ const TournamentManage = () => {
                  {/* Match Summary */}
                  <div className="flex items-center justify-between bg-base2/20 p-6 rounded-3xl border border-base2">
                     <div className="text-center flex-1">
-                       <p className="text-lg font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
-                       <p className="text-[10px] font-black uppercase text-primary tracking-widest mt-1 mb-2">
+                       <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
+                       <p className="text-xs font-black uppercase text-primary tracking-widest mt-1 mb-2">
                           Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player1Id?._id).length || 0} / {selectedMatchForSets.setsCount}
                        </p>
-                       <p className="text-3xl font-black text-primary mt-2">{selectedMatchForSets.scorePlayer1}</p>
+                       <p className="text-4xl font-black text-primary mt-2">{selectedMatchForSets.scorePlayer1}</p>
                     </div>
                     <div className="px-6 flex flex-col items-center gap-2">
-                        <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
+                        <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
                            {tournament.name} • Match
                         </div>
-                        <div className="text-sm font-black italic text-text/20">VS</div>
+                        <div className="text-base font-black italic text-text/20">VS</div>
                     </div>
                     <div className="text-center flex-1">
-                       <p className="text-lg font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
-                       <p className="text-[10px] font-black uppercase text-violet tracking-widest mt-1 mb-2">
+                       <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
+                       <p className="text-xs font-black uppercase text-violet tracking-widest mt-1 mb-2">
                           Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player2Id?._id).length || 0} / {selectedMatchForSets.setsCount}
                        </p>
-                       <p className="text-3xl font-black text-violet mt-2">{selectedMatchForSets.scorePlayer2}</p>
+                       <p className="text-4xl font-black text-violet mt-2">{selectedMatchForSets.scorePlayer2}</p>
                     </div>
                  </div>
 
@@ -360,13 +360,13 @@ const TournamentManage = () => {
                                      setSelectingWinnerForSetInModal(null);
                                   }
                                }}
-                               className={`min-w-[120px] h-[64px] px-6 rounded-[28px] font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
+                               className={`min-w-[140px] h-[72px] px-6 rounded-[28px] font-black text-xs uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
                                  isActive 
                                     ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
                                     : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
                                } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
                              >
-                                <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                <span className={`text-base font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
                                    {tabLabel}
                                  </span>
                              </button>
@@ -410,8 +410,8 @@ const TournamentManage = () => {
                  {selectedMatchForSets.status === 'completed' && (
                     <div className="bg-green/10 border border-green/20 p-8 rounded-[32px] text-center">
                        <Trophy className="mx-auto text-green mb-4" size={48} />
-                       <h4 className="text-2xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
-                       <p className="text-sm font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
+                       <h4 className="text-3xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
+                       <p className="text-base font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
                     </div>
                  )}
               </div>
