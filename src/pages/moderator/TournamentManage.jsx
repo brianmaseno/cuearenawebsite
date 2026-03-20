@@ -80,6 +80,19 @@ const TournamentManage = () => {
     }
   };
 
+  const handlePublish = async () => {
+    setActionLoading(true);
+    try {
+      await api.post(`/tournaments/${id}/publish`);
+      toast.success('Tournament is now open for players!');
+      fetchTournamentData();
+    } catch (err) {
+      toast.error('Failed to publish tournament');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleRecordTournamentSetWinner = async (matchId, setIndex, winnerId) => {
     try {
       const { data: updatedMatch } = await api.post(`/tournaments/matches/${matchId}/sets`, {
@@ -127,10 +140,20 @@ const TournamentManage = () => {
           </div>
 
           <div className="flex items-center gap-3">
-             {tournament.status === 'scheduled' && (
+             {tournament.status === 'draft' && (
+                <button
+                  onClick={handlePublish}
+                  disabled={actionLoading}
+                  className="bg-green hover:bg-green-dark text-base3 px-8 py-3 rounded-2xl font-black shadow-lg shadow-green/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                >
+                   <Trophy size={20} />
+                   Open for Registration
+                </button>
+             )}
+             {(tournament.status === 'open_for_players' || tournament.status === 'full' || tournament.status === 'draft') && (
                 <button
                   onClick={handleStartTournament}
-                  disabled={actionLoading}
+                  disabled={actionLoading || tournament.confirmedPlayers.length < 2}
                   className="bg-primary hover:bg-primary-dark text-base3 px-8 py-3 rounded-2xl font-black shadow-lg shadow-primary/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                 >
                    <Zap size={20} fill="currentColor" />

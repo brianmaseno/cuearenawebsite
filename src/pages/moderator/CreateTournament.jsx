@@ -31,7 +31,7 @@ const CreateTournament = () => {
     setLoading(true);
     try {
       await api.post('/tournaments', formData);
-      toast.success('Tournament created as draft!');
+      toast.success('Tournament created and open for players!');
       navigate('/moderator');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error creating tournament');
