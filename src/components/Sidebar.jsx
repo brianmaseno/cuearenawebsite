@@ -45,7 +45,7 @@ const Sidebar = () => {
       { label: 'Active', path: '/dashboard', icon: LayoutDashboard },
       { label: 'History', path: '/dashboard/history', icon: Clock },
       { label: 'Invitations', path: '/dashboard/invitations', icon: MessageSquare },
-      { label: 'Browse', path: '/tournaments', icon: Calendar },
+      { label: 'Open Tournaments', path: '/tournaments', icon: Calendar },
     ];
   };
 

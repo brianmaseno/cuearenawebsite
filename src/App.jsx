@@ -24,6 +24,7 @@ import MatchDetails from './pages/match/MatchDetails';
 import PlayerHistory from './pages/player/PlayerHistory';
 import OngoingActivities from './pages/moderator/OngoingActivities';
 import History from './pages/moderator/History';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -66,6 +67,11 @@ function App() {
           <Route path="/notifications" element={
             <ProtectedRoute>
               <Notifications />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           } />
 

@@ -19,7 +19,7 @@ const PlayerDashboard = () => {
         api.get('/notifications/my'),
       ]);
       
-      const userStr = localStorage.getItem('user');
+      const userStr = localStorage.getItem('userInfo');
       if (userStr) {
         const u = JSON.parse(userStr);
         setUserId(u._id);
