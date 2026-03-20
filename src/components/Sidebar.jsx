@@ -56,8 +56,8 @@ const Sidebar = () => {
     <aside className="w-64 bg-base3 border-r border-base2 flex flex-col h-screen sticky top-0">
       <div className="p-6">
         <Link to="/" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-base3">
-            <Target size={24} />
+          <div className="w-9 h-9 flex items-center justify-center">
+            <img src="/favicon.png" alt="7 Ball" className="w-8 h-8 drop-shadow-md" />
           </div>
           <span className="text-xl font-bold text-text-emphasis">Cue Arena</span>
         </Link>
