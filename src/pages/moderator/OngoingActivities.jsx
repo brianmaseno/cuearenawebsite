@@ -139,6 +139,7 @@ const OngoingActivities = () => {
                 const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
                 const setRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
                 const isMatchFinished = match.status === 'completed';
+                const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
@@ -194,6 +195,9 @@ const OngoingActivities = () => {
                           }`}>
                              {match.player1Id.fullName}
                           </p>
+                          <p className="text-[8px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
+                             Won: {match.setsResults?.filter(s => s.winnerId === (match.player1Id._id || match.player1Id)).length || 0}/{match.setsCount}
+                          </p>
                           {match.winnerId && (
                              <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
                                 match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : 'text-red/40 line-through'
@@ -238,6 +242,9 @@ const OngoingActivities = () => {
                           }`}>
                              {match.player2Id.fullName}
                           </p>
+                          <p className="text-[8px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
+                             Won: {match.setsResults?.filter(s => s.winnerId === (match.player2Id._id || match.player2Id)).length || 0}/{match.setsCount}
+                          </p>
                           {match.winnerId && (
                              <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
                                 match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : 'text-red/40 line-through'
@@ -251,15 +258,15 @@ const OngoingActivities = () => {
                   </div>
 
                   {/* Redesigned Set Management */}
-                  <div className="bg-base2/10 p-3 border-t border-base2 space-y-3">
-                     {/* Set Tabs - Elastic Layout */}
-                     <div className="flex flex-wrap gap-1.5">
+                  <div className="bg-base2/10 p-3 border-t border-base2 space-y-3 relative">
+                     
+                     {/* Set Tabs Container */}
+                     <div className="flex flex-wrap gap-1.5 justify-center relative">
                         {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                           const sRes = match.setsResults?.find(s => s.setIndex === idx);
                           const isActive = currentActiveSet === idx;
-                          
                           const isLocked = idx > defaultActive;
-                          const isSelecting = selectingWinnerForSetMap[match._id] === idx;
+                          
                           let tabLabel = `Set ${idx + 1}`;
                           let isWon = false;
                           if (sRes) {
@@ -268,30 +275,7 @@ const OngoingActivities = () => {
                           }
 
                           return (
-                            <div key={idx} className="relative flex-1 min-w-[60px]">
-                              {isSelecting ? (
-                                <div className="absolute left-1/2 -translate-x-1/2 top-[-8px] bottom-[-8px] min-w-[320px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-1.5 gap-2 z-30 animate-in zoom-in-95 duration-200">
-                                   <button 
-                                     onClick={() => handleRecordSetWinner(match, idx, (match.player1Id._id || match.player1Id))}
-                                     className="flex-1 h-full bg-primary/10 text-primary hover:bg-primary hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 py-1 flex items-center justify-center text-center leading-tight"
-                                   >
-                                      {match.player1Id.fullName}
-                                   </button>
-                                   <div className="w-px h-6 bg-base2"></div>
-                                   <button 
-                                     onClick={() => handleRecordSetWinner(match, idx, (match.player2Id._id || match.player2Id))}
-                                     className="flex-1 h-full bg-violet/10 text-violet hover:bg-violet hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 py-1 flex items-center justify-center text-center leading-tight"
-                                   >
-                                      {match.player2Id.fullName}
-                                   </button>
-                                   <button 
-                                     onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
-                                     className="w-8 h-full flex items-center justify-center text-text/20 hover:text-red transition-colors"
-                                   >
-                                      <X size={14} />
-                                   </button>
-                                </div>
-                              ) : (
+                            <div key={idx} className="flex-1 min-w-[60px] max-w-[80px]">
                                 <button
                                   disabled={isLocked && match.status !== 'completed'}
                                   onClick={() => {
@@ -304,16 +288,42 @@ const OngoingActivities = () => {
                                   }}
                                   className={`w-full px-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
                                     isActive 
-                                      ? 'bg-primary text-base3 border-primary shadow-md scale-105 z-10' 
+                                      ? 'bg-primary text-base3 border-primary shadow-md' 
                                       : (sRes ? 'bg-primary/5 text-primary border-primary/10 opacity-80' : 'bg-base2/30 text-text/30 border-base2/50 hover:bg-base2/50')
                                   } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                    <span className={`truncate max-w-full ${isWon ? 'text-[9px]' : ''}`}>{tabLabel}</span>
                                 </button>
-                              )}
                             </div>
                           );
                         })}
+
+                        {/* Centered Overlay for Winner Selection */}
+                        {selectingSetIdx !== undefined && (
+                           <div className="absolute inset-x-0 inset-y-[-4px] flex justify-center z-50">
+                              <div className="w-[340px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-1.5 gap-2 animate-in zoom-in-95 duration-200">
+                                 <button 
+                                   onClick={() => handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
+                                   className="flex-1 h-full py-2 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 text-center"
+                                 >
+                                    {match.player1Id.fullName}
+                                 </button>
+                                 <div className="w-px h-6 bg-base2"></div>
+                                 <button 
+                                   onClick={() => handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
+                                   className="flex-1 h-full py-2 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 text-center"
+                                 >
+                                    {match.player2Id.fullName}
+                                 </button>
+                                 <button 
+                                   onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
+                                   className="w-8 h-8 flex items-center justify-center text-text/20 hover:text-red transition-colors"
+                                 >
+                                    <X size={16} />
+                                 </button>
+                              </div>
+                           </div>
+                        )}
                      </div>
 
                      {isMatchFinished && (

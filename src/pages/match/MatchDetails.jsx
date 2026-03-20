@@ -41,8 +41,6 @@ const MatchDetails = () => {
     }
   };
 
-  const activeSetRes = match?.setsResults?.find(s => s.setIndex === activeSet);
-
   const fetchMatch = async () => {
     try {
       const { data } = await api.get(`/direct-matches/${id}`);
@@ -118,6 +116,9 @@ const MatchDetails = () => {
               </div>
               <div>
                 <h4 className="text-xl font-bold text-text-emphasis">{match.player1Id.fullName}</h4>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1 mb-2">
+                   Won: {match.setsResults?.filter(s => s.winnerId === match.player1Id._id).length || 0} / {match.setsCount}
+                </p>
                 <p className={`text-xs font-bold uppercase ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
                    {match.player1Accepted ? 'Ready' : 'Pending Invite'}
                 </p>
@@ -138,6 +139,9 @@ const MatchDetails = () => {
               </div>
               <div>
                 <h4 className="text-xl font-bold text-text-emphasis">{match.player2Id.fullName}</h4>
+                <p className="text-[10px] font-black uppercase tracking-widest text-violet mt-1 mb-2">
+                   Won: {match.setsResults?.filter(s => s.winnerId === match.player2Id._id).length || 0} / {match.setsCount}
+                </p>
                 <p className={`text-xs font-bold uppercase ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
                    {match.player2Accepted ? 'Ready' : 'Pending Invite'}
                 </p>
@@ -160,7 +164,7 @@ const MatchDetails = () => {
 
         {/* Record Result section (Moderator Only) */}
         {(match.status === 'confirmed' || match.status === 'ongoing') && (
-          <section className="card-premium p-8 rounded-2xl bg-base3 space-y-8">
+          <section className="card-premium p-8 rounded-2xl bg-base3 space-y-8 relative overflow-visible">
              <div className="flex items-center justify-between border-b border-base2 pb-4">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                    <Target size={20} className="text-primary" />
@@ -171,8 +175,8 @@ const MatchDetails = () => {
                 </div>
              </div>
 
-             {/* Set Tabs */}
-             <div className="flex flex-wrap gap-4">
+             {/* Set Tabs Container */}
+             <div className="flex flex-wrap gap-4 justify-center relative">
                 {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                    const sRes = match.setsResults?.find(s => s.setIndex === idx);
                    
@@ -187,7 +191,6 @@ const MatchDetails = () => {
 
                    const isActive = activeSet === idx;
                    const isLocked = idx > firstUnplayed;
-                   const isSelecting = selectingWinnerForSet === idx;
                    
                    let tabLabel = `SET ${idx + 1}`;
                    let winnerColor = '';
@@ -203,56 +206,61 @@ const MatchDetails = () => {
                    }
 
                    return (
-                      <div key={idx} className="relative">
-                         {isSelecting ? (
-                            <div className="min-w-[240px] h-[64px] bg-base3 border-2 border-primary rounded-3xl shadow-2xl flex items-center p-1.5 gap-2 animate-in zoom-in-95 duration-200 z-30">
-                               <button 
-                                 onClick={() => handleRecordSetWinner(match.player1Id._id)}
-                                 className="flex-1 h-full bg-primary/10 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
-                               >
-                                  <span className="opacity-40 text-[7px] uppercase">P1</span>
-                                  {match.player1Id.fullName}
-                               </button>
-                               <div className="w-px h-8 bg-base2"></div>
-                               <button 
-                                 onClick={() => handleRecordSetWinner(match.player2Id._id)}
-                                 className="flex-1 h-full bg-violet/10 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
-                               >
-                                  <span className="opacity-40 text-[7px] uppercase">P2</span>
-                                  {match.player2Id.fullName}
-                               </button>
-                               <button 
-                                 onClick={() => setSelectingWinnerForSet(null)}
-                                 className="w-10 h-10 flex items-center justify-center text-text/20 hover:text-red transition-colors rounded-2xl hover:bg-red/5"
-                               >
-                                  <X size={18} />
-                               </button>
-                            </div>
-                         ) : (
-                            <button
-                              disabled={isLocked && match.status !== 'completed'}
-                              onClick={() => {
-                                 if (!isLocked && !sRes && match.status !== 'completed') {
-                                    setSelectingWinnerForSet(idx);
-                                 } else {
-                                    setActiveSet(idx);
-                                    setSelectingWinnerForSet(null);
-                                 }
-                              }}
-                              className={`min-w-[120px] h-[64px] px-6 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
-                                isActive 
-                                  ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
-                                  : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
-                              } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
-                            >
-                               <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
-                                  {tabLabel}
-                               </span>
-                            </button>
-                         )}
+                      <div key={idx}>
+                         <button
+                           disabled={isLocked && match.status !== 'completed'}
+                           onClick={() => {
+                              if (!isLocked && !sRes && match.status !== 'completed') {
+                                 setSelectingWinnerForSet(idx);
+                              } else {
+                                 setActiveSet(idx);
+                                 setSelectingWinnerForSet(null);
+                              }
+                           }}
+                           className={`min-w-[120px] h-[64px] px-6 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
+                             isActive 
+                               ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
+                               : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
+                           } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
+                         >
+                            <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                               {tabLabel}
+                            </span>
+                         </button>
                       </div>
                    );
                 })}
+
+                {/* Centered Overlay for Winner Selection */}
+                {selectingWinnerForSet !== null && (
+                   <div className="absolute inset-x-0 inset-y-[-8px] flex justify-center z-50">
+                      <div className="w-[420px] bg-base3 border-2 border-primary rounded-[32px] shadow-2xl flex items-center p-2 gap-3 animate-in zoom-in-95 duration-200">
+                         <div className="px-4 py-2 bg-primary/10 rounded-2xl flex flex-col items-center justify-center min-w-[80px]">
+                            <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Set {selectingWinnerForSet + 1}</span>
+                         </div>
+                         <div className="flex-1 flex gap-2">
+                            <button 
+                              onClick={() => handleRecordSetWinner(match.player1Id._id)}
+                              className="flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10"
+                            >
+                               {match.player1Id.fullName}
+                            </button>
+                            <button 
+                              onClick={() => handleRecordSetWinner(match.player2Id._id)}
+                              className="flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10"
+                            >
+                               {match.player2Id.fullName}
+                            </button>
+                         </div>
+                         <button 
+                           onClick={() => setSelectingWinnerForSet(null)}
+                           className="w-12 h-12 flex items-center justify-center text-text/20 hover:text-red transition-all rounded-full hover:bg-red/5"
+                         >
+                            <X size={20} />
+                         </button>
+                      </div>
+                   </div>
+                )}
              </div>
 
 

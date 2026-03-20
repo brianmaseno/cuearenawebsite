@@ -378,18 +378,24 @@ const TournamentManage = () => {
                  {/* Match Summary */}
                  <div className="flex items-center justify-between bg-base2/20 p-6 rounded-3xl border border-base2">
                     <div className="text-center flex-1">
-                       <p className="text-lg font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
+                       <p className="text-lg font-black text-text-emphasis ">{selectedMatchForSets.player1Id?.fullName}</p>
+                       <p className="text-[10px] font-black uppercase text-primary tracking-widest mt-1 mb-2">
+                          Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player1Id?._id).length || 0} / {selectedMatchForSets.setsCount}
+                       </p>
                        <p className="text-3xl font-black text-primary mt-2">{selectedMatchForSets.scorePlayer1}</p>
                     </div>
                     <div className="px-6 text-sm font-black italic text-text/20">VS</div>
                     <div className="text-center flex-1">
-                       <p className="text-lg font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
+                       <p className="text-lg font-black text-text-emphasis ">{selectedMatchForSets.player2Id?.fullName}</p>
+                       <p className="text-[10px] font-black uppercase text-violet tracking-widest mt-1 mb-2">
+                          Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player2Id?._id).length || 0} / {selectedMatchForSets.setsCount}
+                       </p>
                        <p className="text-3xl font-black text-violet mt-2">{selectedMatchForSets.scorePlayer2}</p>
                     </div>
                  </div>
 
-                 {/* Set Tabs */}
-                 <div className="flex flex-wrap gap-4">
+                 {/* Set Tabs Container */}
+                 <div className="flex flex-wrap gap-4 justify-center relative">
                     {Array.from({ length: selectedMatchForSets.setsCount || 1 }).map((_, idx) => {
                        const sRes = selectedMatchForSets.setsResults?.find(s => s.setIndex === idx);
                        
@@ -404,7 +410,6 @@ const TournamentManage = () => {
 
                        const isActive = activeSetInModal === idx;
                        const isLocked = idx > firstUnplayed;
-                       const isSelecting = selectingWinnerForSetInModal === idx;
                        
                        let tabLabel = `SET ${idx + 1}`;
                        let winnerColor = '';
@@ -420,57 +425,61 @@ const TournamentManage = () => {
                        }
 
                        return (
-                          <div key={idx} className="relative">
-                             {isSelecting ? (
-                                <div className="min-w-[240px] h-[64px] bg-base3 border-2 border-primary rounded-3xl shadow-2xl flex items-center p-1.5 gap-2 animate-in zoom-in-95 duration-200 z-30">
-                                   <button 
-                                     onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, idx, selectedMatchForSets.player1Id?._id)}
-                                     className="flex-1 h-full bg-primary/10 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
-                                   >
-                                      <span className="opacity-40 text-[7px] uppercase">P1</span>
-                                      {selectedMatchForSets.player1Id?.fullName}
-                                   </button>
-                                   <div className="w-px h-8 bg-base2"></div>
-                                   <button 
-                                     onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, idx, selectedMatchForSets.player2Id?._id)}
-                                     className="flex-1 h-full bg-violet/10 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
-                                   >
-                                      <span className="opacity-40 text-[7px] uppercase">P2</span>
-                                      {selectedMatchForSets.player2Id?.fullName}
-                                   </button>
-                                   <button 
-                                     onClick={() => setSelectingWinnerForSetInModal(null)}
-                                     className="w-10 h-10 flex items-center justify-center text-text/20 hover:text-red transition-colors rounded-2xl hover:bg-red/5"
-                                   >
-                                      <X size={18} />
-                                   </button>
-                                </div>
-                             ) : (
-                                <button
-                                  key={idx}
-                                  disabled={isLocked && selectedMatchForSets.status !== 'completed'}
-                                  onClick={() => {
-                                     if (!isLocked && !sRes && selectedMatchForSets.status !== 'completed') {
-                                        setSelectingWinnerForSetInModal(idx);
-                                     } else {
-                                        setActiveSetInModal(idx);
-                                        setSelectingWinnerForSetInModal(null);
-                                     }
-                                  }}
-                                  className={`min-w-[120px] h-[64px] px-6 rounded-[28px] font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
-                                    isActive 
-                                       ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
-                                       : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
-                                  } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
-                                >
-                                   <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
-                                      {tabLabel}
-                                   </span>
-                                </button>
-                             )}
+                          <div key={idx}>
+                             <button
+                               disabled={isLocked && selectedMatchForSets.status !== 'completed'}
+                               onClick={() => {
+                                  if (!isLocked && !sRes && selectedMatchForSets.status !== 'completed') {
+                                     setSelectingWinnerForSetInModal(idx);
+                                  } else {
+                                     setActiveSetInModal(idx);
+                                     setSelectingWinnerForSetInModal(null);
+                                  }
+                               }}
+                               className={`min-w-[120px] h-[64px] px-6 rounded-[28px] font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
+                                 isActive 
+                                    ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
+                                    : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
+                               } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
+                             >
+                                <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                   {tabLabel}
+                                </span>
+                             </button>
                           </div>
                        );
                     })}
+
+                    {/* Centered Overlay for Winner Selection */}
+                    {selectingWinnerForSetInModal !== null && (
+                       <div className="absolute inset-x-0 inset-y-[-8px] flex justify-center z-50">
+                          <div className="w-[420px] bg-base3 border-2 border-primary rounded-[32px] shadow-2xl flex items-center p-2 gap-3 animate-in zoom-in-95 duration-200">
+                             <div className="px-4 py-2 bg-primary/10 rounded-2xl flex flex-col items-center justify-center min-w-[80px]">
+                                <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Set {selectingWinnerForSetInModal + 1}</span>
+                             </div>
+                             <div className="flex-1 flex gap-2">
+                                <button 
+                                  onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, selectedMatchForSets.player1Id?._id)}
+                                  className="flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10"
+                                >
+                                   {selectedMatchForSets.player1Id?.fullName}
+                                </button>
+                                <button 
+                                  onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, selectedMatchForSets.player2Id?._id)}
+                                  className="flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10"
+                                >
+                                   {selectedMatchForSets.player2Id?.fullName}
+                                </button>
+                             </div>
+                             <button 
+                               onClick={() => setSelectingWinnerForSetInModal(null)}
+                               className="w-12 h-12 flex items-center justify-center text-text/20 hover:text-red transition-all rounded-full hover:bg-red/5"
+                             >
+                                <X size={20} />
+                             </button>
+                          </div>
+                       </div>
+                    )}
                  </div>
 
 
