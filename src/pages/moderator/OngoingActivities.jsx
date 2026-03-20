@@ -145,7 +145,7 @@ const OngoingActivities = () => {
                 const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
                 const setRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
                 const isMatchFinished = match.status === 'completed';
-                const isOngoing = match.status === 'ongoing';
+                const isOngoing = ['ongoing', 'confirmed'].includes(match.status);
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
@@ -412,7 +412,7 @@ const OngoingActivities = () => {
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <Trophy size={16} />
                     </div>
-                    <StatusBadge status={t.status} />
+                    <StatusBadge status={t.status} entryType={t.entryType} />
                   </div>
                   
                   <div className="p-5">
