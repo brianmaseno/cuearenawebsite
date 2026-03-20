@@ -163,17 +163,26 @@ const PlayerDashboard = () => {
                           <p className="text-[11px] font-bold truncate max-w-[80px] text-text-emphasis">
                              {match.player1Id.fullName}
                           </p>
-                          <p className="text-[8px] font-black uppercase text-text/40 tracking-wider mt-0.5">
-                             Partner
-                          </p>
+                          <div className="mt-1 flex flex-col items-center gap-0.5">
+                            <span className="text-[10px] font-black text-primary">
+                              {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId).toString() === match.player1Id._id.toString()).length || 0} / {match.setsCount}
+                            </span>
+                            <span className={`text-[8px] font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
+                               {match.player1Accepted ? 'Accepted' : 'Pending'}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
                       <div className="flex flex-col items-center gap-2">
-                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2">
+                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
                             {match.title || 'Exhibition'}
                          </div>
                          <div className="text-xl font-black text-primary/10 italic">VS</div>
+                         <div className="flex flex-col items-center gap-0.5">
+                            <p className="text-[8px] font-bold text-text/60">Org: {match.organizerId?.fullName}</p>
+                            <p className="text-[8px] font-bold text-text/60">{match.location || 'Cue Arena'}</p>
+                         </div>
                       </div>
 
                       {/* Player 2 */}
@@ -191,15 +200,20 @@ const PlayerDashboard = () => {
                           <p className="text-[11px] font-bold truncate max-w-[80px] text-text-emphasis">
                              {match.player2Id.fullName}
                           </p>
-                          <p className="text-[8px] font-black uppercase text-text/40 tracking-wider mt-0.5">
-                             Partner
-                          </p>
+                          <div className="mt-1 flex flex-col items-center gap-0.5">
+                            <span className="text-[10px] font-black text-primary">
+                              {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId).toString() === match.player2Id._id.toString()).length || 0} / {match.setsCount}
+                            </span>
+                            <span className={`text-[8px] font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
+                               {match.player2Accepted ? 'Accepted' : 'Pending'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-base2/10 p-3 border-t border-base2">
+                  <div className="bg-base2/10 p-3 border-t border-base2 mt-auto">
                      {match.myStatus === 'pending' ? (
                         <div className="flex gap-2">
                            <button
@@ -217,14 +231,20 @@ const PlayerDashboard = () => {
                              Accept Match
                            </button>
                         </div>
+                     ) : match.status === 'completed' ? (
+                        <div className={`w-full py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2 ${
+                           match.winnerId === userId ? 'bg-green/10 text-green' : 'bg-red/10 text-red'
+                        }`}>
+                           {match.winnerId === userId ? '🏆 YOU WON!' : '❌ MATCH LOST'}
+                        </div>
+                     ) : (match.player1Accepted && match.player2Accepted) ? (
+                        <div className="w-full bg-primary/10 text-primary py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
+                           ⚡ ONGOING
+                        </div>
                      ) : (
-                        <Link 
-                          to={`/dashboard/match/${match._id}`}
-                          className="w-full bg-primary/10 text-primary py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-base3 transition-all"
-                        >
-                           View Match Details
-                           <ChevronRight size={14} />
-                        </Link>
+                        <div className="w-full bg-orange/10 text-orange py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
+                           ⏳ READY
+                        </div>
                      )}
                   </div>
                 </div>

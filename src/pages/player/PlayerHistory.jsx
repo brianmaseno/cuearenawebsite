@@ -165,17 +165,26 @@ const PlayerHistory = () => {
                           <p className={`text-[11px] font-bold truncate max-w-[80px] ${isP1Winner ? 'text-green' : 'text-text/40'}`}>
                              {match.player1Id?.fullName}
                           </p>
-                          <p className="text-[8px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
-                             Sets won: {match.scorePlayer1 || 0}
-                          </p>
+                          <div className="mt-1 flex flex-col items-center gap-0.5">
+                            <span className="text-[10px] font-black text-primary">
+                              {match.scorePlayer1 || 0} / {match.setsCount}
+                            </span>
+                            <span className={`text-[8px] font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
+                               {match.player1Accepted ? 'Accepted' : 'Pending'}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
                       <div className="flex flex-col items-center gap-2">
-                        <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
-                           {match.title || 'Exhibition Match'}
-                        </div>
-                        <div className="text-xl font-black text-primary/10 italic">VS</div>
+                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
+                            {match.title || 'Exhibition Match'}
+                         </div>
+                         <div className="text-xl font-black text-primary/10 italic">VS</div>
+                         <div className="flex flex-col items-center gap-0.5">
+                            <p className="text-[8px] font-bold text-text/60">Org: {match.organizerId?.fullName}</p>
+                            <p className="text-[8px] font-bold text-text/60">{match.location || 'Cue Arena'}</p>
+                         </div>
                       </div>
 
                       {/* Player 2 */}
@@ -193,9 +202,14 @@ const PlayerHistory = () => {
                           <p className={`text-[11px] font-bold truncate max-w-[80px] ${isP2Winner ? 'text-green' : 'text-text/40'}`}>
                              {match.player2Id?.fullName}
                           </p>
-                          <p className="text-[8px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
-                             Sets won: {match.scorePlayer2 || 0}
-                          </p>
+                          <div className="mt-1 flex flex-col items-center gap-0.5">
+                            <span className="text-[10px] font-black text-primary">
+                              {match.scorePlayer2 || 0} / {match.setsCount}
+                            </span>
+                            <span className={`text-[8px] font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
+                               {match.player2Accepted ? 'Accepted' : 'Pending'}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
