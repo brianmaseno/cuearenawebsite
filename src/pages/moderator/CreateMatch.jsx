@@ -2,48 +2,82 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Target, Users, Calendar, MapPin, Search, Loader2, Send } from 'lucide-react';
+import { Target, Users, Calendar, MapPin, Search, Loader2, Send, X, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const CreateMatch = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [players, setPlayers] = useState([]);
-  const [search, setSearch] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
-    player1Id: '',
-    player2Id: '',
     venue: '',
     location: '',
-    scheduledAt: '',
     notes: '',
   });
 
+  // Handle live search
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const searchPlayers = async () => {
+      if (searchQuery.length < 3) {
+        setSearchResults([]);
+        return;
+      }
+
+      setIsSearching(true);
       try {
-        const { data } = await api.get('/users/players');
-        setPlayers(data);
+        const { data } = await api.get(`/users/players?search=${searchQuery}`);
+        // Filter out already selected players
+        const filtered = data.filter(
+          p => !selectedPlayers.some(selected => selected._id === p._id)
+        );
+        setSearchResults(filtered);
       } catch (err) {
-        toast.error('Failed to load players');
+        console.error('Search failed:', err);
+      } finally {
+        setIsSearching(false);
       }
     };
-    fetchPlayers();
-  }, []);
+
+    const timer = setTimeout(searchPlayers, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedPlayers]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleSelectPlayer = (player) => {
+    if (selectedPlayers.length >= 2) {
+      toast.error('Maximum 2 players allowed');
+      return;
+    }
+    setSelectedPlayers([...selectedPlayers, player]);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  const handleRemovePlayer = (id) => {
+    setSelectedPlayers(selectedPlayers.filter(p => p._id !== id));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.player1Id === formData.player2Id) {
-      return toast.error('Please select two different players');
+    if (selectedPlayers.length !== 2) {
+      return toast.error('Please select exactly two players');
     }
+
     setLoading(true);
     try {
-      await api.post('/direct-matches', formData);
+      const payload = {
+        ...formData,
+        player1Id: selectedPlayers[0]._id,
+        player2Id: selectedPlayers[1]._id,
+      };
+      await api.post('/direct-matches', payload);
       toast.success('Direct match created and invitations sent!');
       navigate('/moderator');
     } catch (err) {
@@ -53,36 +87,32 @@ const CreateMatch = () => {
     }
   };
 
-  const filteredPlayers = players.filter(p => 
-    p.fullName.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <DashboardLayout title="Setup Direct Match">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto pb-20">
         <form onSubmit={handleSubmit} className="space-y-8">
           <section className="card-premium p-8 rounded-2xl space-y-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4">
+            <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis">
               <Target size={20} className="text-violet" />
               Match Information
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Match Title</label>
+                <label className="block text-sm font-bold text-text mb-2">Match Title</label>
                 <input
                   name="title"
                   type="text"
                   required
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-                  placeholder="e.g., Friday Afternoon Friendly"
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                  placeholder="e.g., Regional Semifinals: Smith vs Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Venue</label>
+                <label className="block text-sm font-bold text-text mb-2">Venue</label>
                 <div className="relative">
                   <MapPin size={18} className="absolute left-3 top-3.5 text-base1" />
                   <input
@@ -91,70 +121,106 @@ const CreateMatch = () => {
                     required
                     value={formData.venue}
                     onChange={handleChange}
-                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-                    placeholder="The Green Room"
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                    placeholder="Grand Arena Pool Club"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Scheduled At</label>
-                <input
-                  name="scheduledAt"
-                  type="datetime-local"
-                  required
-                  value={formData.scheduledAt}
-                  onChange={handleChange}
-                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-                />
-              </div>
             </div>
           </section>
 
-          <section className="card-premium p-8 rounded-2xl space-y-6">
-            <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4">
+          <section className="card-premium p-8 rounded-2xl space-y-6 relative">
+            <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis">
               <Users size={20} className="text-blue" />
-              Selection Exactly 2 Players
+              Select Players (Exactly 2)
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Player 1 Selection */}
-              <div>
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Player 1</label>
-                <select
-                  name="player1Id"
-                  required
-                  value={formData.player1Id}
-                  onChange={handleChange}
-                  className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none mb-2"
-                >
-                  <option value="">Select Player 1</option>
-                  {players.map(p => (
-                    <option key={p._id} value={p._id}>{p.fullName}</option>
-                  ))}
-                </select>
-              </div>
+            {selectedPlayers.length < 2 ? (
+              <div className="relative">
+                <label className="block text-sm font-bold text-text mb-2">Search Player (Name or Email)</label>
+                <div className="relative">
+                  <Search size={18} className="absolute left-3 top-3.5 text-base1" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                    placeholder="Type at least 3 characters..."
+                  />
+                  {isSearching && (
+                    <div className="absolute right-3 top-3.5">
+                      <Loader2 size={18} className="animate-spin text-primary" />
+                    </div>
+                  )}
+                </div>
 
-              {/* Player 2 Selection */}
-              <div>
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Player 2</label>
-                <select
-                  name="player2Id"
-                  required
-                  value={formData.player2Id}
-                  onChange={handleChange}
-                  className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none mb-2"
-                >
-                  <option value="">Select Player 2</option>
-                  {players.map(p => (
-                    <option key={p._id} value={p._id}>{p.fullName}</option>
-                  ))}
-                </select>
+                {/* Results Dropdown */}
+                {searchResults.length > 0 && (
+                  <div className="absolute z-50 w-full mt-2 bg-base3 border border-base2 rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
+                    {searchResults.map((p) => (
+                      <button
+                        key={p._id}
+                        type="button"
+                        onClick={() => handleSelectPlayer(p)}
+                        className="w-full px-4 py-3 text-left hover:bg-base2/50 flex items-center gap-3 transition-colors border-b border-base2 last:border-0"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          {p.fullName.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-text-emphasis text-sm">{p.fullName}</p>
+                          <p className="text-xs text-text">{p.email}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchQuery.length >= 3 && !isSearching && searchResults.length === 0 && (
+                  <div className="absolute z-50 w-full mt-2 bg-base3 border border-base2 rounded-xl p-4 text-center text-sm italic text-text shadow-xl">
+                    No active players found matching "{searchQuery}"
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-primary text-sm font-bold text-center">
+                Maximum players selected. Remove one to search for another.
+              </div>
+            )}
+
+            {/* Selected Players List */}
+            <div className="space-y-3 pt-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-text">Selected Players</h4>
+              {selectedPlayers.length === 0 && (
+                <p className="text-sm italic text-text opacity-50">No players selected yet.</p>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {selectedPlayers.map((p, index) => (
+                  <div key={p._id} className="bg-base3 border border-base2 p-4 rounded-xl flex items-center justify-between group hover:border-primary transition-colors shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-base2 flex items-center justify-center text-text font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-bold text-text-emphasis">{p.fullName}</p>
+                        <p className="text-xs text-text">{p.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePlayer(p._id)}
+                      className="p-2 text-red hover:bg-red/5 rounded-lg transition-colors"
+                      title="Remove Player"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
 
-          <div className="flex justify-end gap-4">
+          <div className="flex justify-end gap-4 pt-4">
             <button
               type="button"
               onClick={() => navigate('/moderator')}
@@ -164,8 +230,8 @@ const CreateMatch = () => {
             </button>
             <button
               type="submit"
-              disabled={loading}
-              className="bg-violet text-base3 px-12 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-violet/20 hover:bg-violet/90 disabled:opacity-70"
+              disabled={loading || selectedPlayers.length !== 2}
+              className="bg-violet text-base3 px-12 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-violet/20 hover:scale-105 transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
             >
               {loading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
               Send Match Invites
