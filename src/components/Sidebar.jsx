@@ -37,7 +37,7 @@ const Sidebar = () => {
     if (user.role === 'moderator') {
       return [
         { label: 'Organizer Hub', path: '/moderator', icon: LayoutDashboard },
-        { label: 'Invitations', path: '/moderator/invitations', icon: MessageSquare },
+        { label: 'Ongoing Management', path: '/moderator/ongoing', icon: Calendar },
       ];
     }
     return [

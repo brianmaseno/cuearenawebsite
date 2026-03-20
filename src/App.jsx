@@ -21,6 +21,7 @@ import TournamentManage from './pages/moderator/TournamentManage';
 import CreateMatch from './pages/moderator/CreateMatch';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import MatchDetails from './pages/match/MatchDetails';
+import OngoingActivities from './pages/moderator/OngoingActivities';
 
 function App() {
   return (
@@ -82,9 +83,14 @@ function App() {
               <CreateMatch />
             </ProtectedRoute>
           } />
-           <Route path="/moderator/match/:id" element={
+          <Route path="/moderator/match/:id" element={
             <ProtectedRoute roles={['moderator']}>
               <MatchDetails />
+            </ProtectedRoute>
+          } />
+          <Route path="/moderator/ongoing" element={
+            <ProtectedRoute roles={['moderator']}>
+              <OngoingActivities />
             </ProtectedRoute>
           } />
 
