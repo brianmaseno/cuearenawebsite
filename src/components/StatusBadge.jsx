@@ -15,6 +15,8 @@ const StatusBadge = ({ status }) => {
         return 'bg-orange/10 text-orange border-orange/20';
       case 'confirmed':
         return 'bg-cyan/10 text-cyan border-cyan/20';
+      case 'cancelled':
+        return 'bg-red/10 text-red border-red/20';
       default:
         return 'bg-base2/50 text-text border-base2';
     }

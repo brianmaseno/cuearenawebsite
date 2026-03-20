@@ -150,7 +150,13 @@ const OngoingActivities = () => {
                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
                      </div>
                     <div className="flex items-center gap-1">
-                       <StatusBadge status={match.status} />
+                       {match.status === 'cancelled' && match.declinedBy ? (
+                         <span className="text-[10px] font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse">
+                            {match.declinedBy.fullName} Declined
+                         </span>
+                       ) : (
+                         <StatusBadge status={match.status} />
+                       )}
                        <button 
                          disabled={actionLoading}
                          onClick={() => handleCancelMatch(match._id)}

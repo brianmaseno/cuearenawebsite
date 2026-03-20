@@ -219,7 +219,9 @@ const PlayerHistory = () => {
                      <div className="flex flex-col items-center justify-center text-center space-y-2">
                         <div className={`flex items-center gap-2 font-black uppercase tracking-widest text-[11px] ${isCancelled ? 'text-red/60' : 'text-green'}`}>
                            {isCancelled ? <CancelIcon size={16} /> : <AwardIcon size={16} />}
-                           {isCancelled ? 'Match Cancelled' : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
+                           {isCancelled ? (
+                             match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
+                           ) : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
                         </div>
                         <div className="flex items-center gap-4 text-text/40 font-bold text-[10px]">
                            <div className="flex items-center gap-1.5 leading-none">
@@ -253,7 +255,15 @@ const PlayerHistory = () => {
                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                       <div className="flex items-center gap-3">
                          <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                         <span className={`text-sm font-black uppercase tracking-widest ${
+                           t.status === 'completed' ? 'text-text-emphasis' : 'text-red'
+                        }`}>
+                           {t.status === 'cancelled' && t.declinedBy ? (
+                             (t.declinedBy._id || t.declinedBy).toString() === (user?._id || user?.id)?.toString() 
+                               ? 'Declined' 
+                               : `Declined: by ${t.declinedBy.fullName}`
+                           ) : t.status}
+                        </span>
                       </div>
                       <div>
                          {isCancelled ? (

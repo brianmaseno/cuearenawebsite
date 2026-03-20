@@ -226,7 +226,9 @@ const History = () => {
                      <div className="flex flex-col items-center justify-center text-center space-y-2">
                         <div className={`flex items-center gap-2 font-black uppercase tracking-widest text-[11px] ${isCancelled ? 'text-red/60' : 'text-green'}`}>
                            {isCancelled ? <CancelIcon size={16} /> : <AwardIcon size={16} />}
-                           {isCancelled ? 'Match Cancelled' : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
+                           {isCancelled ? (
+                             match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
+                           ) : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
                         </div>
                         <div className="flex items-center gap-4 text-text/40 font-bold text-[10px]">
                            <div className="flex items-center gap-1.5 leading-none">
