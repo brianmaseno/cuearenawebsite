@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import { 
   Trophy as TrophyIcon, 
   User, 
+  Users,
   Target as TargetIcon, 
   Clock as ClockIcon, 
   Calendar as CalendarIcon, 
@@ -258,7 +259,7 @@ const History = () => {
               filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
-                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
+                   <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                       <div className="flex items-center gap-3">
                          <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
@@ -274,14 +275,15 @@ const History = () => {
                     </div>
                     
                     <div className="p-5 flex-1">
+                      <h3 className="text-base font-bold text-text-emphasis mb-3 truncate">{t.name || 'Untitled Tournament'}</h3>
                       <div className="flex items-center gap-3 text-[10px] text-text/70 mb-4">
                         <div className="flex items-center gap-1.5 font-bold">
                            <Users size={12} className="text-primary" />
-                           {t.confirmedPlayers.length} Players
+                           {t.confirmedPlayers?.length || 0} Players
                         </div>
                         <div className="flex items-center gap-1.5 font-bold capitalize">
                            <AwardIcon size={12} className="text-yellow" />
-                           {t.format.split('_')[0]}
+                           {t.format?.split('_')[0] || 'N/A'}
                         </div>
                       </div>
   
@@ -292,7 +294,7 @@ const History = () => {
                             </div>
                             <div>
                                <p className="text-[9px] font-black uppercase text-yellow/60 tracking-tighter">Tournament Winner</p>
-                               <p className="text-sm font-bold text-text-emphasis truncate">{t.winner.fullName || t.winner}</p>
+                               <p className="text-sm font-bold text-text-emphasis truncate">{t.winner?.fullName || (typeof t.winner === 'string' ? t.winner : 'N/A')}</p>
                             </div>
                          </div>
                       )}
@@ -307,10 +309,10 @@ const History = () => {
                          </div>
                          <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1.5">
-                               {new Date(t.updatedAt).toLocaleDateString()}
+                               {t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}
                             </div>
                             <div className="flex items-center gap-1.5">
-                               {new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                               {t.updatedAt ? new Date(t.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                             </div>
                          </div>
                       </div>
