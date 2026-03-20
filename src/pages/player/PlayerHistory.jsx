@@ -39,7 +39,13 @@ const PlayerHistory = () => {
   }, []);
 
   const getFilteredData = () => {
-    const list = activeTab === 'matches' ? data.matches : data.tournaments;
+    let list = [];
+    if (activeTab === 'matches') {
+      list = [...(data.matches || []), ...(data.tournamentMatches || [])];
+    } else {
+      list = data.tournaments || [];
+    }
+    
     if (subFilter === 'all') return list;
     return list.filter(item => item.status === (subFilter === 'completed' ? 'completed' : 'cancelled'));
   };
@@ -132,8 +138,16 @@ const PlayerHistory = () => {
                   <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                       <div className="flex items-center gap-3">
-                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                        {match.isTournamentMatch ? (
+                           <div className="w-7 h-7 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                              <TrophyIcon size={14} />
+                           </div>
+                        ) : (
+                           <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                        )}
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
+                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
+                        </h3>
                       </div>
                       <div>
                         {isCancelled ? (
@@ -173,12 +187,14 @@ const PlayerHistory = () => {
 
                         <div className="flex flex-col items-center gap-2">
                           <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
-                            {match.title || 'Exhibition Match'}
+                            {match.isTournamentMatch ? `Round ${match.round}` : (match.title || 'Direct')}
                           </div>
                           <div className="text-xl font-black text-primary/10 italic">VS</div>
                           <div className="flex flex-col items-center gap-0.5">
-                            <p className="text-[10px] font-bold text-text/60">Org: {match.organizerId?.fullName}</p>
-                            <p className="text-[10px] font-bold text-text/60">{match.location || 'Cue Arena'}</p>
+                            <p className="text-[10px] font-bold text-text/60">
+                               {match.isTournamentMatch ? 'Tournament Match' : `Org: ${match.organizerId?.fullName}`}
+                            </p>
+                            <p className="text-[10px] font-bold text-text/60">{match.location || match.venue || 'Cue Arena'}</p>
                           </div>
                         </div>
 

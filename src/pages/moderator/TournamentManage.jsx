@@ -113,6 +113,19 @@ const TournamentManage = () => {
       }
    };
 
+   const handleUpdateSettings = async (field, value) => {
+      setActionLoading(true);
+      try {
+         await api.put(`/tournaments/${id}`, { [field]: value });
+         toast.success('Settings updated');
+         fetchTournamentData();
+      } catch (err) {
+         toast.error('Failed to update settings');
+      } finally {
+         setActionLoading(false);
+      }
+   };
+
    if (loading) {
       return (
          <DashboardLayout title="Tournament Management">
@@ -140,6 +153,21 @@ const TournamentManage = () => {
                </div>
 
                <div className="flex items-center gap-3">
+                  {(tournament.status === 'draft' || tournament.status === 'open_for_players' || tournament.status === 'full') && (
+                     <div className="flex items-center gap-2 bg-base2/20 px-4 py-2 rounded-2xl border border-base2">
+                        <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Sets/Match</span>
+                        <select
+                           value={tournament.matchSetsCount || 1}
+                           disabled={actionLoading}
+                           onChange={(e) => handleUpdateSettings('matchSetsCount', parseInt(e.target.value))}
+                           className="bg-transparent text-sm font-black text-primary outline-none cursor-pointer"
+                        >
+                           {[1, 3, 5, 7, 9, 11].map(num => (
+                              <option key={num} value={num} className="bg-base3 text-text">Best of {num}</option>
+                           ))}
+                        </select>
+                     </div>
+                  )}
                   {tournament.status === 'draft' && (
                      <button
                         onClick={handlePublish}
@@ -199,32 +227,38 @@ const TournamentManage = () => {
 
                                     <div className="flex flex-col gap-3 mt-2">
                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${match.winnerId === match.player1Id?._id ? 'bg-primary text-base3' : 'bg-base2/40 text-text/40'
-                                                }`}>
-                                                {match.player1Id?.fullName[0]}
-                                             </div>
-                                             <span className={`text-base font-bold truncate max-w-[120px] ${match.winnerId === match.player1Id?._id ? 'text-primary' : 'text-text'
-                                                }`}>
-                                                {match.player1Id?.fullName}
-                                             </span>
-                                          </div>
-                                          <span className="text-xl font-black">{match.scorePlayer1}</span>
-                                       </div>
-                                       <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3">
-                                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${match.winnerId === match.player2Id?._id ? 'bg-violet text-base3' : 'bg-base2/40 text-text/40'
-                                                }`}>
-                                                {match.player2Id?.fullName[0]}
-                                             </div>
-                                             <span className={`text-base font-bold truncate max-w-[120px] ${match.winnerId === match.player2Id?._id ? 'text-violet' : 'text-text'
-                                                }`}>
-                                                {match.player2Id?.fullName}
-                                             </span>
-                                          </div>
-                                          <span className="text-xl font-black">{match.scorePlayer2}</span>
-                                       </div>
-                                    </div>
+                                           <div className="flex items-center gap-3">
+                                              <div className="relative">
+                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${match.winnerId === match.player1Id?._id ? 'bg-primary text-base3' : 'bg-base2/40 text-text/40'
+                                                    }`}>
+                                                    {match.player1Id?.fullName[0]}
+                                                 </div>
+                                                 <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-base3 ${match.player1Accepted ? 'bg-green' : 'bg-orange'}`} title={match.player1Accepted ? 'Accepted' : 'Pending'}></div>
+                                              </div>
+                                              <span className={`text-base font-bold truncate max-w-[120px] ${match.winnerId === match.player1Id?._id ? 'text-primary' : 'text-text'
+                                                 }`}>
+                                                 {match.player1Id?.fullName}
+                                              </span>
+                                           </div>
+                                           <span className="text-xl font-black">{match.scorePlayer1}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                           <div className="flex items-center gap-3">
+                                              <div className="relative">
+                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${match.winnerId === match.player2Id?._id ? 'bg-violet text-base3' : 'bg-base2/40 text-text/40'
+                                                    }`}>
+                                                    {match.player2Id?.fullName[0]}
+                                                 </div>
+                                                 <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-base3 ${match.player2Accepted ? 'bg-green' : 'bg-orange'}`} title={match.player2Accepted ? 'Accepted' : 'Pending'}></div>
+                                              </div>
+                                              <span className={`text-base font-bold truncate max-w-[120px] ${match.winnerId === match.player2Id?._id ? 'text-violet' : 'text-text'
+                                                 }`}>
+                                                 {match.player2Id?.fullName}
+                                              </span>
+                                           </div>
+                                           <span className="text-xl font-black">{match.scorePlayer2}</span>
+                                        </div>
+                                     </div>
                                  </div>
                               ))}
                            </div>
@@ -314,26 +348,36 @@ const TournamentManage = () => {
                   <div className="p-8 space-y-8">
                      {/* Match Summary */}
                      <div className="flex items-center justify-between bg-base2/20 p-6 rounded-3xl border border-base2">
-                        <div className="text-center flex-1">
-                           <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
-                           <p className="text-xs font-black uppercase text-primary tracking-widest mt-1 mb-2">
-                              Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player1Id?._id).length || 0} / {selectedMatchForSets.setsCount}
-                           </p>
-                           <p className="text-4xl font-black text-primary mt-2">{selectedMatchForSets.scorePlayer1}</p>
-                        </div>
-                        <div className="px-6 flex flex-col items-center gap-2">
-                           <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
-                              {tournament.name} • Match
-                           </div>
-                           <div className="text-base font-black italic text-text/20">VS</div>
-                        </div>
-                        <div className="text-center flex-1">
-                           <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
-                           <p className="text-xs font-black uppercase text-violet tracking-widest mt-1 mb-2">
-                              Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player2Id?._id).length || 0} / {selectedMatchForSets.setsCount}
-                           </p>
-                           <p className="text-4xl font-black text-violet mt-2">{selectedMatchForSets.scorePlayer2}</p>
-                        </div>
+                         <div className="text-center flex-1">
+                            <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
+                            <div className="flex flex-col items-center gap-1 mt-1">
+                               <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
+                                  Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player1Id?._id).length || 0} / {selectedMatchForSets.setsCount}
+                               </p>
+                               <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
+                                  {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
+                               </span>
+                            </div>
+                            <p className="text-4xl font-black text-primary mt-4">{selectedMatchForSets.scorePlayer1}</p>
+                         </div>
+                         <div className="px-6 flex flex-col items-center gap-2">
+                            <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
+                               {tournament.name} • Match
+                            </div>
+                            <div className="text-base font-black italic text-text/20">VS</div>
+                         </div>
+                         <div className="text-center flex-1">
+                            <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
+                            <div className="flex flex-col items-center gap-1 mt-1">
+                               <p className="text-[10px] font-black uppercase text-violet tracking-widest leading-none">
+                                  Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player2Id?._id).length || 0} / {selectedMatchForSets.setsCount}
+                               </p>
+                               <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
+                                  {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
+                               </span>
+                            </div>
+                            <p className="text-4xl font-black text-violet mt-4">{selectedMatchForSets.scorePlayer2}</p>
+                         </div>
                      </div>
 
                      {/* Set Tabs Container */}

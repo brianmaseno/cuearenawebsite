@@ -63,11 +63,17 @@ const OngoingActivities = () => {
     setActionLoading(true);
     try {
       const targetSetIdx = selectingWinnerForSetMap[match._id] !== undefined ? selectingWinnerForSetMap[match._id] : setIndex;
-      await api.put(`/direct-matches/${match._id}/set-winner`, { setIndex: targetSetIdx, winnerId });
+      
+      const endpoint = match.isTournamentMatch 
+        ? `/tournaments/matches/${match._id}/set-winner`
+        : `/direct-matches/${match._id}/set-winner`;
+
+      await api.put(endpoint, { setIndex: targetSetIdx, winnerId });
       toast.success(`Set ${targetSetIdx + 1} recorded!`);
       
       // Auto-advance to next set if not finished
-      if (targetSetIdx + 1 < match.setsCount && !match.winnerId) {
+      // For tournament matches, the backend handles winner logic and progression
+      if (!match.isTournamentMatch && targetSetIdx + 1 < match.setsCount && !match.winnerId) {
         setActiveSetMap(prev => ({ ...prev, [match._id]: targetSetIdx + 1 }));
       }
       
@@ -146,8 +152,16 @@ const OngoingActivities = () => {
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                      <div className="flex items-center gap-3">
-                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                        {match.isTournamentMatch ? (
+                           <div className="w-7 h-7 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                              <Trophy size={14} />
+                           </div>
+                        ) : (
+                           <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                        )}
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
+                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Arena'}
+                        </h3>
                      </div>
                     <div className="flex items-center gap-1">
                        {match.status === 'cancelled' && match.declinedBy ? (
@@ -179,13 +193,13 @@ const OngoingActivities = () => {
                             src={match.player1Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id.fullName}&background=random`} 
                             alt={match.player1Id.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.winnerId === (match.player1Id._id || match.player1Id) ? 'ring-green scale-105' : 
-                               (setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
+                               (match.winnerId?._id || match.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-green scale-105' : 
+                               ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
                             }`}
                           />
-                          {!isMatchFinished && (
+                          {!isMatchFinished && setRes && (
                              <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
-                                setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'bg-primary text-base3 border-primary' : 'bg-base3 text-text/20 border-base2'
+                                (setRes.winnerId?._id || setRes.winnerId)?.toString() === (match.player1Id._id || match.player1Id)?.toString() ? 'bg-primary text-base3 border-primary' : 'bg-base3 text-text/20 border-base2'
                              }`}>
                                 <CheckCircle2 size={12} />
                              </div>
@@ -203,7 +217,7 @@ const OngoingActivities = () => {
                              {match.player1Id.fullName}
                           </p>
                           <p className="text-[10px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
-                             Won: {match.setsResults?.filter(s => s.winnerId === (match.player1Id._id || match.player1Id)).length || 0}/{match.setsCount}
+                             Won: {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || match.player1Id || '').toString()).length || 0}/{match.setsCount}
                           </p>
                           {match.winnerId && (
                              <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
@@ -231,13 +245,13 @@ const OngoingActivities = () => {
                             src={match.player2Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id.fullName}&background=random`} 
                             alt={match.player2Id.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.winnerId === (match.player2Id._id || match.player2Id) ? 'ring-green scale-105' : 
-                               (setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
+                               (match.winnerId?._id || match.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-green scale-105' : 
+                               ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
                             }`}
                           />
-                          {!isMatchFinished && (
+                          {!isMatchFinished && setRes && (
                              <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
-                                setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'bg-violet text-base3 border-violet' : 'bg-base3 text-text/20 border-base2'
+                                (setRes.winnerId?._id || setRes.winnerId)?.toString() === (match.player2Id._id || match.player2Id)?.toString() ? 'bg-violet text-base3 border-violet' : 'bg-base3 text-text/20 border-base2'
                              }`}>
                                 <CheckCircle2 size={12} />
                              </div>
@@ -255,7 +269,7 @@ const OngoingActivities = () => {
                              {match.player2Id.fullName}
                           </p>
                           <p className="text-[10px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
-                             Won: {match.setsResults?.filter(s => s.winnerId === (match.player2Id._id || match.player2Id)).length || 0}/{match.setsCount}
+                             Won: {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || match.player2Id || '').toString()).length || 0}/{match.setsCount}
                           </p>
                           {match.winnerId && (
                              <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
@@ -283,7 +297,9 @@ const OngoingActivities = () => {
                           let tabLabel = `Set ${idx + 1}`;
                           let isWon = false;
                           if (sRes) {
-                             tabLabel = sRes.winnerId === (match.player1Id._id || match.player1Id) ? (match.player1Id.fullName?.split(' ')[0] || '?') : (match.player2Id.fullName?.split(' ')[0] || '?');
+                             const winnerIdStr = (sRes.winnerId?._id || sRes.winnerId || '').toString();
+                             const p1IdStr = (match.player1Id?._id || match.player1Id || '').toString();
+                             tabLabel = winnerIdStr === p1IdStr ? (match.player1Id.fullName?.split(' ')[0] || '?') : (match.player2Id.fullName?.split(' ')[0] || '?');
                              isWon = true;
                           }
 

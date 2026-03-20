@@ -19,6 +19,7 @@ const CreateTournament = () => {
     entryType: 'open_request',
     startDate: '',
     registrationDeadline: '',
+    matchSetsCount: 1,
   });
 
   const handleChange = (e) => {
@@ -189,6 +190,21 @@ const CreateTournament = () => {
                   onChange={handleChange}
                   className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text-emphasis mb-2">Sets per Match</label>
+                <input
+                  name="matchSetsCount"
+                  type="number"
+                  min="1"
+                  max="11"
+                  step="2"
+                  value={formData.matchSetsCount}
+                  onChange={handleChange}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+                />
+                <p className="text-[10px] text-text/50 mt-1 italic font-bold uppercase transition-all">Best of {formData.matchSetsCount} (1, 3, 5...)</p>
               </div>
             </div>
           </section>
