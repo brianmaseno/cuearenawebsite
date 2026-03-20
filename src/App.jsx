@@ -22,6 +22,7 @@ import CreateMatch from './pages/moderator/CreateMatch';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import MatchDetails from './pages/match/MatchDetails';
 import OngoingActivities from './pages/moderator/OngoingActivities';
+import History from './pages/moderator/History';
 
 function App() {
   return (
@@ -91,6 +92,11 @@ function App() {
           <Route path="/moderator/ongoing" element={
             <ProtectedRoute roles={['moderator']}>
               <OngoingActivities />
+            </ProtectedRoute>
+          } />
+          <Route path="/moderator/history" element={
+            <ProtectedRoute roles={['moderator']}>
+              <History />
             </ProtectedRoute>
           } />
 

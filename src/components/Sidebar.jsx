@@ -12,7 +12,8 @@ import {
   MessageSquare,
   Shield,
   User,
-  Target
+  Target,
+  Clock
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -38,6 +39,7 @@ const Sidebar = () => {
       return [
         { label: 'Organizer Hub', path: '/moderator', icon: LayoutDashboard },
         { label: 'Ongoing Management', path: '/moderator/ongoing', icon: Calendar },
+        { label: 'History', path: '/moderator/history', icon: Clock },
       ];
     }
     return [
