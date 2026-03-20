@@ -170,7 +170,7 @@ const MatchDetails = () => {
         </div>
 
         {/* Record Result section (Moderator Only) */}
-        {(match.status === 'confirmed' || match.status === 'ongoing') && (
+        {(match.status === 'confirmed' || match.status === 'ongoing' || match.status === 'pending_invites') && (
           <section className="card-premium p-8 rounded-2xl bg-base3 space-y-8 relative overflow-visible">
              <div className="flex items-center justify-between border-b border-base2 pb-4">
                 <h3 className="text-lg font-bold flex items-center gap-2">
@@ -196,40 +196,41 @@ const MatchDetails = () => {
                       }
                    }
 
-                   const isActive = activeSet === idx;
-                   const isLocked = idx > firstUnplayed;
-                   
-                   let tabLabel = `SET ${idx + 1}`;
-                   let winnerColor = '';
-                   
-                   if (sRes) {
-                      if (sRes.winnerId === match.player1Id._id) {
-                         tabLabel = match.player1Id.fullName.split(' ')[0];
-                         winnerColor = 'text-primary';
-                      } else {
-                         tabLabel = match.player2Id.fullName.split(' ')[0];
-                         winnerColor = 'text-violet';
-                      }
-                   }
+                    const isActive = activeSet === idx;
+                    const isOngoing = match.status === 'ongoing';
+                    const isLocked = !isOngoing && match.status !== 'completed' ? true : (idx > firstUnplayed);
+                    
+                    let tabLabel = `SET ${idx + 1}`;
+                    let winnerColor = '';
+                    
+                    if (sRes) {
+                       if (sRes.winnerId === match.player1Id._id) {
+                          tabLabel = match.player1Id.fullName.split(' ')[0];
+                          winnerColor = 'text-primary';
+                       } else {
+                          tabLabel = match.player2Id.fullName.split(' ')[0];
+                          winnerColor = 'text-violet';
+                       }
+                    }
 
-                   return (
-                      <div key={idx}>
-                         <button
-                           disabled={isLocked && match.status !== 'completed'}
-                           onClick={() => {
-                              if (!isLocked && !sRes && match.status !== 'completed') {
-                                 setSelectingWinnerForSet(idx);
-                              } else {
-                                 setActiveSet(idx);
-                                 setSelectingWinnerForSet(null);
-                              }
-                           }}
-                           className={`min-w-[120px] h-[64px] px-6 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
-                             isActive 
-                               ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
-                               : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
-                           } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
-                         >
+                    return (
+                       <div key={idx}>
+                          <button
+                            disabled={(isLocked || !isOngoing) && match.status !== 'completed'}
+                            onClick={() => {
+                               if (!isLocked && isOngoing && !sRes && match.status !== 'completed') {
+                                  setSelectingWinnerForSet(idx);
+                               } else {
+                                  setActiveSet(idx);
+                                  setSelectingWinnerForSet(null);
+                               }
+                            }}
+                            className={`min-w-[120px] h-[64px] px-6 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
+                              isActive 
+                                ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
+                                : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
+                            } ${(isLocked || !isOngoing) && match.status !== 'completed' ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
+                          >
                             <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
                                {tabLabel}
                             </span>
@@ -267,8 +268,17 @@ const MatchDetails = () => {
                          </button>
                       </div>
                    </div>
-                )}
-             </div>
+                 )}
+
+                 {/* Pending Acceptance Message */}
+                 {match.status !== 'ongoing' && match.status !== 'completed' && (
+                    <div className="absolute inset-0 bg-base3/10 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-3xl border border-dashed border-base2">
+                       <p className="text-xs font-black uppercase tracking-widest text-text/40 animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-lg border border-base2">
+                          Waiting for players to accept
+                       </p>
+                    </div>
+                 )}
+              </div>
 
 
              <div className="pt-4 border-t border-base2">

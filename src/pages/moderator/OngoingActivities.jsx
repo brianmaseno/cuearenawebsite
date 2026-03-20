@@ -139,6 +139,7 @@ const OngoingActivities = () => {
                 const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
                 const setRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
                 const isMatchFinished = match.status === 'completed';
+                const isOngoing = match.status === 'ongoing';
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
@@ -270,7 +271,8 @@ const OngoingActivities = () => {
                         {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                           const sRes = match.setsResults?.find(s => s.setIndex === idx);
                           const isActive = currentActiveSet === idx;
-                          const isLocked = idx > defaultActive;
+                          // Lock if match not ongoing (unless it's already completed history)
+                          const isLocked = !isOngoing && !isMatchFinished ? true : (idx > defaultActive);
                           
                           let tabLabel = `Set ${idx + 1}`;
                           let isWon = false;
@@ -281,10 +283,10 @@ const OngoingActivities = () => {
 
                           return (
                             <div key={idx} className="flex-1 min-w-[60px] max-w-[80px]">
-                                <button
-                                  disabled={isLocked && match.status !== 'completed'}
+                                 <button
+                                  disabled={(isLocked || !isOngoing) && !isMatchFinished}
                                   onClick={() => {
-                                     if (!isLocked && !sRes && match.status !== 'completed') {
+                                     if (!isLocked && isOngoing && !sRes && !isMatchFinished) {
                                         setSelectingWinnerForSetMap(prev => ({ ...prev, [match._id]: idx }));
                                      } else {
                                         setActiveSetMap(prev => ({ ...prev, [match._id]: idx }));
@@ -295,7 +297,7 @@ const OngoingActivities = () => {
                                     isActive 
                                       ? 'bg-primary text-base3 border-primary shadow-md' 
                                       : (sRes ? 'bg-primary/5 text-primary border-primary/10 opacity-80' : 'bg-base2/30 text-text/30 border-base2/50 hover:bg-base2/50')
-                                  } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                                 >
                                    <span className={`truncate max-w-full ${isWon ? 'text-[9px]' : ''}`}>{tabLabel}</span>
                                 </button>
@@ -327,6 +329,15 @@ const OngoingActivities = () => {
                                     <X size={16} />
                                  </button>
                               </div>
+                           </div>
+                        )}
+
+                        {/* Pending Acceptance Message */}
+                        {!isOngoing && !isMatchFinished && (
+                           <div className="absolute inset-0 bg-base3/40 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-xl border border-dashed border-base2">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-text/40 animate-pulse bg-base3 px-3 py-1 rounded-full shadow-sm border border-base2">
+                                 Waiting for players to accept
+                              </p>
                            </div>
                         )}
                      </div>
