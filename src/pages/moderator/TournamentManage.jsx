@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Users, UserPlus, Play, CheckCircle, Clock, MapPin, Loader2, ArrowLeft, ChevronRight, User } from 'lucide-react';
+import { Trophy, Users, UserPlus, Play, CheckCircle, Clock, MapPin, Loader2, ArrowLeft, ChevronRight, User, Target } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 
@@ -174,59 +174,57 @@ const TournamentManage = () => {
                     {roundNum === rounds.length ? 'Final' : `Round ${roundNum}`}
                   </div>
                   <div className="space-y-12">
-                     {matches.filter(m => m.round === roundNum).map(match => (
-                       <div key={match._id} className="relative group">
-                          <div className={`card-premium p-0 rounded-xl overflow-hidden border-2 transition-all ${
-                            match.status === 'ongoing' ? 'border-primary ring-4 ring-primary/5 shadow-xl' : 'border-base2'
-                          }`}>
-                             {/* Player 1 */}
-                             <button
-                               disabled={match.status !== 'ongoing' || actionLoading}
-                               onClick={() => handleSetWinner(match._id, match.player1Id?._id)}
-                               className={`w-full p-4 flex items-center justify-between group/p1 transition-colors ${
-                                 match.winnerId?._id === match.player1Id?._id ? 'bg-green/10' : 'hover:bg-base2/30'
-                               }`}
-                             >
-                                <div className="flex items-center gap-3 overflow-hidden">
-                                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
-                                     match.winnerId?._id === match.player1Id?._id ? 'bg-green text-base3' : 'bg-base2 text-text'
-                                   }`}>
-                                      {match.player1Id?.fullName[0] || '?'}
-                                   </div>
-                                   <span className={`text-sm font-bold truncate ${match.winnerId?._id === match.player1Id?._id ? 'text-green-700' : 'text-text-emphasis'}`}>
-                                      {match.player1Id?.fullName || 'TBD'}
-                                   </span>
-                                </div>
-                                {match.winnerId?._id === match.player1Id?._id && <CheckCircle size={16} className="text-green" />}
-                             </button>
+                    {matches.filter(m => m.round === roundNum).map(match => (
+                      <div key={match._id} className="relative group">
+                        <div className={`card-premium p-0 rounded-xl overflow-hidden border-2 transition-all ${
+                          match.status === 'ongoing' ? 'border-primary ring-4 ring-primary/5 shadow-xl' : 'border-base2'
+                        }`}>
+                          {/* Player 1 */}
+                          <button
+                            disabled={match.status !== 'ongoing' || actionLoading}
+                            onClick={() => handleSetWinner(match._id, match.player1Id?._id)}
+                            className={`w-full p-4 flex items-center justify-between group/p1 transition-colors ${
+                              match.winnerId?._id === match.player1Id?._id ? 'bg-green/10' : 'hover:bg-base2/30'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 overflow-hidden">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                                match.winnerId?._id === match.player1Id?._id ? 'bg-green text-base3' : 'bg-base2 text-text'
+                              }`}>
+                                {match.player1Id?.fullName[0] || '?'}
+                              </div>
+                              <span className={`text-sm font-bold truncate ${match.winnerId?._id === match.player1Id?._id ? 'text-green-700' : 'text-text-emphasis'}`}>
+                                {match.player1Id?.fullName || 'TBD'}
+                              </span>
+                            </div>
+                            {match.winnerId?._id === match.player1Id?._id && <CheckCircle size={16} className="text-green" />}
+                          </button>
 
-                             <div className="border-t border-base2"></div>
+                          <div className="border-t border-base2"></div>
 
-                             {/* Player 2 */}
-                             <button
-                               disabled={match.status !== 'ongoing' || actionLoading}
-                               onClick={() => handleSetWinner(match._id, match.player2Id?._id)}
-                               className={`w-full p-4 flex items-center justify-between group/p2 transition-colors ${
-                                 match.winnerId?._id === match.player2Id?._id ? 'bg-green/10' : 'hover:bg-base2/30'
-                               }`}
-                             >
-                                <div className="flex items-center gap-3 overflow-hidden">
-                                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
-                                     match.winnerId?._id === match.player2Id?._id ? 'bg-green text-base3' : 'bg-base2 text-text'
-                                   }`}>
-                                      {match.player2Id?.fullName[0] || '?'}
-                                   </div>
-                                   <span className={`text-sm font-bold truncate ${match.winnerId?._id === match.player2Id?._id ? 'text-green-700' : 'text-text-emphasis'}`}>
-                                      {match.player2Id?.fullName || 'TBD'}
-                                   </span>
-                                </div>
-                                {match.winnerId?._id === match.player2Id?._id && <CheckCircle size={16} className="text-green" />}
-                             </button>
-                          </div>
-                          
-                          {/* Connection lines would go here for a "true" bracket view, but for now, simple columnar rounds are functional */}
-                       </div>
-                     ))}
+                          {/* Player 2 */}
+                          <button
+                            disabled={match.status !== 'ongoing' || actionLoading}
+                            onClick={() => handleSetWinner(match._id, match.player2Id?._id)}
+                            className={`w-full p-4 flex items-center justify-between group/p2 transition-colors ${
+                              match.winnerId?._id === match.player2Id?._id ? 'bg-green/10' : 'hover:bg-base2/30'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 overflow-hidden">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
+                                match.winnerId?._id === match.player2Id?._id ? 'bg-green text-base3' : 'bg-base2 text-text'
+                              }`}>
+                                {match.player2Id?.fullName[0] || '?'}
+                              </div>
+                              <span className={`text-sm font-bold truncate ${match.winnerId?._id === match.player2Id?._id ? 'text-green-700' : 'text-text-emphasis'}`}>
+                                {match.player2Id?.fullName || 'TBD'}
+                              </span>
+                            </div>
+                            {match.winnerId?._id === match.player2Id?._id && <CheckCircle size={16} className="text-green" />}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}

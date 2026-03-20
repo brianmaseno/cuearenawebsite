@@ -11,11 +11,34 @@ const MatchDetails = () => {
   const navigate = useNavigate();
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeSet, setActiveSet] = useState(0);
+  const [actionLoading, setActionLoading] = useState(false);
   const [resultData, setResultData] = useState({
     scorePlayer1: 0,
     scorePlayer2: 0,
     winnerId: '',
   });
+
+  const handleRecordSetWinner = async (winnerId) => {
+    setActionLoading(true);
+    try {
+      await api.put(`/direct-matches/${id}/set-winner`, { setIndex: activeSet, winnerId });
+      toast.success(`Set ${activeSet + 1} recorded!`);
+      
+      // Auto-advance
+      if (activeSet + 1 < match.setsCount && !match.winnerId) {
+        setActiveSet(activeSet + 1);
+      }
+      
+      fetchMatch();
+    } catch (err) {
+      toast.error('Failed to record set winner');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const activeSetRes = match?.setsResults?.find(s => s.setIndex === activeSet);
 
   const fetchMatch = async () => {
     try {
@@ -120,63 +143,128 @@ const MatchDetails = () => {
         </div>
 
         {/* Record Result section (Moderator Only) */}
-        {match.status === 'confirmed' || match.status === 'ongoing' ? (
-          <section className="card-premium p-8 rounded-2xl bg-base3">
-             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                <Trophy size={20} className="text-yellow" />
-                Record Final Result
-             </h3>
-             <form onSubmit={handleRecordResult} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                <div>
-                   <label className="block text-xs font-bold uppercase text-text mb-2">{match.player1Id.fullName} Score</label>
-                   <input 
-                      type="number" 
-                      value={resultData.scorePlayer1}
-                      onChange={(e) => setResultData({...resultData, scorePlayer1: parseInt(e.target.value)})}
-                      className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
-                   />
+        {(match.status === 'confirmed' || match.status === 'ongoing') && (
+          <section className="card-premium p-8 rounded-2xl bg-base3 space-y-8">
+             <div className="flex items-center justify-between border-b border-base2 pb-4">
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                   <Target size={20} className="text-primary" />
+                   Match Console (Sets Management)
+                </h3>
+                <div className="text-[10px] font-black uppercase tracking-widest text-text/40">
+                   Best of {match.setsCount} Sets
                 </div>
-                <div>
-                   <label className="block text-xs font-bold uppercase text-text mb-2">{match.player2Id.fullName} Score</label>
-                   <input 
-                      type="number" 
-                      value={resultData.scorePlayer2}
-                      onChange={(e) => setResultData({...resultData, scorePlayer2: parseInt(e.target.value)})}
-                      className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
-                   />
-                </div>
-                <div className="md:col-span-1">
-                   <button type="submit" className="w-full btn-primary py-3.5 rounded-xl font-bold shadow-lg shadow-primary/20">
-                      Submit Result
+             </div>
+
+             {/* Set Tabs */}
+             <div className="flex flex-wrap gap-2">
+                {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
+                   const sRes = match.setsResults?.find(s => s.setIndex === idx);
+                   const isActive = activeSet === idx;
+                   return (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveSet(idx)}
+                        className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all border ${
+                          isActive 
+                            ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105' 
+                            : (sRes ? 'bg-primary/10 text-primary border-primary/20' : 'bg-base2/30 text-text/50 border-transparent hover:border-base2/50')
+                        }`}
+                      >
+                         SET {idx + 1}
+                         {sRes && <span className="ml-2 opacity-50">✓</span>}
+                      </button>
+                   );
+                })}
+             </div>
+
+             {/* Record Set Winner */}
+             <div className="bg-base2/20 p-8 rounded-3xl border border-base2 text-center space-y-6">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-text/40">Select Winner for Set {activeSet + 1}</p>
+                <div className="flex items-center justify-center gap-8">
+                   <button 
+                     onClick={() => handleRecordSetWinner(match.player1Id._id)}
+                     className={`flex flex-col items-center gap-4 group transition-all ${activeSetRes?.winnerId === match.player1Id._id ? 'scale-110' : 'hover:scale-105'}`}
+                   >
+                      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black border-4 transition-all ${
+                         activeSetRes?.winnerId === match.player1Id._id ? 'bg-primary text-base3 border-primary shadow-xl shadow-primary/30' : 'bg-base3 text-text border-base2 group-hover:border-primary/50'
+                      }`}>
+                         {match.player1Id.fullName[0]}
+                      </div>
+                      <span className={`text-sm font-bold ${activeSetRes?.winnerId === match.player1Id._id ? 'text-primary' : 'text-text'}`}>
+                         {match.player1Id.fullName.split(' ')[0]}
+                      </span>
+                   </button>
+
+                   <div className="text-xl font-black italic opacity-10">VS</div>
+
+                   <button 
+                     onClick={() => handleRecordSetWinner(match.player2Id._id)}
+                     className={`flex flex-col items-center gap-4 group transition-all ${activeSetRes?.winnerId === match.player2Id._id ? 'scale-110' : 'hover:scale-105'}`}
+                   >
+                      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black border-4 transition-all ${
+                         activeSetRes?.winnerId === match.player2Id._id ? 'bg-violet text-base3 border-violet shadow-xl shadow-violet/30' : 'bg-base3 text-text border-base2 group-hover:border-violet/50'
+                      }`}>
+                         {match.player2Id.fullName[0]}
+                      </div>
+                      <span className={`text-sm font-bold ${activeSetRes?.winnerId === match.player2Id._id ? 'text-violet' : 'text-text'}`}>
+                         {match.player2Id.fullName.split(' ')[0]}
+                      </span>
                    </button>
                 </div>
-                
-                <div className="md:col-span-3">
-                   <label className="block text-xs font-bold uppercase text-text mb-2">Winner Selection</label>
-                   <div className="flex gap-4">
-                      <button 
-                        type="button"
-                        onClick={() => setResultData({...resultData, winnerId: match.player1Id._id})}
-                        className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
-                          resultData.winnerId === match.player1Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3'
-                        }`}
-                      >
-                         {match.player1Id.fullName}
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setResultData({...resultData, winnerId: match.player2Id._id})}
-                        className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
-                          resultData.winnerId === match.player2Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3'
-                        }`}
-                      >
-                         {match.player2Id.fullName}
-                      </button>
-                   </div>
-                </div>
-             </form>
+             </div>
+
+             <div className="pt-4 border-t border-base2">
+                <h4 className="text-xs font-black uppercase tracking-widest text-text/30 mb-4">Manual Override (Final Score)</h4>
+                <form onSubmit={handleRecordResult} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                    <div>
+                       <label className="block text-[10px] font-black uppercase text-text/50 mb-2">{match.player1Id.fullName} Final Score</label>
+                       <input 
+                          type="number" 
+                          value={resultData.scorePlayer1}
+                          onChange={(e) => setResultData({...resultData, scorePlayer1: parseInt(e.target.value)})}
+                          className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
+                       />
+                    </div>
+                    <div>
+                       <label className="block text-[10px] font-black uppercase text-text/50 mb-2">{match.player2Id.fullName} Final Score</label>
+                       <input 
+                          type="number" 
+                          value={resultData.scorePlayer2}
+                          onChange={(e) => setResultData({...resultData, scorePlayer2: parseInt(e.target.value)})}
+                          className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
+                       />
+                    </div>
+                    <button type="submit" className="btn-primary py-3.5 rounded-xl font-bold shadow-lg">
+                       Force Final Result
+                    </button>
+                    
+                    <div className="md:col-span-3">
+                       <label className="block text-[10px] font-black uppercase text-text/50 mb-2">Winner Selection</label>
+                       <div className="flex gap-4">
+                          <button 
+                            type="button"
+                            onClick={() => setResultData({...resultData, winnerId: match.player1Id._id})}
+                            className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
+                              resultData.winnerId === match.player1Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3 text-text/50'
+                            }`}
+                          >
+                             {match.player1Id.fullName}
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={() => setResultData({...resultData, winnerId: match.player2Id._id})}
+                            className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
+                              resultData.winnerId === match.player2Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3 text-text/50'
+                            }`}
+                          >
+                             {match.player2Id.fullName}
+                          </button>
+                       </div>
+                    </div>
+                </form>
+             </div>
           </section>
-        ) : null}
+        )}
       </div>
     </DashboardLayout>
   );

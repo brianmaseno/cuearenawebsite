@@ -74,6 +74,7 @@ const CreateMatch = () => {
     try {
       const payload = {
         ...formData,
+        setsCount: Number(formData.setsCount || 1),
         player1Id: selectedPlayers[0]._id,
         player2Id: selectedPlayers[1]._id,
       };
@@ -125,6 +126,24 @@ const CreateMatch = () => {
                     placeholder="Grand Arena Pool Club"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text mb-2">Number of Sets</label>
+                <div className="relative">
+                   <Target size={18} className="absolute left-3 top-3.5 text-violet" />
+                   <input
+                    name="setsCount"
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={formData.setsCount || 1}
+                    onChange={handleChange}
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold text-violet"
+                    placeholder="1"
+                  />
+                </div>
+                <p className="text-[10px] text-text/50 mt-1 font-bold italic">Best of {formData.setsCount || 1} sets</p>
               </div>
 
             </div>
