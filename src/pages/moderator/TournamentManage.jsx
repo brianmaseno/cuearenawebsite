@@ -95,7 +95,7 @@ const TournamentManage = () => {
 
    const handleRecordTournamentSetWinner = async (matchId, setIndex, winnerId) => {
       try {
-         const { data: updatedMatch } = await api.post(`/tournaments/matches/${matchId}/sets`, {
+         const { data: updatedMatch } = await api.put(`/tournaments/matches/${matchId}/set-winner`, {
             setIndex,
             winnerId
          });
@@ -103,9 +103,9 @@ const TournamentManage = () => {
          // Update local state for the match modal
          setSelectedMatchForSets(updatedMatch);
          setSelectingWinnerForSetInModal(null);
-         setActiveSetInModal(setIndex); // Stay on the set that was just played or move forward?
-
-         // Refresh total tournament data to update brackets/standings
+         
+         // If match finished, move to the last set or stay?
+         // We refresh to show bracket updates
          fetchTournamentData();
          toast.success('Set result recorded');
       } catch (err) {
@@ -143,7 +143,7 @@ const TournamentManage = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-base2">
                <div>
                   <div className="flex items-center gap-3 mb-2">
-                     <StatusBadge status={tournament.status} />
+                     <StatusBadge status={tournament.status} entryType={tournament.entryType} />
                      <div className="flex items-center gap-2 text-text/40 text-xs font-bold uppercase tracking-widest">
                         <Calendar size={14} />
                         Created {new Date(tournament.createdAt).toLocaleDateString()}
@@ -175,7 +175,7 @@ const TournamentManage = () => {
                         className="bg-green hover:bg-green-dark text-base3 px-8 py-3 rounded-2xl font-black shadow-lg shadow-green/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                      >
                         <Trophy size={20} />
-                        Open for Registration
+                        {tournament.entryType === 'invite_only' ? 'Set to Private' : 'Open for Registration'}
                      </button>
                   )}
                   {(tournament.status === 'open_for_players' || tournament.status === 'full' || tournament.status === 'draft') && (
@@ -352,7 +352,7 @@ const TournamentManage = () => {
                             <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
                             <div className="flex flex-col items-center gap-1 mt-1">
                                <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
-                                  Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player1Id?._id).length || 0} / {selectedMatchForSets.setsCount}
+                                  Won: {selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id || '').toString()).length || 0} / {selectedMatchForSets.setsCount}
                                </p>
                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                   {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
@@ -370,7 +370,7 @@ const TournamentManage = () => {
                             <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
                             <div className="flex flex-col items-center gap-1 mt-1">
                                <p className="text-[10px] font-black uppercase text-violet tracking-widest leading-none">
-                                  Won: {selectedMatchForSets.setsResults?.filter(s => s.winnerId === selectedMatchForSets.player2Id?._id).length || 0} / {selectedMatchForSets.setsCount}
+                                  Won: {selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id || '').toString()).length || 0} / {selectedMatchForSets.setsCount}
                                </p>
                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                   {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
@@ -444,16 +444,18 @@ const TournamentManage = () => {
                                  </div>
                                  <div className="flex-1 flex gap-2">
                                     <button
-                                       onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, selectedMatchForSets.player1Id?._id)}
-                                       className="flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10"
+                                       disabled={!selectedMatchForSets.player1Id}
+                                       onClick={() => selectedMatchForSets.player1Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id))}
+                                       className={`flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10 ${!selectedMatchForSets.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                     >
-                                       {selectedMatchForSets.player1Id?.fullName}
+                                       {selectedMatchForSets.player1Id?.fullName || 'TBD'}
                                     </button>
                                     <button
-                                       onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, selectedMatchForSets.player2Id?._id)}
-                                       className="flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10"
+                                       disabled={!selectedMatchForSets.player2Id}
+                                       onClick={() => selectedMatchForSets.player2Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id))}
+                                       className={`flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10 ${!selectedMatchForSets.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                     >
-                                       {selectedMatchForSets.player2Id?.fullName}
+                                       {selectedMatchForSets.player2Id?.fullName || 'TBD'}
                                     </button>
                                  </div>
                                  <button

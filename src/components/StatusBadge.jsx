@@ -1,7 +1,10 @@
 import React from 'react';
 
-const StatusBadge = ({ status }) => {
+const StatusBadge = ({ status, entryType }) => {
   const getStyles = () => {
+    if (status === 'open_for_players' && entryType === 'invite_only') {
+      return 'bg-violet/10 text-violet border-violet/20';
+    }
     switch (status) {
       case 'open_for_players':
         return 'bg-green/10 text-green border-green/20';
@@ -22,7 +25,10 @@ const StatusBadge = ({ status }) => {
     }
   };
 
-  const formatStatus = (s) => s.replace(/_/g, ' ').toUpperCase();
+  const formatStatus = (s) => {
+    if (s === 'open_for_players' && entryType === 'invite_only') return 'PRIVATE';
+    return s.replace(/_/g, ' ').toUpperCase();
+  };
 
   return (
     <span className={`px-2 py-1 rounded-md text-[10px] font-bold border ${getStyles()}`}>

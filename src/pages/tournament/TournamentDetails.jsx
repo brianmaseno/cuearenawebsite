@@ -39,7 +39,7 @@ const TournamentDetails = () => {
                <section className="card-premium p-8 rounded-3xl bg-base3">
                   <div className="flex justify-between items-start mb-6">
                      <div>
-                        <StatusBadge status={tournament.status} />
+                        <StatusBadge status={tournament.status} entryType={tournament.entryType} />
                         <h3 className="text-4xl font-black text-text-emphasis mt-3 tracking-tight">{tournament.name}</h3>
                      </div>
                      <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-center min-w-[120px]">
