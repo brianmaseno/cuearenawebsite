@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Users, UserPlus, Play, CheckCircle, Clock, MapPin, Loader2, ArrowLeft, ChevronRight, User, Target } from 'lucide-react';
+import { Trophy, Users, UserPlus, Play, CheckCircle, Clock, MapPin, Loader2, ArrowLeft, ChevronRight, User, Target, X } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,9 @@ const TournamentManage = () => {
   const [availablePlayers, setAvailablePlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [selectedMatchForSets, setSelectedMatchForSets] = useState(null);
+  const [activeSetInModal, setActiveSetInModal] = useState(0);
+  const [selectingWinnerForSetInModal, setSelectingWinnerForSetInModal] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -87,6 +90,44 @@ const TournamentManage = () => {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const handleRecordTournamentSetWinner = async (matchId, setIndex, winnerId) => {
+    setActionLoading(true);
+    try {
+      const targetSetIdx = selectingWinnerForSetInModal !== null ? selectingWinnerForSetInModal : setIndex;
+      const { data } = await api.put(`/tournaments/matches/${matchId}/set-winner`, { setIndex: targetSetIdx, winnerId });
+      toast.success(`Set ${targetSetIdx + 1} recorded!`);
+      
+      setSelectedMatchForSets(data);
+      
+      // Auto-advance
+      if (targetSetIdx + 1 < data.setsCount && !data.winnerId) {
+        setActiveSetInModal(targetSetIdx + 1);
+      }
+      
+      setSelectingWinnerForSetInModal(null);
+      fetchData();
+    } catch (err) {
+      toast.error('Failed to record set winner');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openMatchConsole = (match) => {
+    setSelectedMatchForSets(match);
+    setSelectingWinnerForSetInModal(null);
+    
+    // Determine active set (first unplayed)
+    let firstUnplayed = 0;
+    for (let i = 0; i < match.setsCount; i++) {
+        if (!match.setsResults.find(s => s.setIndex === i)) {
+            firstUnplayed = i;
+            break;
+        }
+    }
+    setActiveSetInModal(firstUnplayed);
   };
 
   if (loading) return <DashboardLayout title="Tournament Management"><div className="flex justify-center p-20"><Loader2 className="animate-spin text-primary" size={40} /></div></DashboardLayout>;
@@ -179,10 +220,28 @@ const TournamentManage = () => {
                         <div className={`card-premium p-0 rounded-xl overflow-hidden border-2 transition-all ${
                           match.status === 'ongoing' ? 'border-primary ring-4 ring-primary/5 shadow-xl' : 'border-base2'
                         }`}>
+                          {/* Match Header (Sets Info) */}
+                          <div className="bg-base2/10 px-4 py-2 flex justify-between items-center border-b border-base2">
+                             <span className="text-[9px] font-black text-text/40 uppercase tracking-widest">
+                                {match.setsCount > 1 ? `${match.setsCount} Sets` : 'Single Match'}
+                             </span>
+                             {match.status === 'ongoing' && match.setsCount > 1 && (
+                                <button 
+                                  onClick={() => openMatchConsole(match)}
+                                  className="text-[9px] font-black text-primary uppercase hover:underline"
+                                >
+                                   Manage Sets
+                                </button>
+                             )}
+                          </div>
+
                           {/* Player 1 */}
                           <button
-                            disabled={match.status !== 'ongoing' || actionLoading}
-                            onClick={() => handleSetWinner(match._id, match.player1Id?._id)}
+                            disabled={(match.status !== 'ongoing' && match.status !== 'completed') || actionLoading}
+                            onClick={() => {
+                               if (match.setsCount > 1) openMatchConsole(match);
+                               else handleSetWinner(match._id, match.player1Id?._id);
+                            }}
                             className={`w-full p-4 flex items-center justify-between group/p1 transition-colors ${
                               match.winnerId?._id === match.player1Id?._id ? 'bg-green/10' : 'hover:bg-base2/30'
                             }`}
@@ -190,22 +249,28 @@ const TournamentManage = () => {
                             <div className="flex items-center gap-3 overflow-hidden">
                               <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
                                 match.winnerId?._id === match.player1Id?._id ? 'bg-green text-base3' : 'bg-base2 text-text'
-                              }`}>
+                               }`}>
                                 {match.player1Id?.fullName[0] || '?'}
                               </div>
                               <span className={`text-sm font-bold truncate ${match.winnerId?._id === match.player1Id?._id ? 'text-green-700' : 'text-text-emphasis'}`}>
                                 {match.player1Id?.fullName || 'TBD'}
                               </span>
                             </div>
-                            {match.winnerId?._id === match.player1Id?._id && <CheckCircle size={16} className="text-green" />}
+                            <div className="flex items-center gap-2">
+                               {match.setsCount > 1 && <span className="text-lg font-black tabular-nums">{match.scorePlayer1}</span>}
+                               {match.winnerId?._id === match.player1Id?._id && <CheckCircle size={16} className="text-green" />}
+                            </div>
                           </button>
 
                           <div className="border-t border-base2"></div>
 
                           {/* Player 2 */}
                           <button
-                            disabled={match.status !== 'ongoing' || actionLoading}
-                            onClick={() => handleSetWinner(match._id, match.player2Id?._id)}
+                            disabled={(match.status !== 'ongoing' && match.status !== 'completed') || actionLoading}
+                            onClick={() => {
+                               if (match.setsCount > 1) openMatchConsole(match);
+                               else handleSetWinner(match._id, match.player2Id?._id);
+                            }}
                             className={`w-full p-4 flex items-center justify-between group/p2 transition-colors ${
                               match.winnerId?._id === match.player2Id?._id ? 'bg-green/10' : 'hover:bg-base2/30'
                             }`}
@@ -213,14 +278,17 @@ const TournamentManage = () => {
                             <div className="flex items-center gap-3 overflow-hidden">
                               <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${
                                 match.winnerId?._id === match.player2Id?._id ? 'bg-green text-base3' : 'bg-base2 text-text'
-                              }`}>
+                               }`}>
                                 {match.player2Id?.fullName[0] || '?'}
                               </div>
                               <span className={`text-sm font-bold truncate ${match.winnerId?._id === match.player2Id?._id ? 'text-green-700' : 'text-text-emphasis'}`}>
                                 {match.player2Id?.fullName || 'TBD'}
                               </span>
                             </div>
-                            {match.winnerId?._id === match.player2Id?._id && <CheckCircle size={16} className="text-green" />}
+                            <div className="flex items-center gap-2">
+                               {match.setsCount > 1 && <span className="text-lg font-black tabular-nums">{match.scorePlayer2}</span>}
+                               {match.winnerId?._id === match.player2Id?._id && <CheckCircle size={16} className="text-green" />}
+                            </div>
                           </button>
                         </div>
                       </div>
@@ -288,6 +356,135 @@ const TournamentManage = () => {
           </div>
         )}
       </div>
+
+      {/* Match Console Modal */}
+      {selectedMatchForSets && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-base1/80 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-base3 w-full max-w-2xl rounded-[40px] shadow-2xl border border-base2 overflow-hidden animate-in zoom-in-95 duration-300">
+              <div className="p-8 border-b border-base2 flex justify-between items-center bg-base2/10">
+                 <div>
+                    <h3 className="text-2xl font-black text-text-emphasis tracking-tight">Match Console</h3>
+                    <p className="text-[10px] font-black uppercase text-text/40 tracking-widest mt-1">Tournament System Engine</p>
+                 </div>
+                 <button 
+                   onClick={() => setSelectedMatchForSets(null)}
+                   className="w-10 h-10 rounded-full bg-base2 flex items-center justify-center text-text hover:bg-red hover:text-white transition-all font-bold"
+                 >
+                    ✕
+                 </button>
+              </div>
+
+              <div className="p-8 space-y-8">
+                 {/* Match Summary */}
+                 <div className="flex items-center justify-between bg-base2/20 p-6 rounded-3xl border border-base2">
+                    <div className="text-center flex-1">
+                       <p className="text-lg font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
+                       <p className="text-3xl font-black text-primary mt-2">{selectedMatchForSets.scorePlayer1}</p>
+                    </div>
+                    <div className="px-6 text-sm font-black italic text-text/20">VS</div>
+                    <div className="text-center flex-1">
+                       <p className="text-lg font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
+                       <p className="text-3xl font-black text-violet mt-2">{selectedMatchForSets.scorePlayer2}</p>
+                    </div>
+                 </div>
+
+                 {/* Set Tabs */}
+                 <div className="flex flex-wrap gap-4">
+                    {Array.from({ length: selectedMatchForSets.setsCount || 1 }).map((_, idx) => {
+                       const sRes = selectedMatchForSets.setsResults?.find(s => s.setIndex === idx);
+                       
+                       // Find the first unplayed set index
+                       let firstUnplayed = 0;
+                       for (let i = 0; i < selectedMatchForSets.setsCount; i++) {
+                          if (!selectedMatchForSets.setsResults?.find(s => s.setIndex === i)) {
+                             firstUnplayed = i;
+                             break;
+                          }
+                       }
+
+                       const isActive = activeSetInModal === idx;
+                       const isLocked = idx > firstUnplayed;
+                       const isSelecting = selectingWinnerForSetInModal === idx;
+                       
+                       let tabLabel = `SET ${idx + 1}`;
+                       let winnerColor = '';
+                       
+                       if (sRes) {
+                          if (sRes.winnerId === selectedMatchForSets.player1Id?._id) {
+                             tabLabel = selectedMatchForSets.player1Id?.fullName.split(' ')[0];
+                             winnerColor = 'text-primary';
+                          } else {
+                             tabLabel = selectedMatchForSets.player2Id?.fullName.split(' ')[0];
+                             winnerColor = 'text-violet';
+                          }
+                       }
+
+                       return (
+                          <div key={idx} className="relative">
+                             {isSelecting ? (
+                                <div className="min-w-[240px] h-[64px] bg-base3 border-2 border-primary rounded-3xl shadow-2xl flex items-center p-1.5 gap-2 animate-in zoom-in-95 duration-200 z-30">
+                                   <button 
+                                     onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, idx, selectedMatchForSets.player1Id?._id)}
+                                     className="flex-1 h-full bg-primary/10 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
+                                   >
+                                      <span className="opacity-40 text-[7px] uppercase">P1</span>
+                                      {selectedMatchForSets.player1Id?.fullName}
+                                   </button>
+                                   <div className="w-px h-8 bg-base2"></div>
+                                   <button 
+                                     onClick={() => handleRecordTournamentSetWinner(selectedMatchForSets._id, idx, selectedMatchForSets.player2Id?._id)}
+                                     className="flex-1 h-full bg-violet/10 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
+                                   >
+                                      <span className="opacity-40 text-[7px] uppercase">P2</span>
+                                      {selectedMatchForSets.player2Id?.fullName}
+                                   </button>
+                                   <button 
+                                     onClick={() => setSelectingWinnerForSetInModal(null)}
+                                     className="w-10 h-10 flex items-center justify-center text-text/20 hover:text-red transition-colors rounded-2xl hover:bg-red/5"
+                                   >
+                                      <X size={18} />
+                                   </button>
+                                </div>
+                             ) : (
+                                <button
+                                  key={idx}
+                                  disabled={isLocked && selectedMatchForSets.status !== 'completed'}
+                                  onClick={() => {
+                                     if (!isLocked && !sRes && selectedMatchForSets.status !== 'completed') {
+                                        setSelectingWinnerForSetInModal(idx);
+                                     } else {
+                                        setActiveSetInModal(idx);
+                                        setSelectingWinnerForSetInModal(null);
+                                     }
+                                  }}
+                                  className={`min-w-[120px] h-[64px] px-6 rounded-[28px] font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
+                                    isActive 
+                                       ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
+                                       : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
+                                  } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
+                                >
+                                   <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                      {tabLabel}
+                                   </span>
+                                </button>
+                             )}
+                          </div>
+                       );
+                    })}
+                 </div>
+
+
+                 {selectedMatchForSets.status === 'completed' && (
+                    <div className="bg-green/10 border border-green/20 p-8 rounded-[32px] text-center">
+                       <Trophy className="mx-auto text-green mb-4" size={48} />
+                       <h4 className="text-2xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
+                       <p className="text-sm font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
+                    </div>
+                 )}
+              </div>
+           </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

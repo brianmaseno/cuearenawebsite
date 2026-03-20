@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Target, Users, MapPin, Calendar, CheckCircle, Trophy, Loader2, ArrowLeft } from 'lucide-react';
+import { Target, Users, MapPin, Calendar, CheckCircle, Trophy, Loader2, ArrowLeft, X } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 
@@ -12,6 +12,7 @@ const MatchDetails = () => {
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSet, setActiveSet] = useState(0);
+  const [selectingWinnerForSet, setSelectingWinnerForSet] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [resultData, setResultData] = useState({
     scorePlayer1: 0,
@@ -22,14 +23,16 @@ const MatchDetails = () => {
   const handleRecordSetWinner = async (winnerId) => {
     setActionLoading(true);
     try {
-      await api.put(`/direct-matches/${id}/set-winner`, { setIndex: activeSet, winnerId });
-      toast.success(`Set ${activeSet + 1} recorded!`);
+      await api.put(`/direct-matches/${id}/set-winner`, { setIndex: selectingWinnerForSet !== null ? selectingWinnerForSet : activeSet, winnerId });
+      toast.success(`Set ${(selectingWinnerForSet !== null ? selectingWinnerForSet : activeSet) + 1} recorded!`);
       
       // Auto-advance
-      if (activeSet + 1 < match.setsCount && !match.winnerId) {
-        setActiveSet(activeSet + 1);
+      const currentIdx = selectingWinnerForSet !== null ? selectingWinnerForSet : activeSet;
+      if (currentIdx + 1 < match.setsCount && !match.winnerId) {
+        setActiveSet(currentIdx + 1);
       }
       
+      setSelectingWinnerForSet(null);
       fetchMatch();
     } catch (err) {
       toast.error('Failed to record set winner');
@@ -44,6 +47,19 @@ const MatchDetails = () => {
     try {
       const { data } = await api.get(`/direct-matches/${id}`);
       setMatch(data);
+      
+      // Auto-set active set to the first unplayed one
+      if (data.setsResults && data.status !== 'completed') {
+        let firstUnplayed = 0;
+        for (let i = 0; i < data.setsCount; i++) {
+          if (!data.setsResults.find(s => s.setIndex === i)) {
+            firstUnplayed = i;
+            break;
+          }
+        }
+        setActiveSet(firstUnplayed);
+      }
+
       if (data.scorePlayer1 !== null) {
         setResultData({
           scorePlayer1: data.scorePlayer1,
@@ -156,62 +172,89 @@ const MatchDetails = () => {
              </div>
 
              {/* Set Tabs */}
-             <div className="flex flex-wrap gap-2">
+             <div className="flex flex-wrap gap-4">
                 {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                    const sRes = match.setsResults?.find(s => s.setIndex === idx);
+                   
+                   // Find the first unplayed set index
+                   let firstUnplayed = 0;
+                   for (let i = 0; i < match.setsCount; i++) {
+                      if (!match.setsResults?.find(s => s.setIndex === i)) {
+                         firstUnplayed = i;
+                         break;
+                      }
+                   }
+
                    const isActive = activeSet === idx;
+                   const isLocked = idx > firstUnplayed;
+                   const isSelecting = selectingWinnerForSet === idx;
+                   
+                   let tabLabel = `SET ${idx + 1}`;
+                   let winnerColor = '';
+                   
+                   if (sRes) {
+                      if (sRes.winnerId === match.player1Id._id) {
+                         tabLabel = match.player1Id.fullName.split(' ')[0];
+                         winnerColor = 'text-primary';
+                      } else {
+                         tabLabel = match.player2Id.fullName.split(' ')[0];
+                         winnerColor = 'text-violet';
+                      }
+                   }
+
                    return (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveSet(idx)}
-                        className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all border ${
-                          isActive 
-                            ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105' 
-                            : (sRes ? 'bg-primary/10 text-primary border-primary/20' : 'bg-base2/30 text-text/50 border-transparent hover:border-base2/50')
-                        }`}
-                      >
-                         SET {idx + 1}
-                         {sRes && <span className="ml-2 opacity-50">✓</span>}
-                      </button>
+                      <div key={idx} className="relative">
+                         {isSelecting ? (
+                            <div className="min-w-[240px] h-[64px] bg-base3 border-2 border-primary rounded-3xl shadow-2xl flex items-center p-1.5 gap-2 animate-in zoom-in-95 duration-200 z-30">
+                               <button 
+                                 onClick={() => handleRecordSetWinner(match.player1Id._id)}
+                                 className="flex-1 h-full bg-primary/10 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
+                               >
+                                  <span className="opacity-40 text-[7px] uppercase">P1</span>
+                                  {match.player1Id.fullName}
+                               </button>
+                               <div className="w-px h-8 bg-base2"></div>
+                               <button 
+                                 onClick={() => handleRecordSetWinner(match.player2Id._id)}
+                                 className="flex-1 h-full bg-violet/10 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[10px] font-black transition-all truncate px-3 flex flex-col items-center justify-center gap-0.5"
+                               >
+                                  <span className="opacity-40 text-[7px] uppercase">P2</span>
+                                  {match.player2Id.fullName}
+                               </button>
+                               <button 
+                                 onClick={() => setSelectingWinnerForSet(null)}
+                                 className="w-10 h-10 flex items-center justify-center text-text/20 hover:text-red transition-colors rounded-2xl hover:bg-red/5"
+                               >
+                                  <X size={18} />
+                               </button>
+                            </div>
+                         ) : (
+                            <button
+                              disabled={isLocked && match.status !== 'completed'}
+                              onClick={() => {
+                                 if (!isLocked && !sRes && match.status !== 'completed') {
+                                    setSelectingWinnerForSet(idx);
+                                 } else {
+                                    setActiveSet(idx);
+                                    setSelectingWinnerForSet(null);
+                                 }
+                              }}
+                              className={`min-w-[120px] h-[64px] px-6 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${
+                                isActive 
+                                  ? 'bg-base3 border-primary shadow-xl shadow-primary/10' 
+                                  : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
+                              } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
+                            >
+                               <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                  {tabLabel}
+                               </span>
+                            </button>
+                         )}
+                      </div>
                    );
                 })}
              </div>
 
-             {/* Record Set Winner */}
-             <div className="bg-base2/20 p-8 rounded-3xl border border-base2 text-center space-y-6">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-text/40">Select Winner for Set {activeSet + 1}</p>
-                <div className="flex items-center justify-center gap-8">
-                   <button 
-                     onClick={() => handleRecordSetWinner(match.player1Id._id)}
-                     className={`flex flex-col items-center gap-4 group transition-all ${activeSetRes?.winnerId === match.player1Id._id ? 'scale-110' : 'hover:scale-105'}`}
-                   >
-                      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black border-4 transition-all ${
-                         activeSetRes?.winnerId === match.player1Id._id ? 'bg-primary text-base3 border-primary shadow-xl shadow-primary/30' : 'bg-base3 text-text border-base2 group-hover:border-primary/50'
-                      }`}>
-                         {match.player1Id.fullName[0]}
-                      </div>
-                      <span className={`text-sm font-bold ${activeSetRes?.winnerId === match.player1Id._id ? 'text-primary' : 'text-text'}`}>
-                         {match.player1Id.fullName.split(' ')[0]}
-                      </span>
-                   </button>
-
-                   <div className="text-xl font-black italic opacity-10">VS</div>
-
-                   <button 
-                     onClick={() => handleRecordSetWinner(match.player2Id._id)}
-                     className={`flex flex-col items-center gap-4 group transition-all ${activeSetRes?.winnerId === match.player2Id._id ? 'scale-110' : 'hover:scale-105'}`}
-                   >
-                      <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black border-4 transition-all ${
-                         activeSetRes?.winnerId === match.player2Id._id ? 'bg-violet text-base3 border-violet shadow-xl shadow-violet/30' : 'bg-base3 text-text border-base2 group-hover:border-violet/50'
-                      }`}>
-                         {match.player2Id.fullName[0]}
-                      </div>
-                      <span className={`text-sm font-bold ${activeSetRes?.winnerId === match.player2Id._id ? 'text-violet' : 'text-text'}`}>
-                         {match.player2Id.fullName.split(' ')[0]}
-                      </span>
-                   </button>
-                </div>
-             </div>
 
              <div className="pt-4 border-t border-base2">
                 <h4 className="text-xs font-black uppercase tracking-widest text-text/30 mb-4">Manual Override (Final Score)</h4>

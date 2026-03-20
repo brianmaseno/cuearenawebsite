@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award } from 'lucide-react';
+import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
@@ -11,6 +11,8 @@ const OngoingActivities = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [actionLoading, setActionLoading] = useState(false);
+  const [activeSetMap, setActiveSetMap] = useState({});
+  const [selectingWinnerForSetMap, setSelectingWinnerForSetMap] = useState({});
 
   const fetchOngoing = async () => {
     try {
@@ -57,19 +59,23 @@ const OngoingActivities = () => {
     }
   };
 
-  const [activeSetMap, setActiveSetMap] = useState({});
-
   const handleRecordSetWinner = async (match, setIndex, winnerId) => {
     setActionLoading(true);
     try {
-      await api.put(`/direct-matches/${match._id}/set-winner`, { setIndex, winnerId });
-      toast.success(`Set ${setIndex + 1} recorded!`);
+      const targetSetIdx = selectingWinnerForSetMap[match._id] !== undefined ? selectingWinnerForSetMap[match._id] : setIndex;
+      await api.put(`/direct-matches/${match._id}/set-winner`, { setIndex: targetSetIdx, winnerId });
+      toast.success(`Set ${targetSetIdx + 1} recorded!`);
       
       // Auto-advance to next set if not finished
-      if (setIndex + 1 < match.setsCount && !match.winnerId) {
-        setActiveSetMap(prev => ({ ...prev, [match._id]: setIndex + 1 }));
+      if (targetSetIdx + 1 < match.setsCount && !match.winnerId) {
+        setActiveSetMap(prev => ({ ...prev, [match._id]: targetSetIdx + 1 }));
       }
       
+      setSelectingWinnerForSetMap(prev => {
+        const next = { ...prev };
+        delete next[match._id];
+        return next;
+      });
       fetchOngoing();
     } catch (err) {
       toast.error('Failed to record set winner');
@@ -121,7 +127,16 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.matches.map((match) => {
-                const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : 0;
+                let defaultActive = 0;
+                if (match.setsResults && match.status !== 'completed') {
+                  for (let i = 0; i < (match.setsCount || 1); i++) {
+                    if (!match.setsResults.find(s => s.setIndex === i)) {
+                      defaultActive = i;
+                      break;
+                    }
+                  }
+                }
+                const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
                 const setRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
                 const isMatchFinished = match.status === 'completed';
 
@@ -148,22 +163,21 @@ const OngoingActivities = () => {
                   <div className="p-5">
                     <div className="flex items-center justify-between gap-2 relative">
                       {/* Player 1 */}
-                      <button 
-                        onClick={() => !isMatchFinished && handleRecordSetWinner(match, currentActiveSet, match.player1Id._id)}
-                        className="flex-1 flex flex-col items-center gap-2 group/p1 transition-transform active:scale-95"
+                      <div 
+                        className="flex-1 flex flex-col items-center gap-2 transition-transform"
                       >
                         <div className="relative">
                           <img 
                             src={match.player1Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id.fullName}&background=random`} 
                             alt={match.player1Id.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.winnerId === match.player1Id._id ? 'ring-green scale-105' : 
-                               (setRes?.winnerId === match.player1Id._id ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
+                               match.winnerId === (match.player1Id._id || match.player1Id) ? 'ring-green scale-105' : 
+                               (setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
                             }`}
                           />
                           {!isMatchFinished && (
                              <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
-                                setRes?.winnerId === match.player1Id._id ? 'bg-primary text-base3 border-primary' : 'bg-base3 text-text/20 border-base2'
+                                setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'bg-primary text-base3 border-primary' : 'bg-base3 text-text/20 border-base2'
                              }`}>
                                 <CheckCircle2 size={12} />
                              </div>
@@ -176,39 +190,38 @@ const OngoingActivities = () => {
                         </div>
                         <div className="text-center">
                           <p className={`text-[11px] font-bold truncate max-w-[80px] ${
-                             match.winnerId === match.player1Id._id ? 'text-green' : (setRes?.winnerId === match.player1Id._id ? 'text-primary' : 'text-text-emphasis')
+                             match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : (setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'text-primary' : 'text-text-emphasis')
                           }`}>
                              {match.player1Id.fullName}
                           </p>
                           {match.winnerId && (
                              <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
-                                match.winnerId === match.player1Id._id ? 'text-green' : 'text-red/40 line-through'
+                                match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : 'text-red/40 line-through'
                              }`}>
-                                {match.winnerId === match.player1Id._id ? 'WON' : 'LOST'}
+                                {match.winnerId === (match.player1Id._id || match.player1Id) ? 'WON' : 'LOST'}
                              </p>
                           )}
                         </div>
-                      </button>
+                      </div>
 
                       <div className="text-xl font-black text-primary/10 italic">VS</div>
 
                       {/* Player 2 */}
-                      <button 
-                        onClick={() => !isMatchFinished && handleRecordSetWinner(match, currentActiveSet, match.player2Id._id)}
-                        className="flex-1 flex flex-col items-center gap-2 group/p2 transition-transform active:scale-95"
+                      <div 
+                        className="flex-1 flex flex-col items-center gap-2 transition-transform"
                       >
                         <div className="relative">
                           <img 
                             src={match.player2Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id.fullName}&background=random`} 
                             alt={match.player2Id.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.winnerId === match.player2Id._id ? 'ring-green scale-105' : 
-                               (setRes?.winnerId === match.player2Id._id ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
+                               match.winnerId === (match.player2Id._id || match.player2Id) ? 'ring-green scale-105' : 
+                               (setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
                             }`}
                           />
                           {!isMatchFinished && (
                              <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
-                                setRes?.winnerId === match.player2Id._id ? 'bg-violet text-base3 border-violet' : 'bg-base3 text-text/20 border-base2'
+                                setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'bg-violet text-base3 border-violet' : 'bg-base3 text-text/20 border-base2'
                              }`}>
                                 <CheckCircle2 size={12} />
                              </div>
@@ -221,19 +234,19 @@ const OngoingActivities = () => {
                         </div>
                         <div className="text-center">
                           <p className={`text-[11px] font-bold truncate max-w-[80px] ${
-                             match.winnerId === match.player2Id._id ? 'text-green' : (setRes?.winnerId === match.player2Id._id ? 'text-violet' : 'text-text-emphasis')
+                             match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : (setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'text-violet' : 'text-text-emphasis')
                           }`}>
                              {match.player2Id.fullName}
                           </p>
                           {match.winnerId && (
                              <p className={`text-[9px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
-                                match.winnerId === match.player2Id._id ? 'text-green' : 'text-red/40 line-through'
+                                match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : 'text-red/40 line-through'
                              }`}>
-                                {match.winnerId === match.player2Id._id ? 'WON' : 'LOST'}
+                                {match.winnerId === (match.player2Id._id || match.player2Id) ? 'WON' : 'LOST'}
                              </p>
                           )}
                         </div>
-                      </button>
+                      </div>
                     </div>
                   </div>
 
@@ -245,22 +258,60 @@ const OngoingActivities = () => {
                           const sRes = match.setsResults?.find(s => s.setIndex === idx);
                           const isActive = currentActiveSet === idx;
                           
-                          // Explicit Label logic: Set 1, Set 2...
-                          const label = `Set ${idx + 1}`;
+                          const isLocked = idx > defaultActive;
+                          const isSelecting = selectingWinnerForSetMap[match._id] === idx;
+                          let tabLabel = `Set ${idx + 1}`;
+                          let isWon = false;
+                          if (sRes) {
+                             tabLabel = sRes.winnerId === (match.player1Id._id || match.player1Id) ? (match.player1Id.fullName?.split(' ')[0] || '?') : (match.player2Id.fullName?.split(' ')[0] || '?');
+                             isWon = true;
+                          }
 
                           return (
-                            <button
-                              key={idx}
-                              onClick={() => setActiveSetMap({ ...activeSetMap, [match._id]: idx })}
-                              className={`flex-1 min-w-[50px] px-2 py-2 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border text-center truncate ${
-                                isActive 
-                                  ? 'bg-primary text-base3 border-primary shadow-md' 
-                                  : (sRes ? 'bg-primary/10 text-primary border-primary/20' : 'bg-base2/30 text-text/50 border-transparent hover:bg-base2/50')
-                              }`}
-                              title={sRes ? `Winner: ${sRes.winnerId === match.player1Id._id ? match.player1Id.fullName : match.player2Id.fullName}` : label}
-                            >
-                               {label}
-                            </button>
+                            <div key={idx} className="relative flex-1 min-w-[60px]">
+                              {isSelecting ? (
+                                <div className="absolute left-1/2 -translate-x-1/2 top-[-8px] bottom-[-8px] min-w-[320px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-1.5 gap-2 z-30 animate-in zoom-in-95 duration-200">
+                                   <button 
+                                     onClick={() => handleRecordSetWinner(match, idx, (match.player1Id._id || match.player1Id))}
+                                     className="flex-1 h-full bg-primary/10 text-primary hover:bg-primary hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 py-1 flex items-center justify-center text-center leading-tight"
+                                   >
+                                      {match.player1Id.fullName}
+                                   </button>
+                                   <div className="w-px h-6 bg-base2"></div>
+                                   <button 
+                                     onClick={() => handleRecordSetWinner(match, idx, (match.player2Id._id || match.player2Id))}
+                                     className="flex-1 h-full bg-violet/10 text-violet hover:bg-violet hover:text-base3 transition-all rounded-xl text-[9px] font-black uppercase px-2 py-1 flex items-center justify-center text-center leading-tight"
+                                   >
+                                      {match.player2Id.fullName}
+                                   </button>
+                                   <button 
+                                     onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
+                                     className="w-8 h-full flex items-center justify-center text-text/20 hover:text-red transition-colors"
+                                   >
+                                      <X size={14} />
+                                   </button>
+                                </div>
+                              ) : (
+                                <button
+                                  disabled={isLocked && match.status !== 'completed'}
+                                  onClick={() => {
+                                     if (!isLocked && !sRes && match.status !== 'completed') {
+                                        setSelectingWinnerForSetMap(prev => ({ ...prev, [match._id]: idx }));
+                                     } else {
+                                        setActiveSetMap(prev => ({ ...prev, [match._id]: idx }));
+                                        setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; });
+                                     }
+                                  }}
+                                  className={`w-full px-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
+                                    isActive 
+                                      ? 'bg-primary text-base3 border-primary shadow-md scale-105 z-10' 
+                                      : (sRes ? 'bg-primary/5 text-primary border-primary/10 opacity-80' : 'bg-base2/30 text-text/30 border-base2/50 hover:bg-base2/50')
+                                  } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                   <span className={`truncate max-w-full ${isWon ? 'text-[9px]' : ''}`}>{tabLabel}</span>
+                                </button>
+                              )}
+                            </div>
                           );
                         })}
                      </div>
