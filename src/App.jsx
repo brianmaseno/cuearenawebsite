@@ -21,6 +21,7 @@ import TournamentManage from './pages/moderator/TournamentManage';
 import CreateMatch from './pages/moderator/CreateMatch';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import MatchDetails from './pages/match/MatchDetails';
+import PlayerHistory from './pages/player/PlayerHistory';
 import OngoingActivities from './pages/moderator/OngoingActivities';
 import History from './pages/moderator/History';
 
@@ -40,6 +41,11 @@ function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute roles={['player']}>
               <PlayerDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/dashboard/history" element={
+            <ProtectedRoute roles={['player']}>
+              <PlayerHistory />
             </ProtectedRoute>
           } />
           <Route path="/dashboard/invitations" element={
