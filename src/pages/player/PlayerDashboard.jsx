@@ -27,11 +27,13 @@ const PlayerDashboard = () => {
 
       setData({
         matches: ongoingRes.data.matches || [],
+        tournamentMatches: ongoingRes.data.tournamentMatches || [],
         tournaments: ongoingRes.data.tournaments || [],
         notifications: notifRes.data || [],
-        // Calculate invitations from both matches and tournaments that have 'pending' status
+        // Calculate invitations from all sources
         invitations: [
           ...(ongoingRes.data.matches || []).filter(m => m.myStatus === 'pending'),
+          ...(ongoingRes.data.tournamentMatches || []).filter(m => m.myStatus === 'pending'),
           ...(ongoingRes.data.tournaments || []).filter(t => t.myStatus === 'pending')
         ]
       });
@@ -131,17 +133,28 @@ const PlayerDashboard = () => {
 
         {activeTab === 'matches' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.matches.length === 0 ? (
+            {data.matches.length === 0 && data.tournamentMatches.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic rounded-2xl border-dashed">
                 No active matches found.
               </div>
             ) : (
-              data.matches.map((match) => (
+              [
+                ...data.matches.map(m => ({ ...m, type: 'direct' })), 
+                ...data.tournamentMatches.map(m => ({ ...m, type: 'tournament' }))
+              ].map((match) => (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                      <div className="flex items-center gap-3">
-                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                        {match.type === 'tournament' ? (
+                           <div className="w-7 h-7 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                              <Trophy size={14} />
+                           </div>
+                        ) : (
+                           <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                        )}
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
+                           {match.type === 'tournament' ? match.tournamentId?.name : 'Exhibition'}
+                        </h3>
                      </div>
                     <StatusBadge status={match.status} />
                   </div>
@@ -152,20 +165,20 @@ const PlayerDashboard = () => {
                       <div className="flex-1 flex flex-col items-center gap-2">
                         <div className="relative">
                           <img 
-                            src={match.player1Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id.fullName}&background=random`} 
-                            alt={match.player1Id.fullName} 
+                            src={match.player1Id?.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id?.fullName}&background=random`} 
+                            alt={match.player1Id?.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.player1Id._id === match.winnerId ? 'ring-green scale-105' : 'ring-base3'
+                               match.player1Id?._id === match.winnerId ? 'ring-green scale-105' : 'ring-base3'
                             }`}
                           />
                         </div>
                         <div className="text-center">
                           <p className="text-sm font-bold truncate max-w-[120px] text-text-emphasis">
-                             {match.player1Id.fullName}
+                             {match.player1Id?.fullName}
                           </p>
                           <div className="mt-1 flex flex-col items-center gap-0.5">
                             <span className="text-xs font-black text-primary">
-                              {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId).toString() === match.player1Id._id.toString()).length || 0} / {match.setsCount}
+                              {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || '').toString()).length || 0} / {match.setsCount}
                             </span>
                             <span className={`text-[10px] font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
                                {match.player1Accepted ? 'Accepted' : 'Pending'}
@@ -176,12 +189,14 @@ const PlayerDashboard = () => {
 
                       <div className="flex flex-col items-center gap-2">
                          <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
-                            {match.title || 'Exhibition'}
+                            {match.type === 'tournament' ? `Round ${match.round}` : (match.title || 'Direct')}
                          </div>
                          <div className="text-xl font-black text-primary/10 italic">VS</div>
                          <div className="flex flex-col items-center gap-0.5">
-                            <p className="text-[10px] font-bold text-text/60">Org: {match.organizerId?.fullName}</p>
-                            <p className="text-[10px] font-bold text-text/60">{match.location || 'Cue Arena'}</p>
+                            <p className="text-[10px] font-bold text-text/60">
+                               {match.type === 'tournament' ? 'Tournament Match' : `Org: ${match.organizerId?.fullName}`}
+                            </p>
+                            <p className="text-[10px] font-bold text-text/60">{match.location || match.venue || 'Cue Arena'}</p>
                          </div>
                       </div>
 
@@ -189,20 +204,20 @@ const PlayerDashboard = () => {
                       <div className="flex-1 flex flex-col items-center gap-2">
                         <div className="relative">
                           <img 
-                            src={match.player2Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id.fullName}&background=random`} 
-                            alt={match.player2Id.fullName} 
+                            src={match.player2Id?.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id?.fullName}&background=random`} 
+                            alt={match.player2Id?.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.player2Id._id === match.winnerId ? 'ring-green scale-105' : 'ring-base3'
+                               match.player2Id?._id === match.winnerId ? 'ring-green scale-105' : 'ring-base3'
                             }`}
                           />
                         </div>
                         <div className="text-center">
                           <p className="text-sm font-bold truncate max-w-[120px] text-text-emphasis">
-                             {match.player2Id.fullName}
+                             {match.player2Id?.fullName}
                           </p>
                           <div className="mt-1 flex flex-col items-center gap-0.5">
                             <span className="text-xs font-black text-primary">
-                              {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId).toString() === match.player2Id._id.toString()).length || 0} / {match.setsCount}
+                              {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || '').toString()).length || 0} / {match.setsCount}
                             </span>
                             <span className={`text-[10px] font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
                                {match.player2Accepted ? 'Accepted' : 'Pending'}
