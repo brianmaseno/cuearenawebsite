@@ -37,17 +37,6 @@ const ModeratorDashboard = () => {
   return (
     <DashboardLayout title="Organizer Dashboard">
       <div className="space-y-8">
-        {/* Quick Actions */}
-        <div className="flex flex-wrap gap-4">
-          <Link to="/moderator/create-tournament" className="btn-primary flex items-center gap-2 px-6 py-4 rounded-2xl shadow-lg ring-4 ring-primary/5">
-            <Plus size={24} />
-            <span className="text-lg font-bold">New Tournament</span>
-          </Link>
-          <Link to="/moderator/create-match" className="bg-violet text-base3 font-bold flex items-center gap-2 px-6 py-4 rounded-2xl hover:bg-violet/90 transition-all shadow-lg ring-4 ring-violet/5">
-            <Target size={24} />
-            <span className="text-lg font-bold">Setup Direct Match</span>
-          </Link>
-        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Active Tournaments */}

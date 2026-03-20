@@ -37,8 +37,6 @@ const Sidebar = () => {
     if (user.role === 'moderator') {
       return [
         { label: 'Organizer Hub', path: '/moderator', icon: LayoutDashboard },
-        { label: 'Create Tournament', path: '/moderator/create-tournament', icon: Trophy },
-        { label: 'Direct Matches', path: '/moderator/matches', icon: Target },
         { label: 'Invitations', path: '/moderator/invitations', icon: MessageSquare },
       ];
     }
