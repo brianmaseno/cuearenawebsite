@@ -186,38 +186,46 @@ const OngoingActivities = () => {
                     <div className="flex items-center justify-between gap-2 relative">
                       {/* Player 1 */}
                       <div 
-                        className="flex-1 flex flex-col items-center gap-2 transition-transform"
+                        className="flex-1 flex-col items-center gap-2 transition-transform flex"
                       >
                         <div className="relative">
-                          <img 
-                            src={match.player1Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id.fullName}&background=random`} 
-                            alt={match.player1Id.fullName} 
-                            className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               (match.winnerId?._id || match.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-green scale-105' : 
-                               ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
-                            }`}
-                          />
-                          {!isMatchFinished && setRes && (
-                             <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
-                                (setRes.winnerId?._id || setRes.winnerId)?.toString() === (match.player1Id._id || match.player1Id)?.toString() ? 'bg-primary text-base3 border-primary' : 'bg-base3 text-text/20 border-base2'
-                             }`}>
-                                <CheckCircle2 size={12} />
-                             </div>
+                          {match.player1Id ? (
+                            <>
+                              <img 
+                                src={match.player1Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id.fullName}&background=random`} 
+                                alt={match.player1Id.fullName} 
+                                className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
+                                  (match.winnerId?._id || match.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-green scale-105' : 
+                                  ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
+                                }`}
+                              />
+                              {!isMatchFinished && setRes && (
+                                <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
+                                    (setRes.winnerId?._id || setRes.winnerId)?.toString() === (match.player1Id._id || match.player1Id)?.toString() ? 'bg-primary text-base3 border-primary' : 'bg-base3 text-text/20 border-base2'
+                                }`}>
+                                    <CheckCircle2 size={12} />
+                                </div>
+                              )}
+                              <div className={`absolute -bottom-1 -right-1 p-1 rounded-full shadow-sm ${
+                                match.player1Status === 'accepted' ? 'bg-green text-base3' : 'bg-yellow text-base3'
+                              }`}>
+                                  {match.player1Status === 'accepted' ? <CheckCircle2 size={10} /> : <Clock size={10} />}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="w-14 h-14 rounded-2xl bg-base2/50 flex items-center justify-center border-2 border-dashed border-base2 text-text/20">
+                               <Users size={24} />
+                            </div>
                           )}
-                          <div className={`absolute -bottom-1 -right-1 p-1 rounded-full shadow-sm ${
-                            match.player1Status === 'accepted' ? 'bg-green text-base3' : 'bg-yellow text-base3'
-                          }`}>
-                               {match.player1Status === 'accepted' ? <CheckCircle2 size={10} /> : <Clock size={10} />}
-                          </div>
                         </div>
                         <div className="text-center">
                           <p className={`text-sm font-bold truncate max-w-[120px] ${
-                             match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : (setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'text-primary' : 'text-text-emphasis')
+                             match.player1Id && (match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : (setRes?.winnerId === (match.player1Id._id || match.player1Id) ? 'text-primary' : 'text-text-emphasis'))
                           }`}>
-                             {match.player1Id.fullName}
+                             {match.player1Id?.fullName || 'TBD'}
                           </p>
                           <p className="text-[10px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
-                             Won: {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || match.player1Id || '').toString()).length || 0}/{match.setsCount}
+                             Won: {match.player1Id ? (match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || match.player1Id || '').toString()).length || 0) : 0}/{match.setsCount}
                           </p>
                           {match.winnerId && (
                              <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
@@ -238,44 +246,52 @@ const OngoingActivities = () => {
 
                       {/* Player 2 */}
                       <div 
-                        className="flex-1 flex flex-col items-center gap-2 transition-transform"
+                        className="flex-1 flex-col items-center gap-2 transition-transform flex"
                       >
                         <div className="relative">
-                          <img 
-                            src={match.player2Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id.fullName}&background=random`} 
-                            alt={match.player2Id.fullName} 
-                            className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               (match.winnerId?._id || match.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-green scale-105' : 
-                               ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
-                            }`}
-                          />
-                          {!isMatchFinished && setRes && (
-                             <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
-                                (setRes.winnerId?._id || setRes.winnerId)?.toString() === (match.player2Id._id || match.player2Id)?.toString() ? 'bg-violet text-base3 border-violet' : 'bg-base3 text-text/20 border-base2'
-                             }`}>
-                                <CheckCircle2 size={12} />
-                             </div>
+                          {match.player2Id ? (
+                            <>
+                              <img 
+                                src={match.player2Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id.fullName}&background=random`} 
+                                alt={match.player2Id.fullName} 
+                                className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
+                                  (match.winnerId?._id || match.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-green scale-105' : 
+                                  ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
+                                }`}
+                              />
+                              {!isMatchFinished && setRes && (
+                                <div className={`absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm transition-all ${
+                                    (setRes.winnerId?._id || setRes.winnerId)?.toString() === (match.player2Id._id || match.player2Id)?.toString() ? 'bg-violet text-base3 border-violet' : 'bg-base3 text-text/20 border-base2'
+                                }`}>
+                                    <CheckCircle2 size={12} />
+                                </div>
+                              )}
+                              <div className={`absolute -bottom-1 -right-1 p-1 rounded-full shadow-sm ${
+                                match.player2Status === 'accepted' ? 'bg-green text-base3' : 'bg-yellow text-base3'
+                              }`}>
+                                  {match.player2Status === 'accepted' ? <CheckCircle2 size={10} /> : <Clock size={10} />}
+                              </div>
+                            </>
+                          ) : (
+                            <div className="w-14 h-14 rounded-2xl bg-base2/50 flex items-center justify-center border-2 border-dashed border-base2 text-text/20">
+                               <Users size={24} />
+                            </div>
                           )}
-                          <div className={`absolute -bottom-1 -right-1 p-1 rounded-full shadow-sm ${
-                            match.player2Status === 'accepted' ? 'bg-green text-base3' : 'bg-yellow text-base3'
-                          }`}>
-                               {match.player2Status === 'accepted' ? <CheckCircle2 size={10} /> : <Clock size={10} />}
-                          </div>
                         </div>
                         <div className="text-center">
                           <p className={`text-sm font-bold truncate max-w-[120px] ${
-                             match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : (setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'text-violet' : 'text-text-emphasis')
+                             match.player2Id && (match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : (setRes?.winnerId === (match.player2Id._id || match.player2Id) ? 'text-violet' : 'text-text-emphasis'))
                           }`}>
-                             {match.player2Id.fullName}
+                             {match.player2Id?.fullName || 'TBD'}
                           </p>
                           <p className="text-[10px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
-                             Won: {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || match.player2Id || '').toString()).length || 0}/{match.setsCount}
+                             Won: {match.player2Id ? (match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || match.player2Id || '').toString()).length || 0) : 0}/{match.setsCount}
                           </p>
-                          {match.winnerId && (
+                          {match.winnerId && match.player2Id && (
                              <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
-                                match.winnerId === (match.player2Id._id || match.player2Id) ? 'text-green' : 'text-red/40 line-through'
+                                (match.winnerId?._id || match.winnerId).toString() === (match.player2Id?._id || match.player2Id).toString() ? 'text-green' : 'text-red/40 line-through'
                              }`}>
-                                {match.winnerId === (match.player2Id._id || match.player2Id) ? 'WON' : 'LOST'}
+                                {(match.winnerId?._id || match.winnerId).toString() === (match.player2Id?._id || match.player2Id).toString() ? 'WON' : 'LOST'}
                              </p>
                           )}
                         </div>
@@ -299,7 +315,13 @@ const OngoingActivities = () => {
                           if (sRes) {
                              const winnerIdStr = (sRes.winnerId?._id || sRes.winnerId || '').toString();
                              const p1IdStr = (match.player1Id?._id || match.player1Id || '').toString();
-                             tabLabel = winnerIdStr === p1IdStr ? (match.player1Id.fullName?.split(' ')[0] || '?') : (match.player2Id.fullName?.split(' ')[0] || '?');
+                             const p2IdStr = (match.player2Id?._id || match.player2Id || '').toString();
+                             
+                             if (match.player1Id && winnerIdStr === p1IdStr) {
+                                tabLabel = match.player1Id.fullName?.split(' ')[0] || '?';
+                             } else if (match.player2Id && winnerIdStr === p2IdStr) {
+                                tabLabel = match.player2Id.fullName?.split(' ')[0] || '?';
+                             }
                              isWon = true;
                           }
 
@@ -332,17 +354,19 @@ const OngoingActivities = () => {
                            <div className="absolute inset-x-0 inset-y-[-4px] flex justify-center z-50">
                               <div className="w-[380px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-2 gap-2 animate-in zoom-in-95 duration-200">
                                  <button 
-                                   onClick={() => handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
-                                   className="flex-1 h-full py-2.5 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center"
+                                   disabled={!match.player1Id}
+                                   onClick={() => match.player1Id && handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
+                                   className={`flex-1 h-full py-2.5 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
-                                    {match.player1Id.fullName}
+                                    {match.player1Id?.fullName || 'TBD'}
                                  </button>
                                  <div className="w-px h-6 bg-base2"></div>
                                  <button 
-                                   onClick={() => handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
-                                   className="flex-1 h-full py-2.5 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center"
+                                   disabled={!match.player2Id}
+                                   onClick={() => match.player2Id && handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
+                                   className={`flex-1 h-full py-2.5 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
-                                    {match.player2Id.fullName}
+                                    {match.player2Id?.fullName || 'TBD'}
                                  </button>
                                  <button 
                                    onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
