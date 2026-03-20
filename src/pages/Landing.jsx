@@ -1,8 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Users, Calendar, ArrowRight, Target } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowRight, Target, MapPin } from 'lucide-react';
+import api from '../api/axios';
+import StatusBadge from '../components/StatusBadge';
 
 const Landing = () => {
+  const [tournaments, setTournaments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+        const { data } = await api.get('/tournaments');
+        // Only show open or ongoing, capped at 6
+        const active = data
+          .filter(t => t.status !== 'draft' && t.status !== 'cancelled')
+          .slice(0, 6);
+        setTournaments(active);
+      } catch (err) {
+        console.error('Error fetching tournaments:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTournaments();
+  }, []);
+
+  const scrollToTournaments = () => {
+    document.getElementById('tournaments-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navbar */}
@@ -15,7 +42,6 @@ const Landing = () => {
             <span className="text-xl font-bold text-text-emphasis tracking-tight">Cue-Arena</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link to="/tournaments" className="text-text hover:text-primary font-medium transition-colors">Tournaments</Link>
             <Link to="/login" className="text-text hover:text-primary font-medium transition-colors">Login</Link>
             <Link to="/register" className="btn-primary">Get Started</Link>
           </div>
@@ -39,9 +65,12 @@ const Landing = () => {
             <Link to="/register" className="btn-primary text-lg px-8 py-3 flex items-center gap-2">
               Start Organizing <ArrowRight size={20} />
             </Link>
-            <Link to="/tournaments" className="px-8 py-3 rounded-lg border border-base2 hover:bg-base2 transition-colors font-semibold text-text-emphasis">
+            <button 
+              onClick={scrollToTournaments}
+              className="px-8 py-3 rounded-lg border border-base2 hover:bg-base2 transition-colors font-semibold text-text-emphasis"
+            >
               Browse Matches
-            </Link>
+            </button>
           </div>
         </div>
         
@@ -49,6 +78,74 @@ const Landing = () => {
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-yellow/10 rounded-full blur-3xl"></div>
       </header>
+
+      {/* Tournaments Section */}
+      <section id="tournaments-section" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+            <div>
+              <h2 className="text-4xl font-extrabold text-text-emphasis mb-4">Active Tournaments</h2>
+              <p className="text-lg text-text">Join the latest competitions in the arena.</p>
+            </div>
+            <Link to="/tournaments" className="text-primary hover:text-primary-dark font-bold flex items-center gap-2 group">
+              View All <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-64 bg-base2 rounded-2xl animate-pulse"></div>
+              ))}
+            </div>
+          ) : tournaments.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {tournaments.map(t => (
+                <div key={t._id} className="card-premium rounded-2xl overflow-hidden flex flex-col h-full group">
+                  <div className="relative h-4 w-full bg-primary/10 border-b border-base2">
+                    <div className={`h-full transition-all duration-1000 ${t.status === 'ongoing' ? 'bg-blue pulse' : 'bg-green'}`} style={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }}></div>
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-4">
+                      <StatusBadge status={t.status} />
+                      <span className="text-xs font-bold text-text bg-base2 px-2 py-0.5 rounded uppercase tracking-tighter">
+                        {t.format.replace('_', ' ')}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-text-emphasis mb-4 group-hover:text-primary transition-colors">{t.name}</h3>
+                    
+                    <div className="space-y-2 mb-6 flex-1 text-sm text-text">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} />
+                        {new Date(t.startDate).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} />
+                        {t.venue}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users size={16} />
+                        {t.confirmedPlayers.length} / {t.maxPlayers} Players
+                      </div>
+                    </div>
+
+                    <Link to="/login" className="w-full btn-primary py-2.5 rounded-xl flex items-center justify-center gap-2 opacity-90 hover:opacity-100 group">
+                      View Details <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 bg-base3/30 border-2 border-dashed border-base2 rounded-3xl">
+              <Trophy size={64} className="mx-auto text-base2 mb-4 opacity-50" />
+              <h3 className="text-xl font-bold text-text-emphasis">No active tournaments</h3>
+              <p className="text-text">Check back later or start organizing yourself!</p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Features */}
       <section className="py-20 bg-base3/50 border-y border-base2">
