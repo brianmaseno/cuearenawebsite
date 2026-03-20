@@ -86,7 +86,7 @@ const OngoingActivities = () => {
 
   if (loading) {
     return (
-      <DashboardLayout title="Ongoing Management">
+      <DashboardLayout title="Active Activities">
         <div className="flex items-center justify-center h-64">
           <Loader2 className="animate-spin text-primary" size={32} />
         </div>
@@ -95,7 +95,7 @@ const OngoingActivities = () => {
   }
 
   return (
-    <DashboardLayout title="Ongoing Management">
+    <DashboardLayout title="Active Activities">
       <div className="space-y-6 pb-20">
         {/* Tabs */}
         <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
@@ -106,7 +106,7 @@ const OngoingActivities = () => {
             }`}
           >
             <Target size={18} />
-            Direct Matches ({data.matches.length})
+            Matches ({data.matches.length})
           </button>
           <button
             onClick={() => setActiveTab('tournaments')}
@@ -123,7 +123,7 @@ const OngoingActivities = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.matches.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
-                No active direct matches found.
+                No active matches found.
               </div>
             ) : (
               data.matches.map((match) => {
@@ -144,10 +144,10 @@ const OngoingActivities = () => {
                 return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                    <div className="flex items-center gap-2 text-primary">
-                       <Target size={16} />
-                       <h3 className="text-sm font-black uppercase tracking-wider">{match.title || 'Exhibition'}</h3>
-                    </div>
+                     <div className="flex items-center gap-3">
+                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                     </div>
                     <div className="flex items-center gap-1">
                        <StatusBadge status={match.status} />
                        <button 
@@ -208,7 +208,12 @@ const OngoingActivities = () => {
                         </div>
                       </div>
 
-                      <div className="text-xl font-black text-primary/10 italic">VS</div>
+                      <div className="flex flex-col items-center gap-2">
+                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
+                            {match.title || 'Exhibition Match'}
+                         </div>
+                         <div className="text-xl font-black text-primary/10 italic">VS</div>
+                      </div>
 
                       {/* Player 2 */}
                       <div 

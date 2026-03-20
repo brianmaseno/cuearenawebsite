@@ -37,8 +37,7 @@ const Sidebar = () => {
     }
     if (user.role === 'moderator') {
       return [
-        { label: 'Organizer Hub', path: '/moderator', icon: LayoutDashboard },
-        { label: 'Ongoing Management', path: '/moderator/ongoing', icon: Calendar },
+        { label: 'Active', path: '/moderator/ongoing', icon: Calendar },
         { label: 'History', path: '/moderator/history', icon: Clock },
       ];
     }
@@ -60,7 +59,7 @@ const Sidebar = () => {
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-base3">
             <Target size={24} />
           </div>
-          <span className="text-xl font-bold text-text-emphasis">Cue-Arena</span>
+          <span className="text-xl font-bold text-text-emphasis">Cue Arena</span>
         </Link>
       </div>
 

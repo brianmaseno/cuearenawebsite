@@ -20,7 +20,7 @@ const Login = () => {
       
       // Redirect based on role
       if (user.role === 'admin') navigate('/admin');
-      else if (user.role === 'moderator') navigate('/moderator');
+      else if (user.role === 'moderator') navigate('/moderator/ongoing');
       else navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
@@ -38,7 +38,7 @@ const Login = () => {
             <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-base3 shadow-lg">
               <Trophy size={28} />
             </div>
-            <span className="text-3xl font-extrabold text-text-emphasis tracking-tight">Cue-Arena</span>
+            <span className="text-3xl font-extrabold text-text-emphasis tracking-tight">Cue Arena</span>
           </Link>
           <h2 className="text-2xl font-bold text-text-emphasis">Welcome Back</h2>
           <p className="text-text">Enter your credentials to access the arena</p>

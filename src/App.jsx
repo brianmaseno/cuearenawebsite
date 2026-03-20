@@ -64,11 +64,7 @@ function App() {
           } />
 
           {/* Moderator Routes */}
-          <Route path="/moderator" element={
-            <ProtectedRoute roles={['moderator']}>
-              <ModeratorDashboard />
-            </ProtectedRoute>
-          } />
+          <Route path="/moderator" element={<Navigate to="/moderator/ongoing" replace />} />
           <Route path="/moderator/create-tournament" element={
             <ProtectedRoute roles={['moderator']}>
               <CreateTournament />

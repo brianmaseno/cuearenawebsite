@@ -22,6 +22,7 @@ const History = () => {
   const [data, setData] = useState({ tournaments: [], matches: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
+  const [subFilter, setSubFilter] = useState('all');
 
   const fetchHistory = async () => {
     try {
@@ -38,6 +39,14 @@ const History = () => {
     fetchHistory();
   }, []);
 
+  const getFilteredData = () => {
+    const list = activeTab === 'matches' ? data.matches : data.tournaments;
+    if (subFilter === 'all') return list;
+    return list.filter(item => item.status === (subFilter === 'completed' ? 'completed' : 'cancelled'));
+  };
+
+  const filteredData = getFilteredData();
+
   if (loading) {
     return (
       <DashboardLayout title="Activity History">
@@ -51,14 +60,10 @@ const History = () => {
   return (
     <DashboardLayout title="Activity History">
       <div className="space-y-6 pb-20">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-           <div>
-              <p className="text-text/60 text-sm font-medium">Review your past organized events and finished matches.</p>
-           </div>
-           {/* Tabs */}
+        <div className="flex flex-col gap-6">
            <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
               <button
-                onClick={() => setActiveTab('matches')}
+                onClick={() => { setActiveTab('matches'); setSubFilter('all'); }}
                 className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
                   activeTab === 'matches' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
                 }`}
@@ -67,7 +72,7 @@ const History = () => {
                 Matches ({data.matches.length})
               </button>
               <button
-                onClick={() => setActiveTab('tournaments')}
+                onClick={() => { setActiveTab('tournaments'); setSubFilter('all'); }}
                 className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
                   activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
                 }`}
@@ -76,16 +81,48 @@ const History = () => {
                 Tournaments ({data.tournaments.length})
               </button>
            </div>
+
+           {/* Sub-Filters */}
+           <div className="flex items-center gap-2 bg-base2/20 p-1.5 rounded-2xl w-fit border border-base2/50">
+              {[
+                { id: 'all', label: 'All', icon: ArrowIcon },
+                { id: 'completed', label: 'Completed', icon: CheckIcon },
+                { id: 'cancelled', label: 'Cancelled', icon: CancelIcon }
+              ].map(f => {
+                const count = (activeTab === 'matches' ? data.matches : data.tournaments)
+                  .filter(item => f.id === 'all' ? true : item.status === f.id).length;
+                
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setSubFilter(f.id)}
+                    className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2.5 ${
+                      subFilter === f.id 
+                        ? 'bg-primary/10 text-primary shadow-sm border border-primary/20' 
+                        : 'text-text/60 hover:text-text hover:bg-base2/50 border border-transparent'
+                    }`}
+                  >
+                    <f.icon size={14} />
+                    {f.label}
+                    <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[10px] ${
+                      subFilter === f.id ? 'bg-primary/10 text-primary' : 'bg-base2 text-text/30'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+           </div>
         </div>
 
         {activeTab === 'matches' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.matches.length === 0 ? (
+            {filteredData.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
-                No match history found.
+                No {subFilter !== 'all' ? subFilter : ''} match history found.
               </div>
             ) : (
-              data.matches.map((match) => {
+              filteredData.map((match) => {
                 const winnerIdObj = match.winnerId?._id || match.winnerId;
                 const p1IdObj = match.player1Id?._id || match.player1Id;
                 const p2IdObj = match.player2Id?._id || match.player2Id;
@@ -99,9 +136,9 @@ const History = () => {
                 return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                    <div className="flex items-center gap-2 text-primary">
-                       <TargetIcon size={16} />
-                       <h3 className="text-sm font-black uppercase tracking-wider">{match.title || 'Exhibition'}</h3>
+                    <div className="flex items-center gap-3">
+                       <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                       <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
                     </div>
                     <div>
                        {isCancelled ? (
@@ -145,7 +182,12 @@ const History = () => {
                         </div>
                       </div>
 
-                      <div className="text-xl font-black text-primary/10 italic">VS</div>
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
+                           {match.title || 'Exhibition Match'}
+                        </div>
+                        <div className="text-xl font-black text-primary/10 italic">VS</div>
+                      </div>
 
                       {/* Player 2 */}
                       <div className="flex-1 flex flex-col items-center gap-2">
@@ -206,19 +248,19 @@ const History = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {data.tournaments.length === 0 ? (
+            {filteredData.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
-                No tournament history found.
+                No {subFilter !== 'all' ? subFilter : ''} tournament history found.
               </div>
             ) : (
-              data.tournaments.map((t) => {
+              filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
                   <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                      <div className="flex items-center gap-2 text-primary">
-                         <TrophyIcon size={16} />
-                         <h3 className="text-sm font-bold text-text-emphasis truncate max-w-[150px]">{t.name}</h3>
+                      <div className="flex items-center gap-3">
+                         <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
                       </div>
                       <div>
                          {isCancelled ? (

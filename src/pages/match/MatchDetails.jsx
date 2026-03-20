@@ -99,12 +99,18 @@ const MatchDetails = () => {
       <div className="max-w-4xl space-y-8">
         {/* Match Card */}
         <div className="card-premium p-8 rounded-3xl relative overflow-hidden bg-violet/5 border-violet/10">
-          <div className="flex justify-between items-start mb-8">
-            <StatusBadge status={match.status} />
-            <span className="text-xs text-text flex items-center gap-1">
-              <Calendar size={14} />
-              {new Date(match.scheduledAt).toLocaleString()}
-            </span>
+          <div className="flex justify-between items-start mb-8 border-b border-violet/10 pb-4">
+            <div className="flex items-center gap-3">
+               <img src="/favicon.png" alt="7 Ball" className="w-8 h-8 drop-shadow-sm" />
+               <h3 className="text-xl font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <StatusBadge status={match.status} />
+              <span className="text-[10px] font-bold text-text/40 flex items-center gap-1 uppercase tracking-wider">
+                <Calendar size={12} />
+                {new Date(match.scheduledAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+              </span>
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-12 py-6">
@@ -127,6 +133,7 @@ const MatchDetails = () => {
             </div>
 
             <div className="flex flex-col items-center gap-2">
+               <div className="text-sm font-black uppercase tracking-[0.3em] text-primary/80 mb-2 drop-shadow-sm">{match.title || 'Exhibition Match'}</div>
                <div className="text-sm font-black text-base1 italic tracking-widest opacity-30">VS</div>
                <div className="h-20 w-px bg-base2"></div>
             </div>
