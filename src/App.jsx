@@ -21,6 +21,7 @@ import TournamentManage from './pages/moderator/TournamentManage';
 import CreateMatch from './pages/moderator/CreateMatch';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLogs from './pages/admin/AdminLogs';
+import AdminUsers from './pages/admin/AdminUsers';
 import MatchDetails from './pages/match/MatchDetails';
 import PlayerHistory from './pages/player/PlayerHistory';
 import OngoingActivities from './pages/moderator/OngoingActivities';
@@ -118,6 +119,11 @@ function App() {
           <Route path="/admin/logs" element={
             <ProtectedRoute roles={['admin']}>
               <AdminLogs />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute roles={['admin']}>
+              <AdminUsers />
             </ProtectedRoute>
           } />
 
