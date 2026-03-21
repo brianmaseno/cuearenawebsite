@@ -20,7 +20,11 @@ import {
   Target,
   ExternalLink,
   X,
-  Phone
+  Phone,
+  Camera,
+  Save,
+  CheckCircle2,
+  FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -74,9 +78,29 @@ const AdminUsers = () => {
     fullName: '',
     email: '',
     password: '',
-    role: 'player'
+    role: 'player',
+    profilePhoto: ''
   });
   const [creating, setCreating] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [editData, setEditData] = useState(null);
+
+  const dossierFileRef = useRef(null);
+  const newUserFileRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedUser) {
+      setEditData({
+        fullName: selectedUser.fullName,
+        bio: selectedUser.bio || '',
+        phone: selectedUser.phone || '',
+        whatsApp: selectedUser.whatsApp || '',
+        profilePhoto: selectedUser.profilePhoto || ''
+      });
+    } else {
+      setEditData(null);
+    }
+  }, [selectedUser]);
 
   const fetchUsers = async () => {
     try {
@@ -100,7 +124,7 @@ const AdminUsers = () => {
       setCreating(true);
       const { data } = await api.post('/users', newUser);
       toast.success(data.message);
-      setNewUser({ fullName: '', email: '', password: '', role: 'player' });
+      setNewUser({ fullName: '', email: '', password: '', role: 'player', profilePhoto: '' });
       fetchUsers();
       setShowAddModal(false);
     } catch (err) {
@@ -115,7 +139,7 @@ const AdminUsers = () => {
       const { data } = await api.put(`/users/${userId}/status`);
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser(null);
+      if (selectedUser?._id === userId) setSelectedUser({ ...selectedUser, status: data.user.status });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Update failed');
     }
@@ -126,7 +150,7 @@ const AdminUsers = () => {
       const { data } = await api.put(`/users/${userId}/block`);
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser(null);
+      if (selectedUser?._id === userId) setSelectedUser({ ...selectedUser, status: data.user.status });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Block action failed');
     }
@@ -137,9 +161,40 @@ const AdminUsers = () => {
       const { data } = await api.put(`/users/${userId}/role`, { role: newRole });
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser(null);
+      if (selectedUser?._id === userId) setSelectedUser({ ...selectedUser, role: newRole });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Role update failed');
+    }
+  };
+
+  const handleUpdateUser = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      setUpdating(true);
+      const { data } = await api.put(`/users/${selectedUser._id}`, editData);
+      toast.success(data.message);
+      fetchUsers();
+      setSelectedUser({ ...selectedUser, ...editData });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Update failed');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handlePhotoUpload = (e, target) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) return toast.error('Max 2MB');
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (target === 'new') {
+          setNewUser({ ...newUser, profilePhoto: reader.result });
+        } else {
+          setEditData({ ...editData, profilePhoto: reader.result });
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -417,13 +472,36 @@ const AdminUsers = () => {
             
             <div className="flex-1 overflow-y-auto p-6 space-y-8">
                {/* Identity Card */}
-               <div className="text-center space-y-3">
-                  <div className="w-20 h-20 bg-primary/10 text-primary rounded-3xl flex items-center justify-center mx-auto text-3xl font-black shadow-inner ring-4 ring-base2">
-                     {selectedUser.fullName.charAt(0)}
+               <div className="text-center space-y-4">
+                  <div 
+                    className="relative w-24 h-24 mx-auto group cursor-pointer"
+                    onClick={() => dossierFileRef.current.click()}
+                  >
+                    <img 
+                      src={editData?.profilePhoto || `https://ui-avatars.com/api/?name=${selectedUser.fullName}&background=random`} 
+                      alt="Profile" 
+                      className="w-24 h-24 rounded-[32px] object-cover ring-4 ring-base2 shadow-xl group-hover:scale-[1.02] transition-all"
+                    />
+                    <div className="absolute inset-0 bg-black/40 rounded-[32px] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all">
+                      <Camera className="text-white mb-1" size={20} />
+                      <span className="text-[8px] text-white font-black uppercase tracking-widest">Change</span>
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={dossierFileRef} 
+                      onChange={(e) => handlePhotoUpload(e, 'dossier')} 
+                      accept="image/*" 
+                      className="hidden" 
+                    />
                   </div>
                   <div>
-                     <h2 className="text-xl font-black text-text-emphasis leading-tight">{selectedUser.fullName}</h2>
-                     <p className="text-xs text-text font-bold uppercase tracking-widest opacity-60 underline decoration-primary decoration-2 underline-offset-4">{selectedUser.role}</p>
+                     <input 
+                        type="text"
+                        value={editData?.fullName || ''}
+                        onChange={(e) => setEditData({...editData, fullName: e.target.value})}
+                        className="text-xl font-black text-text-emphasis leading-tight text-center bg-transparent border-none focus:ring-0 outline-none w-full"
+                     />
+                     <p className="text-[10px] text-text font-bold uppercase tracking-widest opacity-60 underline decoration-primary decoration-2 underline-offset-4 mt-1">{selectedUser.role}</p>
                   </div>
                </div>
 
@@ -447,26 +525,60 @@ const AdminUsers = () => {
                <div className="space-y-4">
                   <div className="space-y-1">
                      <p className="text-[9px] uppercase font-black text-text/40">Registered Email</p>
-                     <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50">
-                        <Mail size={16} className="text-primary/60" />
+                     <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50 opacity-60">
+                        <Mail size={14} className="text-primary/60" />
                         <span className="text-xs font-bold truncate">{selectedUser.email}</span>
                      </div>
                   </div>
-                  {selectedUser.phone && (
                   <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-black text-text/40">Verified Mobile</p>
-                     <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50">
-                        <Phone size={16} className="text-primary/60" />
-                        <span className="text-xs font-bold truncate">{selectedUser.phone}</span>
+                     <p className="text-[9px] uppercase font-black text-text/40">Mobile Contact</p>
+                     <div className="flex items-center gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
+                        <Phone size={14} className="text-primary/60 ml-2" />
+                        <input 
+                           type="text"
+                           value={editData?.phone || ''}
+                           onChange={(e) => setEditData({...editData, phone: e.target.value})}
+                           className="bg-transparent border-none focus:ring-0 outline-none text-xs font-bold w-full py-1.5"
+                           placeholder="No phone set"
+                        />
                      </div>
                   </div>
-                  )}
                   <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-black text-text/40">Member Since</p>
-                     <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50">
-                        <Calendar size={16} className="text-primary/60" />
-                        <span className="text-xs font-bold">{new Date(selectedUser.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+                     <p className="text-[9px] uppercase font-black text-text/40">WhatsApp Link</p>
+                     <div className="flex items-center gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
+                        <CheckCircle2 size={14} className="text-green/60 ml-2" />
+                        <input 
+                           type="text"
+                           value={editData?.whatsApp || ''}
+                           onChange={(e) => setEditData({...editData, whatsApp: e.target.value})}
+                           className="bg-transparent border-none focus:ring-0 outline-none text-xs font-bold w-full py-1.5"
+                           placeholder="WhatsApp number"
+                        />
                      </div>
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-[9px] uppercase font-black text-text/40">Member Bio</p>
+                     <div className="flex items-start gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
+                        <FileText size={14} className="text-primary/60 ml-2 mt-2" />
+                        <textarea 
+                           value={editData?.bio || ''}
+                           onChange={(e) => setEditData({...editData, bio: e.target.value})}
+                           className="bg-transparent border-none focus:ring-0 outline-none text-xs font-bold w-full py-1.5 resize-none italic"
+                           rows="2"
+                           placeholder="No bio available"
+                        />
+                     </div>
+                  </div>
+                  
+                  <div className="pt-2">
+                     <button 
+                        onClick={handleUpdateUser}
+                        disabled={updating}
+                        className="w-full py-2.5 bg-primary text-base3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                     >
+                        {updating ? <div className="animate-spin w-3 h-3 border-2 border-base3 border-t-transparent rounded-full" /> : <Save size={14} />}
+                        Save Member Profile
+                     </button>
                   </div>
                </div>
 
@@ -508,20 +620,37 @@ const AdminUsers = () => {
       {showAddModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-base3/80 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-lg bg-base2 border border-base2 rounded-3xl shadow-2xl animate-reveal-up overflow-hidden">
-             <div className="p-6 border-b border-base2/30 flex items-center justify-between bg-base2/50">
-               <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                    <UserCheck size={20} />
-                 </div>
-                 <div>
-                   <h3 className="font-black uppercase text-sm tracking-widest text-text-emphasis">New Member Onboarding</h3>
-                   <p className="text-[10px] text-text/40 font-bold uppercase tracking-tight">Register a new system authority</p>
-                 </div>
-               </div>
-               <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-base3 rounded-xl transition-all text-text/40 hover:text-red">
-                  <X size={20} />
-               </button>
-             </div>
+              <div className="p-6 border-b border-base2/30 flex items-center justify-between bg-base2/50">
+                <div className="flex items-center gap-4">
+                  <div 
+                    className="relative w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center cursor-pointer group/addpic overflow-hidden"
+                    onClick={() => newUserFileRef.current.click()}
+                  >
+                    {newUser.profilePhoto ? (
+                      <img src={newUser.profilePhoto} className="w-full h-full object-cover" />
+                    ) : (
+                      <Camera size={20} />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/addpic:opacity-100 flex items-center justify-center transition-all">
+                       <Camera size={14} className="text-white" />
+                    </div>
+                    <input 
+                      type="file" 
+                      ref={newUserFileRef} 
+                      onChange={(e) => handlePhotoUpload(e, 'new')} 
+                      accept="image/*" 
+                      className="hidden" 
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-black uppercase text-sm tracking-widest text-text-emphasis">New Member Onboarding</h3>
+                    <p className="text-[10px] text-text/40 font-bold uppercase tracking-tight">Register a new system authority</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-base3 rounded-xl transition-all text-text/40 hover:text-red">
+                   <X size={20} />
+                </button>
+              </div>
 
              <form onSubmit={handleCreateUser} className="p-8 space-y-6">
                 <div className="space-y-4">

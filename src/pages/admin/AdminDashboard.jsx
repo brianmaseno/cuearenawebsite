@@ -94,66 +94,66 @@ const AdminDashboard = () => {
         
         {/* Strategic Hero Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <div className="card-premium p-6 rounded-2xl bg-blue/5 border-blue/10 hover:border-blue/30 transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-blue text-base3 rounded-2xl flex items-center justify-center shadow-xl shadow-blue/20 group-hover:scale-110 transition-transform">
-                <Users size={24} />
+          <div className="card-premium p-5 rounded-2xl bg-blue/5 border-blue/10 hover:border-blue/30 transition-all group">
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-10 h-10 bg-blue text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-blue/20 group-hover:scale-110 transition-transform">
+                <Users size={20} />
               </div>
               <div className="flex items-center gap-1 text-green bg-green/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
                 <TrendingUp size={10} /> +2.4%
               </div>
             </div>
             <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Platform Growth</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight">{stats.totalUsers}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60">
+            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.totalUsers}</h4>
+            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
                <span className="text-blue">14</span> New members today
             </div>
           </div>
 
-          <div className="card-premium p-6 rounded-2xl bg-violet/5 border-violet/10 hover:border-violet/30 transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-violet text-base3 rounded-2xl flex items-center justify-center shadow-xl shadow-violet/20 group-hover:scale-110 transition-transform">
-                <Zap size={24} />
+          <div className="card-premium p-5 rounded-2xl bg-violet/5 border-violet/10 hover:border-violet/30 transition-all group">
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-10 h-10 bg-violet text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-violet/20 group-hover:scale-110 transition-transform">
+                <Zap size={20} />
               </div>
               <div className="flex items-center gap-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
                  LIVE PULSE
               </div>
             </div>
             <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Active Now</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight">{stats.activeNow}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic">
+            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.activeNow}</h4>
+            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60 italic">
                System engagement at <span className="text-violet">{stats.engagementPulse}%</span>
             </div>
           </div>
 
-          <div className="card-premium p-6 rounded-2xl bg-green/5 border-green/10 hover:border-green/30 transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-green text-base3 rounded-2xl flex items-center justify-center shadow-xl shadow-green/20 group-hover:scale-110 transition-transform">
-                <Target size={24} />
+          <div className="card-premium p-5 rounded-2xl bg-green/5 border-green/10 hover:border-green/30 transition-all group">
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-10 h-10 bg-green text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-green/20 group-hover:scale-110 transition-transform">
+                <Target size={20} />
               </div>
               <div className="flex items-center gap-1 text-green bg-green/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
                 <TrendingUp size={10} /> {stats.ongoingCount} ONGOING
               </div>
             </div>
             <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Total Activities</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight">{stats.totalActivities}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60">
+            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.totalActivities}</h4>
+            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
                <span className="text-green">{stats.completedCount}</span> Activities completed successfully
             </div>
           </div>
 
-          <div className="card-premium p-6 rounded-2xl bg-primary/5 border-primary/10 hover:border-primary/30 transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-primary text-base3 rounded-2xl flex items-center justify-center shadow-xl shadow-primary/20 group-hover:scale-110 transition-transform">
-                <Shield size={24} />
+          <div className="card-premium p-5 rounded-2xl bg-primary/5 border-primary/10 hover:border-primary/30 transition-all group">
+            <div className="flex justify-between items-start mb-3">
+              <div className="w-10 h-10 bg-primary text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-primary/20 group-hover:scale-110 transition-transform">
+                <Shield size={20} />
               </div>
               <div className="flex items-center gap-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
                 STABLE CAP
               </div>
             </div>
             <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Moderator Coverage</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight">{stats.moderationCoverage}%</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60">
+            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.moderationCoverage}%</h4>
+            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
                Ratio optimized for platform integrity
             </div>
           </div>
