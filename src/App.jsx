@@ -10,12 +10,10 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PublicTournaments from './pages/PublicTournaments';
-import Notifications from './pages/Notifications';
 import TournamentDetails from './pages/tournament/TournamentDetails';
 
 // Dashboards
 import PlayerDashboard from './pages/player/PlayerDashboard';
-import PlayerInvitations from './pages/player/PlayerInvitations';
 import CreateTournament from './pages/moderator/CreateTournament';
 import TournamentManage from './pages/moderator/TournamentManage';
 import CreateMatch from './pages/moderator/CreateMatch';
@@ -52,11 +50,6 @@ function App() {
                 <PlayerHistory />
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/invitations" element={
-              <ProtectedRoute roles={['player']}>
-                <PlayerInvitations />
-              </ProtectedRoute>
-            } />
             <Route path="/dashboard/match/:id" element={
               <ProtectedRoute roles={['player', 'moderator', 'admin']}>
                 <MatchDetails />
@@ -65,11 +58,6 @@ function App() {
             <Route path="/dashboard/tournament/:id" element={
               <ProtectedRoute roles={['player', 'moderator', 'admin']}>
                 <TournamentDetails />
-              </ProtectedRoute>
-            } />
-            <Route path="/notifications" element={
-              <ProtectedRoute>
-                <Notifications />
               </ProtectedRoute>
             } />
             <Route path="/profile" element={

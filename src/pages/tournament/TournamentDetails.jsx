@@ -10,19 +10,43 @@ const TournamentDetails = () => {
    const { id } = useParams();
    const [tournament, setTournament] = useState(null);
    const [loading, setLoading] = useState(true);
+   const [pendingInvite, setPendingInvite] = useState(null);
+
+   const fetchTournament = async () => {
+      try {
+         const { data } = await api.get(`/tournaments/${id}`);
+         setTournament(data);
+      } catch (err) {
+         toast.error('Tournament not found');
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   const checkPendingInvite = async () => {
+      try {
+         const { data } = await api.get(`/invitations/check/tournament/${id}`);
+         setPendingInvite(data);
+      } catch (err) {
+         setPendingInvite(null);
+      }
+   };
+
+   const handleInviteResponse = async (status) => {
+      if (!pendingInvite) return;
+      try {
+         await api.post(`/invitations/${pendingInvite._id}/respond`, { status });
+         toast.success(`Invitation ${status}`);
+         setPendingInvite(null);
+         fetchTournament();
+      } catch (err) {
+         toast.error('Error responding to invitation');
+      }
+   };
 
    useEffect(() => {
-      const fetchTournament = async () => {
-         try {
-            const { data } = await api.get(`/tournaments/${id}`);
-            setTournament(data);
-         } catch (err) {
-            toast.error('Tournament not found');
-         } finally {
-            setLoading(false);
-         }
-      };
       fetchTournament();
+      checkPendingInvite();
    }, [id]);
 
    if (loading) return <DashboardLayout title="Tournament Details">Loading...</DashboardLayout>;
@@ -33,6 +57,36 @@ const TournamentDetails = () => {
          <Link to="/tournaments" className="flex items-center gap-2 text-primary font-bold mb-6 hover:underline">
             <ArrowLeft size={20} /> Back to Browse
          </Link>
+
+         {pendingInvite && (
+            <div className="card-premium p-8 rounded-3xl bg-orange/5 border-2 border-orange/20 mb-8 animate-in slide-in-from-top-4 duration-500">
+               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex gap-4">
+                     <div className="w-14 h-14 rounded-2xl bg-orange/20 text-orange flex items-center justify-center shrink-0">
+                        <Trophy size={32} />
+                     </div>
+                     <div>
+                        <h4 className="text-xl font-bold text-text-emphasis">Tournament Invitation</h4>
+                        <p className="text-text">You have been invited to join <span className="font-bold">{tournament.name}</span> by <span className="font-bold">{pendingInvite.sentBy?.fullName}</span>.</p>
+                     </div>
+                  </div>
+                  <div className="flex items-center gap-3 w-full md:w-auto">
+                     <button
+                        onClick={() => handleInviteResponse('declined')}
+                        className="flex-1 md:flex-none px-8 py-3 rounded-xl border border-red/20 text-red font-bold hover:bg-red/5 transition-all text-sm"
+                     >
+                        Decline
+                     </button>
+                     <button
+                        onClick={() => handleInviteResponse('accepted')}
+                        className="flex-1 md:flex-none px-8 py-3 rounded-xl bg-green text-base3 font-bold hover:opacity-90 shadow-lg shadow-green/20 transition-all text-sm"
+                     >
+                        Join Tournament
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
 
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">

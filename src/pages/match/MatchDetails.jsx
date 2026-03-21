@@ -15,10 +15,9 @@ const MatchDetails = () => {
   const [selectingWinnerForSet, setSelectingWinnerForSet] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [resultData, setResultData] = useState({
-    scorePlayer1: 0,
-    scorePlayer2: 0,
     winnerId: '',
   });
+  const [pendingInvite, setPendingInvite] = useState(null);
 
   const handleRecordSetWinner = async (winnerId) => {
     setActionLoading(true);
@@ -72,8 +71,31 @@ const MatchDetails = () => {
     }
   };
 
+  const checkPendingInvite = async () => {
+    try {
+      const { data } = await api.get(`/invitations/check/direct_match/${id}`);
+      setPendingInvite(data);
+    } catch (err) {
+      // 404 is expected if no invite
+      setPendingInvite(null);
+    }
+  };
+
+  const handleInviteResponse = async (status) => {
+    if (!pendingInvite) return;
+    try {
+      await api.post(`/invitations/${pendingInvite._id}/respond`, { status });
+      toast.success(`Invitation ${status}`);
+      setPendingInvite(null);
+      fetchMatch();
+    } catch (err) {
+      toast.error('Error responding to invitation');
+    }
+  };
+
   useEffect(() => {
     fetchMatch();
+    checkPendingInvite();
   }, [id]);
 
   const handleRecordResult = async (e) => {
@@ -168,6 +190,37 @@ const MatchDetails = () => {
             </div>
           </div>
         </div>
+
+        {/* Invitation Action Overlay */}
+        {pendingInvite && (
+          <div className="card-premium p-8 rounded-3xl bg-orange/5 border-2 border-orange/20 animate-in slide-in-from-top-4 duration-500">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-orange/20 text-orange flex items-center justify-center shrink-0">
+                  <Target size={32} />
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-text-emphasis">Match Invitation</h4>
+                  <p className="text-text">You have been invited to this match by <span className="font-bold">{pendingInvite.sentBy?.fullName}</span>.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <button
+                  onClick={() => handleInviteResponse('declined')}
+                  className="flex-1 md:flex-none px-8 py-3 rounded-xl border border-red/20 text-red font-bold hover:bg-red/5 transition-all"
+                >
+                  Decline
+                </button>
+                <button
+                  onClick={() => handleInviteResponse('accepted')}
+                  className="flex-1 md:flex-none px-8 py-3 rounded-xl bg-green text-base3 font-bold hover:opacity-90 shadow-lg shadow-green/20 transition-all"
+                >
+                  Accept Match
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Record Result section (Moderator Only) */}
         {(match.status === 'confirmed' || match.status === 'ongoing' || match.status === 'pending_invites') && (

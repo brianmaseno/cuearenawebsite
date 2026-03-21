@@ -81,66 +81,98 @@ const TopBar = ({ title }) => {
           {isDropdownOpen && (
             <div className="absolute right-0 mt-3 w-80 bg-base3 border border-base2 rounded-[28px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
               <div className="p-5 border-b border-base2 flex items-center justify-between bg-base2/5">
-                <h3 className="font-black text-sm tracking-tight">Notifications</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-black text-sm tracking-tight">Notifications</h3>
+                  {unreadCount > 0 && (
+                    <span className="bg-primary/10 text-primary text-[10px] font-black px-2 py-0.5 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
                 {unreadCount > 0 && (
                   <button 
-                    onClick={markAllAsRead}
-                    className="text-[10px] font-black text-primary hover:underline uppercase tracking-widest"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markAllAsRead();
+                    }}
+                    className="text-[10px] font-black text-primary hover:text-primary-focus uppercase tracking-widest transition-colors"
                   >
                     Mark all
                   </button>
                 )}
               </div>
 
-              <div className="max-h-[360px] overflow-y-auto thin-scrollbar">
+              <div className="max-h-[400px] overflow-y-auto thin-scrollbar">
                 {notifications.length > 0 ? (
-                  notifications.slice(0, 5).map((n) => (
+                  notifications.slice(0, 10).map((n) => (
                     <div 
                       key={n._id}
                       onClick={() => {
                         if (!n.isRead) markAsRead(n._id);
-                        navigate('/notifications');
+                        
+                        // Direct Navigation Logic
+                        const rolePath = user?.role === 'moderator' ? '/moderator' : '/dashboard';
+                        if (n.type.includes('tournament')) {
+                          navigate(`${rolePath}/${user?.role === 'moderator' ? 'manage-tournament' : 'tournament'}/${n.relatedId}`);
+                        } else if (n.type.includes('match') || n.type === 'result_recorded') {
+                          navigate(`${rolePath}/match/${n.relatedId}`);
+                        } else if (n.type === 'invite_accepted') {
+                          // Try to guess or just go to invitations if ambiguous
+                          navigate(`${rolePath}/invitations`);
+                        } else {
+                          navigate('/notifications');
+                        }
+                        
                         setIsDropdownOpen(false);
                       }}
-                      className={`p-4 border-b border-base2/50 flex gap-3 cursor-pointer hover:bg-base2/20 transition-colors last:border-0 ${
+                      className={`p-4 border-b border-base2/50 flex gap-3 cursor-pointer hover:bg-base2/20 transition-all group last:border-0 ${
                         !n.isRead ? 'bg-primary/5' : ''
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                        !n.isRead ? 'bg-primary/10' : 'bg-base2'
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${
+                        !n.isRead ? 'bg-primary/10 text-primary' : 'bg-base2 text-text/40'
                       }`}>
                         {getIcon(n.type)}
                       </div>
+                      
                       <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start mb-0.5">
-                          <p className={`text-xs font-bold truncate pr-2 ${!n.isRead ? 'text-text-emphasis' : 'text-text/60'}`}>
+                        <div className="flex justify-between items-start mb-0.5 mt-0.5">
+                          <p className={`text-xs font-black truncate pr-2 tracking-tight ${!n.isRead ? 'text-text-emphasis' : 'text-text/60'}`}>
                             {n.title}
                           </p>
-                          <span className="text-[9px] text-text/40 font-bold whitespace-nowrap mt-0.5">
+                          <span className="text-[9px] text-text/40 font-bold whitespace-nowrap">
                             {getTimeAgo(n.createdAt)}
                           </span>
                         </div>
-                        <p className={`text-[11px] line-clamp-2 leading-relaxed ${!n.isRead ? 'text-text/80' : 'text-text/40'}`}>
+                        <p className={`text-[11px] line-clamp-2 leading-tight ${!n.isRead ? 'text-text/80' : 'text-text/40'}`}>
                           {n.message}
                         </p>
                       </div>
+
+                      {!n.isRead && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            markAsRead(n._id);
+                          }}
+                          className="self-center p-2 text-text/20 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
+                          title="Mark as read"
+                        >
+                          <CheckCircle size={16} />
+                        </button>
+                      )}
                     </div>
                   ))
                 ) : (
-                  <div className="py-12 text-center">
-                    <BellOff size={32} className="mx-auto text-base2 mb-3 opacity-50" />
-                    <p className="text-xs text-text/50 font-medium">No notifications yet</p>
+                  <div className="py-16 text-center">
+                    <div className="w-16 h-16 bg-base2/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <BellOff size={24} className="text-text/20" />
+                    </div>
+                    <p className="text-xs text-text/40 font-black tracking-tight">No notifications yet</p>
                   </div>
                 )}
               </div>
 
-              <Link 
-                to="/notifications" 
-                onClick={() => setIsDropdownOpen(false)}
-                className="block p-4 text-center text-[11px] font-black text-primary bg-base2/5 hover:bg-base2/20 transition-all border-t border-base2 uppercase tracking-widest"
-              >
-                View all notifications
-              </Link>
             </div>
           )}
         </div>
