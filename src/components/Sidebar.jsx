@@ -31,8 +31,6 @@ const Sidebar = () => {
     if (user.role === 'admin') {
       return [
         { label: 'Admin Panel', path: '/admin', icon: Shield },
-        { label: 'All Tournaments', path: '/admin/tournaments', icon: Trophy },
-        { label: 'All Matches', path: '/admin/matches', icon: Target },
         { label: 'Users', path: '/admin/users', icon: Users },
         { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
       ];
