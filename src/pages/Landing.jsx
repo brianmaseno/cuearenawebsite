@@ -65,7 +65,7 @@ const Landing = () => {
             <Link to="/register" className="btn-primary text-lg px-8 py-3 flex items-center gap-2">
               Start Organizing <ArrowRight size={20} />
             </Link>
-            <button 
+            <button
               onClick={scrollToTournaments}
               className="px-8 py-3 rounded-lg border border-base2 hover:bg-base2 transition-colors font-semibold text-text-emphasis"
             >
@@ -73,7 +73,7 @@ const Landing = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Background Accents */}
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-yellow/10 rounded-full blur-3xl"></div>
@@ -112,9 +112,9 @@ const Landing = () => {
                         {t.format.replace('_', ' ')}
                       </span>
                     </div>
-                    
+
                     <h3 className="text-xl font-bold text-text-emphasis mb-4 group-hover:text-primary transition-colors">{t.name}</h3>
-                    
+
                     <div className="space-y-2 mb-6 flex-1 text-sm text-text">
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />

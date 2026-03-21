@@ -13,7 +13,8 @@ import {
   Shield,
   User,
   Target,
-  Clock
+  Clock,
+  Activity
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -33,6 +34,7 @@ const Sidebar = () => {
         { label: 'All Tournaments', path: '/admin/tournaments', icon: Trophy },
         { label: 'All Matches', path: '/admin/matches', icon: Target },
         { label: 'Users', path: '/admin/users', icon: Users },
+        { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
       ];
     }
     if (user.role === 'moderator') {
