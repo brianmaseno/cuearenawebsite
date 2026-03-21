@@ -23,17 +23,21 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const [usersRes, tRes, mRes, logsRes] = await Promise.all([
+        const [usersRes, tRes, mRes, logsRes, healthRes] = await Promise.all([
           api.get('/users'),
           api.get('/tournaments'),
           api.get('/direct-matches'),
           api.get('/admin/logs'),
+          api.get('/admin/health'),
         ]);
 
         const users = usersRes.data;
         const tournaments = tRes.data;
         const matches = mRes.data;
         const logs = logsRes.data;
+        const health = healthRes.data;
+
+        setSystemHealth(health);
 
         const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
         const activeNow = users.filter(u => u.lastActive && new Date(u.lastActive) > fifteenMinsAgo).length;

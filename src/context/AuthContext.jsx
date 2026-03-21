@@ -8,11 +8,27 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (userInfo) {
-      setUser(userInfo);
-    }
-    setLoading(false);
+    const verifyUser = async () => {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      if (userInfo && userInfo.token) {
+        try {
+          // Set authorization header for the verification call
+          api.defaults.headers.common['Authorization'] = `Bearer ${userInfo.token}`;
+          const { data } = await api.get('/auth/me');
+          // Update user info including latest status from server
+          const updatedUser = { ...userInfo, ...data };
+          localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+          setUser(updatedUser);
+        } catch (err) {
+          console.error('Token verification failed:', err);
+          localStorage.removeItem('userInfo');
+          delete api.defaults.headers.common['Authorization'];
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    };
+    verifyUser();
   }, []);
 
   const login = async (email, password) => {

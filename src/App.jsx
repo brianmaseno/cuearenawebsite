@@ -15,7 +15,6 @@ import TournamentDetails from './pages/tournament/TournamentDetails';
 // Dashboards
 import PlayerDashboard from './pages/player/PlayerDashboard';
 import PlayerInvitations from './pages/player/PlayerInvitations';
-import ModeratorDashboard from './pages/moderator/ModeratorDashboard';
 import CreateTournament from './pages/moderator/CreateTournament';
 import TournamentManage from './pages/moderator/TournamentManage';
 import CreateMatch from './pages/moderator/CreateMatch';
