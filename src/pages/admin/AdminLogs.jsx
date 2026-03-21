@@ -16,12 +16,13 @@ import {
   Smartphone,
   Globe
 } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useSearchParams } from 'react-router-dom';
 
 const AdminLogs = () => {
+  const [searchParams] = useSearchParams();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [filterAction, setFilterAction] = useState('ALL');
   const [filterSeverity, setFilterSeverity] = useState('ALL');
 
