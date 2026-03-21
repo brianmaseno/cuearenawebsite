@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { SidebarProvider } from './context/SidebarContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Shared / Auth
@@ -30,7 +31,8 @@ function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <div className="min-h-screen font-sans">
+        <SidebarProvider>
+          <div className="min-h-screen font-sans">
           <Toaster position="top-right" />
           <Routes>
             {/* Public Routes */}
@@ -120,6 +122,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
+        </SidebarProvider>
       </NotificationProvider>
     </AuthProvider>
   );
