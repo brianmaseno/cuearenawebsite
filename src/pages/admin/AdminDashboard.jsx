@@ -126,19 +126,19 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="card-premium p-6 rounded-2xl bg-emerald/5 border-emerald/10 hover:border-emerald/30 transition-all group">
+          <div className="card-premium p-6 rounded-2xl bg-green/5 border-green/10 hover:border-green/30 transition-all group">
             <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 bg-emerald text-base3 rounded-2xl flex items-center justify-center shadow-xl shadow-emerald/20 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-green text-base3 rounded-2xl flex items-center justify-center shadow-xl shadow-green/20 group-hover:scale-110 transition-transform">
                 <Target size={24} />
               </div>
-              <div className="flex items-center gap-1 text-emerald bg-emerald/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
+              <div className="flex items-center gap-1 text-green bg-green/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
                 <TrendingUp size={10} /> {stats.ongoingCount} ONGOING
               </div>
             </div>
             <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Total Activities</div>
             <h4 className="text-4xl font-black text-text-emphasis tracking-tight">{stats.totalActivities}</h4>
             <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60">
-               <span className="text-emerald">{stats.completedCount}</span> Activities completed successfully
+               <span className="text-green">{stats.completedCount}</span> Activities completed successfully
             </div>
           </div>
 
