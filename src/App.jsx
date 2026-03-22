@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SidebarProvider } from './context/SidebarContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import InactivityTimer from './components/InactivityTimer';
 
 // Shared / Auth
 import Landing from './pages/Landing';
@@ -34,6 +35,7 @@ function App() {
         <SidebarProvider>
           <div className="min-h-screen font-sans">
           <Toaster position="top-right" />
+          <InactivityTimer />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />

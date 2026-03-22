@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
@@ -94,7 +94,6 @@ const AdminUsers = () => {
         fullName: selectedUser.fullName,
         bio: selectedUser.bio || '',
         phone: selectedUser.phone || '',
-        whatsApp: selectedUser.whatsApp || '',
         profilePhoto: selectedUser.profilePhoto || ''
       });
     } else {
@@ -470,21 +469,21 @@ const AdminUsers = () => {
                </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+            <div className="flex-1 overflow-y-auto p-4 space-y-5">
                {/* Identity Card */}
                <div className="text-center space-y-4">
                   <div 
-                    className="relative w-24 h-24 mx-auto group cursor-pointer"
+                    className="relative w-20 h-20 mx-auto group cursor-pointer"
                     onClick={() => dossierFileRef.current.click()}
                   >
                     <img 
                       src={editData?.profilePhoto || `https://ui-avatars.com/api/?name=${selectedUser.fullName}&background=random`} 
                       alt="Profile" 
-                      className="w-24 h-24 rounded-[32px] object-cover ring-4 ring-base2 shadow-xl group-hover:scale-[1.02] transition-all"
+                      className="w-20 h-20 rounded-[28px] object-cover ring-2 ring-base2 shadow-lg group-hover:scale-[1.02] transition-all"
                     />
-                    <div className="absolute inset-0 bg-black/40 rounded-[32px] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all">
-                      <Camera className="text-white mb-1" size={20} />
-                      <span className="text-[8px] text-white font-black uppercase tracking-widest">Change</span>
+                    <div className="absolute inset-0 bg-black/40 rounded-[28px] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all">
+                      <Camera className="text-white mb-0.5" size={16} />
+                      <span className="text-[7px] text-white font-medium uppercase tracking-widest">Change</span>
                     </div>
                     <input 
                       type="file" 
@@ -499,23 +498,23 @@ const AdminUsers = () => {
                         type="text"
                         value={editData?.fullName || ''}
                         onChange={(e) => setEditData({...editData, fullName: e.target.value})}
-                        className="text-xl font-black text-text-emphasis leading-tight text-center bg-transparent border-none focus:ring-0 outline-none w-full"
+                        className="text-xl font-medium text-text-emphasis leading-tight text-center bg-transparent border-none focus:ring-0 outline-none w-full"
                      />
-                     <p className="text-[10px] text-text font-bold uppercase tracking-widest opacity-60 underline decoration-primary decoration-2 underline-offset-4 mt-1">{selectedUser.role}</p>
+                     <p className="text-[10px] text-text font-medium uppercase tracking-widest opacity-60 underline decoration-primary decoration-2 underline-offset-4 mt-1">{selectedUser.role}</p>
                   </div>
                </div>
 
                {/* Stats Overview */}
-               <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-base2/30 p-4 rounded-2xl border border-base2/50 text-center">
-                     <p className="text-[9px] uppercase font-black text-text/40 mb-1">Total Battles</p>
-                     <p className="text-2xl font-black text-text-emphasis leading-none">
+               <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-base2/30 p-3 rounded-xl border border-base2/50 text-center">
+                     <p className="text-[8px] uppercase font-medium text-text/40 mb-0.5">Total Battles</p>
+                     <p className="text-xl font-medium text-text-emphasis leading-none">
                         <UserStatsValue userId={selectedUser._id} field="totalGames" />
                      </p>
                   </div>
-                  <div className="bg-yellow/5 p-4 rounded-2xl border border-yellow/10 text-center">
-                     <p className="text-[9px] uppercase font-black text-yellow/40 mb-1">Arena Victories</p>
-                     <p className="text-2xl font-black text-yellow leading-none">
+                  <div className="bg-yellow/5 p-3 rounded-xl border border-yellow/10 text-center">
+                     <p className="text-[8px] uppercase font-medium text-yellow/40 mb-0.5">Arena Victories</p>
+                     <p className="text-xl font-medium text-yellow leading-none">
                         <UserStatsValue userId={selectedUser._id} field="totalWins" />
                      </p>
                   </div>
@@ -524,46 +523,33 @@ const AdminUsers = () => {
                {/* Detailed Information */}
                <div className="space-y-4">
                   <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-black text-text/40">Registered Email</p>
+                     <p className="text-[9px] uppercase font-medium text-text/40">Registered Email</p>
                      <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50 opacity-60">
                         <Mail size={14} className="text-primary/60" />
-                        <span className="text-xs font-bold truncate">{selectedUser.email}</span>
+                        <span className="text-xs font-medium truncate">{selectedUser.email}</span>
                      </div>
                   </div>
                   <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-black text-text/40">Mobile Contact</p>
+                     <p className="text-[9px] uppercase font-medium text-text/40">Mobile Contact</p>
                      <div className="flex items-center gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
-                        <Phone size={14} className="text-primary/60 ml-2" />
+                        <Phone size={13} className="text-primary/60 ml-2" />
                         <input 
                            type="text"
                            value={editData?.phone || ''}
                            onChange={(e) => setEditData({...editData, phone: e.target.value})}
-                           className="bg-transparent border-none focus:ring-0 outline-none text-xs font-bold w-full py-1.5"
+                           className="bg-transparent border-none focus:ring-0 outline-none text-[11px] font-medium w-full py-1"
                            placeholder="No phone set"
                         />
                      </div>
                   </div>
                   <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-black text-text/40">WhatsApp Link</p>
-                     <div className="flex items-center gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
-                        <CheckCircle2 size={14} className="text-green/60 ml-2" />
-                        <input 
-                           type="text"
-                           value={editData?.whatsApp || ''}
-                           onChange={(e) => setEditData({...editData, whatsApp: e.target.value})}
-                           className="bg-transparent border-none focus:ring-0 outline-none text-xs font-bold w-full py-1.5"
-                           placeholder="WhatsApp number"
-                        />
-                     </div>
-                  </div>
-                  <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-black text-text/40">Member Bio</p>
+                     <p className="text-[9px] uppercase font-medium text-text/40">Member Bio</p>
                      <div className="flex items-start gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
-                        <FileText size={14} className="text-primary/60 ml-2 mt-2" />
+                        <FileText size={13} className="text-primary/60 ml-2 mt-2" />
                         <textarea 
                            value={editData?.bio || ''}
                            onChange={(e) => setEditData({...editData, bio: e.target.value})}
-                           className="bg-transparent border-none focus:ring-0 outline-none text-xs font-bold w-full py-1.5 resize-none italic"
+                           className="bg-transparent border-none focus:ring-0 outline-none text-[11px] font-medium w-full py-1 resize-none italic leading-tight"
                            rows="2"
                            placeholder="No bio available"
                         />
@@ -574,7 +560,7 @@ const AdminUsers = () => {
                      <button 
                         onClick={handleUpdateUser}
                         disabled={updating}
-                        className="w-full py-2.5 bg-primary text-base3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                        className="w-full py-2.5 bg-primary text-base3 rounded-xl font-medium text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                      >
                         {updating ? <div className="animate-spin w-3 h-3 border-2 border-base3 border-t-transparent rounded-full" /> : <Save size={14} />}
                         Save Member Profile
@@ -583,33 +569,33 @@ const AdminUsers = () => {
                </div>
 
                {/* Role Management */}
-               <div className="space-y-3 pt-4 border-t border-base2">
-                  <p className="text-[9px] uppercase font-black text-primary tracking-widest">Authority Control</p>
+               <div className="space-y-2 pt-3 border-t border-base2">
+                  <p className="text-[8px] uppercase font-medium text-primary tracking-widest">Authority Control</p>
                   <div className="grid grid-cols-2 gap-2">
                      <button 
                         onClick={() => handleRoleChange(selectedUser._id, 'moderator')}
                         disabled={selectedUser.role === 'moderator' || selectedUser.role === 'admin'}
-                        className="flex items-center justify-center gap-2 px-3 py-2.5 bg-purple/10 text-purple border border-purple/20 rounded-xl text-[10px] font-black uppercase hover:bg-purple/20 transition-all disabled:opacity-20"
+                        className="flex items-center justify-center gap-2 px-3 py-2 bg-purple/10 text-purple border border-purple/20 rounded-xl text-[9px] font-medium uppercase hover:bg-purple/20 transition-all disabled:opacity-20"
                      >
-                        <Shield size={14} /> Promote
+                        <Shield size={12} /> Promote
                      </button>
                      <button 
                         onClick={() => handleRoleChange(selectedUser._id, 'player')}
                         disabled={selectedUser.role === 'player' || selectedUser.role === 'admin'}
-                        className="flex items-center justify-center gap-2 px-3 py-2.5 bg-blue/10 text-blue border border-blue/20 rounded-xl text-[10px] font-black uppercase hover:bg-blue/20 transition-all disabled:opacity-20"
+                        className="flex items-center justify-center gap-2 px-3 py-2 bg-blue/10 text-blue border border-blue/20 rounded-xl text-[9px] font-medium uppercase hover:bg-blue/20 transition-all disabled:opacity-20"
                      >
-                        <User size={14} /> Demote
+                        <User size={12} /> Demote
                      </button>
                   </div>
                </div>
             </div>
 
-            <div className="p-4 bg-base2/30 border-t border-base2 space-y-2">
+            <div className="p-3 bg-base2/30 border-t border-base2">
                <button 
                   onClick={() => { navigate(`/admin/logs?search=${selectedUser.fullName}`); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-base3 border border-base2 rounded-xl text-[10px] font-black uppercase hover:bg-primary/10 hover:text-primary transition-all group"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-base3 border border-base2 rounded-xl text-[9px] font-medium uppercase hover:bg-primary/10 hover:text-primary transition-all group"
                >
-                  <History size={16} className="group-hover:animate-spin-slow" /> View Audit Trail
+                  <History size={14} className="group-hover:animate-spin-slow" /> View Audit Trail
                </button>
             </div>
           </div>
@@ -619,8 +605,8 @@ const AdminUsers = () => {
       {/* Add New User Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-base3/80 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-lg bg-base2 border border-base2 rounded-3xl shadow-2xl animate-reveal-up overflow-hidden">
-              <div className="p-6 border-b border-base2/30 flex items-center justify-between bg-base2/50">
+          <div className="w-full max-w-lg bg-base2 border border-base2 rounded-2xl shadow-2xl animate-reveal-up overflow-hidden">
+              <div className="p-4 border-b border-base2/30 flex items-center justify-between bg-base2/50">
                 <div className="flex items-center gap-4">
                   <div 
                     className="relative w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center cursor-pointer group/addpic overflow-hidden"
@@ -643,8 +629,8 @@ const AdminUsers = () => {
                     />
                   </div>
                   <div>
-                    <h3 className="font-black uppercase text-sm tracking-widest text-text-emphasis">New Member Onboarding</h3>
-                    <p className="text-[10px] text-text/40 font-bold uppercase tracking-tight">Register a new system authority</p>
+                    <h3 className="font-medium uppercase text-sm tracking-widest text-text-emphasis">New Member Onboarding</h3>
+                    <p className="text-[10px] text-text/40 font-medium uppercase tracking-tight">Register a new system authority</p>
                   </div>
                 </div>
                 <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-base3 rounded-xl transition-all text-text/40 hover:text-red">
@@ -652,7 +638,7 @@ const AdminUsers = () => {
                 </button>
               </div>
 
-             <form onSubmit={handleCreateUser} className="p-8 space-y-6">
+             <form onSubmit={handleCreateUser} className="p-6 space-y-4">
                 <div className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Full Identity</label>

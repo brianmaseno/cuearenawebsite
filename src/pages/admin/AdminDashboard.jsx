@@ -14,6 +14,8 @@ const AdminDashboard = () => {
     ongoingCount: 0,
     completedCount: 0,
     cancelledCount: 0,
+    newMembersToday: 0,
+    platformGrowth: 0,
   });
   const [activityMatrix, setActivityMatrix] = useState([]);
   const [moderatorPulse, setModeratorPulse] = useState([]);
@@ -55,6 +57,23 @@ const AdminDashboard = () => {
         const moderators = users.filter(u => u.role === 'moderator').length;
         const coverage = users.length > 0 ? ((moderators / users.length) * 100).toFixed(1) : 0;
 
+        const now = new Date();
+        const todayStart = new Date(now.setHours(0, 0, 0, 0));
+        const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+
+        const newMembersToday = users.filter(u => new Date(u.createdAt) >= todayStart).length;
+        const newMembersYesterday = users.filter(u => {
+          const created = new Date(u.createdAt);
+          return created >= yesterdayStart && created < todayStart;
+        }).length;
+
+        let growth = 0;
+        if (newMembersYesterday > 0) {
+          growth = (((newMembersToday - newMembersYesterday) / newMembersYesterday) * 100).toFixed(1);
+        } else if (newMembersToday > 0) {
+          growth = 100.0;
+        }
+
         setStats({
           totalUsers: users.length,
           activeNow,
@@ -64,6 +83,8 @@ const AdminDashboard = () => {
           ongoingCount: totalOngoing,
           completedCount: tournaments.filter(t => t.status === 'completed').length + matches.filter(m => m.status === 'completed').length,
           cancelledCount: tournaments.filter(t => t.status === 'cancelled').length + matches.filter(m => m.status === 'cancelled').length,
+          newMembersToday,
+          platformGrowth: growth,
         });
 
         // Unified Activity Matrix: Top 10 recent/important activities
@@ -99,14 +120,15 @@ const AdminDashboard = () => {
               <div className="w-10 h-10 bg-blue text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-blue/20 group-hover:scale-110 transition-transform">
                 <Users size={20} />
               </div>
-              <div className="flex items-center gap-1 text-green bg-green/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                <TrendingUp size={10} /> +2.4%
+              <div className={`flex items-center gap-1 ${parseFloat(stats.platformGrowth) >= 0 ? 'text-green bg-green/10' : 'text-red bg-red/10'} px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter`}>
+                {parseFloat(stats.platformGrowth) >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />} 
+                {parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}{stats.platformGrowth}%
               </div>
             </div>
             <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Platform Growth</div>
             <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.totalUsers}</h4>
             <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
-               <span className="text-blue">14</span> New members today
+               <span className="text-blue">{stats.newMembersToday}</span> New members today
             </div>
           </div>
 
