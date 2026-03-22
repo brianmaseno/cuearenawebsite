@@ -300,13 +300,13 @@ const OngoingActivities = () => {
                   </div>
 
                   {/* Redesigned Set Management */}
-                  <div className="bg-base2/10 p-3 border-t border-base2 space-y-3 relative">
+                  <div className="bg-gradient-to-b from-base2/30 to-transparent p-4 border-t border-base2 mt-auto space-y-4 relative">
                      
                      {/* Set Tabs Container */}
-                     <div className="flex flex-wrap gap-1.5 justify-center relative">
+                     <div className="flex flex-wrap gap-2 justify-center relative">
                         {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                           const sRes = match.setsResults?.find(s => s.setIndex === idx);
-                          const isActive = currentActiveSet === idx;
+                          const isActive = activeSetMap[match._id] === idx;
                           // Lock if match not ongoing (unless it's already completed history)
                           const isLocked = !isOngoing && !isMatchFinished ? true : (idx > defaultActive);
                           
@@ -337,10 +337,10 @@ const OngoingActivities = () => {
                                         setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; });
                                      }
                                   }}
-                                  className={`w-full px-1 py-3 rounded-xl text-xs font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
+                                  className={`w-full px-1 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-tight transition-all border-2 flex flex-col items-center justify-center ${
                                     isActive 
-                                      ? 'bg-primary text-base3 border-primary shadow-md' 
-                                      : (sRes ? 'bg-primary/5 text-primary border-primary/10 opacity-80' : 'bg-base2/30 text-text/30 border-base2/50 hover:bg-base2/50')
+                                      ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105 z-10' 
+                                      : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 hover:opacity-100 hover:border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
                                   } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                                 >
                                    <span className={`truncate max-w-full ${isWon ? 'text-[10px]' : ''}`}>{tabLabel}</span>
@@ -356,7 +356,7 @@ const OngoingActivities = () => {
                                  <button 
                                    disabled={!match.player1Id}
                                    onClick={() => match.player1Id && handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
-                                   className={`flex-1 h-full py-2.5 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                   className={`flex-1 h-full py-2.5 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center border border-primary/10 ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
                                     {match.player1Id?.fullName || 'TBD'}
                                  </button>
@@ -364,7 +364,7 @@ const OngoingActivities = () => {
                                  <button 
                                    disabled={!match.player2Id}
                                    onClick={() => match.player2Id && handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
-                                   className={`flex-1 h-full py-2.5 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                   className={`flex-1 h-full py-2.5 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center border border-violet/10 ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
                                     {match.player2Id?.fullName || 'TBD'}
                                  </button>
@@ -389,8 +389,8 @@ const OngoingActivities = () => {
                      </div>
 
                      {isMatchFinished && (
-                        <div className="p-2.5 bg-green/5 border border-green/20 rounded-lg text-center">
-                           <p className="text-[10px] font-black text-green uppercase tracking-widest">Match Completed: {match.scorePlayer1} - {match.scorePlayer2}</p>
+                        <div className="w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border bg-green/10 text-green border-green/20">
+                           🏆 MATCH COMPLETED: {match.scorePlayer1} - {match.scorePlayer2}
                         </div>
                      )}
                   </div>

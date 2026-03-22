@@ -245,7 +245,7 @@ const PlayerDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="bg-base2/10 p-3 border-t border-base2 mt-auto space-y-3 relative">
+                  <div className="bg-gradient-to-b from-base2/30 to-transparent p-4 border-t border-base2 mt-auto space-y-4 relative">
                      {match.myStatus === 'pending' ? (
                         <div className="flex gap-2">
                            <button
@@ -264,9 +264,9 @@ const PlayerDashboard = () => {
                            </button>
                         </div>
                      ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                            {/* Set Scoreboard */}
-                           <div className="flex flex-wrap gap-1.5 justify-center">
+                           <div className="flex flex-wrap gap-2 justify-center">
                               {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                                  const sRes = match.setsResults?.find(s => s.setIndex === idx);
                                  const isActive = currentActiveSet === idx;
@@ -298,10 +298,10 @@ const PlayerDashboard = () => {
                                     <button
                                        key={idx}
                                        onClick={() => setActiveSetMap(prev => ({ ...prev, [match._id]: idx }))}
-                                       className={`flex-1 min-w-[50px] py-3 rounded-xl text-[9px] font-black uppercase transition-all border flex flex-col items-center justify-center gap-0.5 ${
+                                       className={`flex-1 min-w-[54px] py-3.5 rounded-2xl text-[9px] font-black uppercase transition-all border-2 flex flex-col items-center justify-center gap-0.5 ${
                                           isActive 
-                                             ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/10' 
-                                             : (sRes ? 'bg-base2/10 border-base2/30 opacity-70 hover:opacity-100' : 'bg-base2/5 border-transparent text-text/20')
+                                             ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105 z-10' 
+                                             : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 hover:opacity-100 hover:border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
                                        }`}
                                     >
                                        <span className={winnerColor || (isActive ? 'text-base3' : 'text-text/40')}>
@@ -314,18 +314,18 @@ const PlayerDashboard = () => {
 
                            {/* Match Status Header */}
                            {match.status === 'completed' ? (
-                              <div className={`w-full py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-2 shadow-sm ${
-                                 (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border border-green/20' : 'bg-red/10 text-red border border-red/20'
+                              <div className={`w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border ${
+                                 (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
                               }`}>
                                  {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? '🏆 YOU WON THE MATCH' : '❌ MATCH LOST'}
                               </div>
                            ) : (match.player1Accepted && match.player2Accepted) ? (
-                              <div className="w-full bg-primary/10 text-primary py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
-                                 ⚡ ONGOING
+                              <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
+                                 ⚡ ONGOING MATCH
                               </div>
                            ) : (
-                              <div className="w-full bg-orange/10 text-orange py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-2 border border-orange/20">
-                                 ⏳ READY
+                              <div className="w-full bg-orange/5 text-orange py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 border border-orange/20 shadow-sm">
+                                 ⏳ WAITING FOR OPPONENT
                               </div>
                            )}
                         </div>
