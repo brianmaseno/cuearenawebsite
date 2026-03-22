@@ -96,17 +96,6 @@ const PlayerDashboard = () => {
               </Link>
             )}
 
-            {unreadNotifs > 0 && (
-              <Link 
-                to="/notifications" 
-                className="group flex items-center gap-2 px-6 py-2 bg-primary/5 border border-primary/10 rounded-full hover:bg-primary/10 transition-all animate-in slide-in-from-top duration-500 delay-100"
-              >
-                <span className="text-sm font-bold text-text/60 group-hover:text-text transition-colors">
-                  You have <span className="text-primary font-black">{unreadNotifs}</span> new {unreadNotifs === 1 ? 'notification' : 'notifications'}
-                </span>
-                <Bell size={14} className="text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-              </Link>
-            )}
           </div>
         )}
 
