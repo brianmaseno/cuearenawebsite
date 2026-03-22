@@ -495,20 +495,38 @@ const TournamentManage = () => {
                         <Users size={24} className="text-primary" />
                         Joined Players
                      </h3>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {tournament.confirmedPlayers.map(p => (
-                           <div key={p._id} className="flex items-center gap-4 p-4 bg-base3 border border-base2 rounded-2xl">
-                              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
-                                 {p.fullName[0]}
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {tournament.confirmedPlayers.map(p => {
+                           const isInvited = invitations.some(inv => 
+                              (inv.playerId?._id || inv.playerId)?.toString() === p._id.toString() && 
+                              inv.status === 'accepted'
+                           );
+                           
+                           return (
+                              <div key={p._id} className="group relative flex items-center gap-3 p-3 bg-base3/50 backdrop-blur-sm border border-base2/50 rounded-2xl hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5">
+                                 {/* Join Method Label */}
+                                 <div className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-wider shadow-sm transition-colors ${
+                                    isInvited 
+                                       ? 'bg-violet/10 text-violet border border-violet/20 group-hover:bg-violet/20' 
+                                       : 'bg-blue/10 text-blue border border-blue/20 group-hover:bg-blue/20'
+                                 }`}>
+                                    {isInvited ? 'Invited' : 'Joined'}
+                                 </div>
+
+                                 <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center font-black text-sm shrink-0 shadow-inner border border-primary/10">
+                                    {p.fullName[0]}
+                                 </div>
+                                 <div className="min-w-0 pr-14">
+                                    <p className="font-bold text-text-emphasis truncate text-sm tracking-tight">{p.fullName}</p>
+                                    <p className="text-[10px] text-text/50 truncate font-medium mt-0.5">{p.email}</p>
+                                 </div>
                               </div>
-                              <div>
-                                 <p className="font-bold text-text-emphasis">{p.fullName}</p>
-                                 <p className="text-xs text-text">{p.email}</p>
-                              </div>
-                           </div>
-                        ))}
+                           );
+                        })}
                         {tournament.confirmedPlayers.length === 0 && (
-                           <p className="col-span-full text-center text-text italic py-8">Waiting for players to join...</p>
+                           <p className="col-span-full text-center text-text italic py-8 bg-base3/10 rounded-2xl border border-dashed border-base2">
+                              Waiting for players to join...
+                           </p>
                         )}
                      </div>
                   </div>

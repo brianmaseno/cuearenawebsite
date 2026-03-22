@@ -330,7 +330,17 @@ const PlayerDashboard = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
+                <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full relative">
+                  {/* Status Badge Watermark */}
+                  {t.myStatus === 'accepted' && (
+                    <div className="absolute top-[45%] right-4 -translate-y-1/2 pointer-events-none z-10">
+                      <div className="bg-primary/20 border border-primary/40 rounded-lg px-2.5 py-1 text-primary text-[7.5px] font-black uppercase tracking-[0.15em] text-center select-none shadow-md">
+                        {t.confirmedPlayers?.length < t.maxPlayers ? (
+                          <>Accepted<br/>Waiting for players</>
+                        ) : "Ongoing"}
+                      </div>
+                    </div>
+                  )}
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <Trophy size={16} />
@@ -365,16 +375,24 @@ const PlayerDashboard = () => {
                             <CheckCircle2 size={14} />
                             Accept Tournament
                           </button>
-                       </div>
-                    ) : (
-                      <Link 
-                        to={`/dashboard/tournament/${t._id}`}
-                        className="w-full bg-primary text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all"
-                      >
-                        Tournament Room
-                        <ChevronRight size={14} />
-                      </Link>
-                    )}
+                        </div>
+                     ) : t.myStatus === 'available' ? (
+                       <Link 
+                         to={`/dashboard/tournament/${t._id}`}
+                         className="w-full bg-blue text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all hover:bg-blue/90"
+                       >
+                         <Trophy size={14} />
+                         View Tournament Details
+                       </Link>
+                     ) : (
+                       <Link 
+                         to={`/dashboard/tournament/${t._id}`}
+                         className="w-full bg-primary text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all"
+                       >
+                         Tournament Room
+                         <ChevronRight size={14} />
+                       </Link>
+                     )}
                   </div>
                 </div>
               ))

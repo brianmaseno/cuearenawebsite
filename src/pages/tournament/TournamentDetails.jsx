@@ -105,6 +105,16 @@ const TournamentDetails = () => {
       }
    };
 
+   const handleJoinTournament = async () => {
+      try {
+         await api.post(`/tournaments/${id}/join`);
+         toast.success('Successfully joined the tournament!');
+         fetchTournament();
+      } catch (err) {
+         toast.error(err.response?.data?.message || 'Error joining tournament');
+      }
+   };
+
    useEffect(() => {
       fetchTournament();
       checkPendingInvite();
@@ -213,6 +223,34 @@ const TournamentDetails = () => {
                      </div>
                   </div>
                )}
+
+               {!pendingInvite && 
+                  tournament.entryType === 'open_request' && 
+                  tournament.status === 'open_for_players' && 
+                  !tournament.confirmedPlayers.some(p => p._id.toString() === user?._id?.toString()) && (
+                  <div className="card-premium p-8 rounded-3xl bg-green/5 border-2 border-green/20 mb-8 animate-in slide-in-from-top-4 duration-500 shadow-lg shadow-green/5">
+                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex gap-4">
+                           <div className="w-14 h-14 rounded-2xl bg-green/20 text-green flex items-center justify-center shrink-0">
+                              <Trophy size={32} />
+                           </div>
+                           <div>
+                              <h4 className="text-xl font-bold text-text-emphasis">Open Tournament</h4>
+                              <p className="text-text">This tournament is open for public registration. Join now to secure your spot!</p>
+                           </div>
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                           <button
+                              onClick={handleJoinTournament}
+                              disabled={new Date(tournament.registrationDeadline) < new Date()}
+                              className="flex-1 md:flex-none px-12 py-3 rounded-xl bg-green text-base3 font-bold hover:bg-green/90 shadow-lg shadow-green/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                           >
+                              Join Tournament
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+                )}
 
                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
                   <div className="lg:col-span-2 space-y-8">
