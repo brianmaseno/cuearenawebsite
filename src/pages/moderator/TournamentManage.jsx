@@ -15,6 +15,7 @@ import {
    Zap,
    Target as TargetIcon,
    Trash2,
+   Search,
    X
 } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
@@ -32,6 +33,7 @@ const TournamentManage = () => {
    const [selectedMatchForSets, setSelectedMatchForSets] = useState(null);
    const [activeSetInModal, setActiveSetInModal] = useState(0);
    const [selectingWinnerForSetInModal, setSelectingWinnerForSetInModal] = useState(null);
+   const [playerSearchQuery, setPlayerSearchQuery] = useState('');
 
    const fetchTournamentData = async () => {
       try {
@@ -330,24 +332,65 @@ const TournamentManage = () => {
                         <UserPlus size={20} className="text-violet" />
                         Invite Players
                      </h3>
-                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        {availablePlayers.filter(p => !tournament.confirmedPlayers.some(cp => cp._id === p._id)).map(p => (
-                           <div key={p._id} className="flex items-center justify-between p-3 bg-base2/30 rounded-xl hover:bg-base2/50 transition-colors">
-                              <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-full bg-violet/10 text-violet flex items-center justify-center text-xs font-bold">
-                                    {p.fullName[0]}
+
+                     {/* Search Input */}
+                     <div className="relative mb-4">
+                        <Search size={16} className="absolute left-3 top-2.5 text-text/40" />
+                        <input
+                           type="text"
+                           placeholder="Filter players by name..."
+                           value={playerSearchQuery}
+                           onChange={(e) => setPlayerSearchQuery(e.target.value)}
+                           className="w-full bg-base2/20 border border-base2/50 rounded-xl pl-10 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all font-bold placeholder:font-medium"
+                        />
+                     </div>
+
+                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 thin-scrollbar">
+                        {playerSearchQuery.trim().length >= 2 ? (
+                           <>
+                              {availablePlayers
+                                 .filter(p => !tournament.confirmedPlayers.some(cp => cp._id === p._id))
+                                 .filter(p => 
+                                    p.fullName.toLowerCase().includes(playerSearchQuery.toLowerCase()) || 
+                                    (p.email || '').toLowerCase().includes(playerSearchQuery.toLowerCase())
+                                 )
+                                 .map(p => (
+                                 <div key={p._id} className="flex items-center justify-between p-3 bg-base2/30 rounded-xl hover:bg-base2/50 transition-colors group">
+                                    <div className="flex items-center gap-3">
+                                       <div className="w-8 h-8 rounded-full bg-violet/10 text-violet flex items-center justify-center text-xs font-bold shadow-sm">
+                                          {p.fullName[0]}
+                                       </div>
+                                       <div>
+                                          <p className="text-sm font-bold text-text-emphasis leading-tight group-hover:text-primary transition-colors">{p.fullName}</p>
+                                          <p className="text-[10px] text-text/40 font-medium">{p.email}</p>
+                                       </div>
+                                    </div>
+                                    <button
+                                       onClick={() => handleInvite(p._id)}
+                                       disabled={tournament.invitedPlayers?.some(ip => ip._id === p._id)}
+                                       className="text-primary disabled:opacity-30 hover:scale-110 transition-transform"
+                                       type="button"
+                                    >
+                                       <UserPlus size={18} />
+                                    </button>
                                  </div>
-                                 <span className="text-sm font-bold text-text-emphasis">{p.fullName}</span>
-                              </div>
-                              <button
-                                 onClick={() => handleInvite(p._id)}
-                                 disabled={tournament.invitedPlayers.some(ip => ip._id === p._id)}
-                                 className="text-primary disabled:opacity-30 hover:scale-110 transition-transform"
-                              >
-                                 <UserPlus size={18} />
-                              </button>
+                              ))}
+                              {availablePlayers
+                                 .filter(p => !tournament.confirmedPlayers.some(cp => cp._id === p._id))
+                                 .filter(p => 
+                                    p.fullName.toLowerCase().includes(playerSearchQuery.toLowerCase()) || 
+                                    (p.email || '').toLowerCase().includes(playerSearchQuery.toLowerCase())
+                                 ).length === 0 && (
+                                    <p className="text-center py-4 text-xs italic text-text/30 font-bold">No matches found for "{playerSearchQuery}"</p>
+                              )}
+                           </>
+                        ) : (
+                           <div className="text-center py-8">
+                              <p className="text-xs text-text/40 font-black italic uppercase tracking-widest leading-relaxed">
+                                Enter at least 2 characters<br/>to search players
+                              </p>
                            </div>
-                        ))}
+                        )}
                      </div>
                   </div>
                </div>

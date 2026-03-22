@@ -87,11 +87,11 @@ const AdminDashboard = () => {
           platformGrowth: growth,
         });
 
-        // Unified Activity Matrix: Top 10 recent/important activities
+        // Unified Activity Matrix: Unified stream of latest platform competitions
         const unified = [
           ...tournaments.map(t => ({ ...t, type: 'Tournament' })),
           ...matches.map(m => ({ ...m, type: 'Match' }))
-        ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 10);
+        ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
         setActivityMatrix(unified);
 
         // Moderator Pulse: Latest non-admin actions
@@ -199,7 +199,7 @@ const AdminDashboard = () => {
                   Full Analytics
                 </button>
               </div>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[600px] overflow-y-auto thin-scrollbar">
                 <table className="w-full text-left">
                   <thead className="bg-base2/30 text-[10px] font-black uppercase text-text/40 tracking-widest border-b border-base2">
                     <tr>
@@ -220,8 +220,10 @@ const AdminDashboard = () => {
                               {item.type === 'Tournament' ? <Trophy size={14} /> : <Target size={14} />}
                             </div>
                             <div>
-                              <div className="text-xs font-black text-text-emphasis group-hover:text-primary transition-colors">{item.name || item.title}</div>
-                              <div className="text-[9px] font-mono text-text/30 uppercase tracking-tighter">ID: {item._id.slice(-8)}</div>
+                              <div className="text-xs font-black text-text-emphasis group-hover:text-primary transition-colors">
+                                {item.type === 'Tournament' ? item.name : (item.player1Id ? `${item.player1Id.fullName} vs ${item.player2Id?.fullName}` : (item.name || item.title || 'Direct Match'))}
+                              </div>
+                              <div className="text-[9px] font-mono text-text/30 uppercase tracking-tighter">{item.type} ID: {item._id.slice(-8)}</div>
                             </div>
                           </div>
                         </td>
