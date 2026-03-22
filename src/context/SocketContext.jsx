@@ -48,14 +48,16 @@ export const SocketProvider = ({ children }) => {
     if (socket) socket.emit('leave_room', `tournament_${tournamentId}`);
   };
 
+  const value = React.useMemo(() => ({
+    socket, 
+    joinMatchRoom, 
+    leaveMatchRoom, 
+    joinTournamentRoom, 
+    leaveTournamentRoom 
+  }), [socket]);
+
   return (
-    <SocketContext.Provider value={{ 
-      socket, 
-      joinMatchRoom, 
-      leaveMatchRoom, 
-      joinTournamentRoom, 
-      leaveTournamentRoom 
-    }}>
+    <SocketContext.Provider value={value}>
       {children}
     </SocketContext.Provider>
   );

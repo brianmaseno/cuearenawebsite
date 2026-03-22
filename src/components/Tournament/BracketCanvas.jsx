@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trophy, ChevronRight, Activity, Eye, Settings } from 'lucide-react';
+import { Trophy, Activity, Eye, Settings } from 'lucide-react';
 
 const BracketCanvas = ({ tournament, onMatchClick, user }) => {
    const containerRef = useRef(null);
