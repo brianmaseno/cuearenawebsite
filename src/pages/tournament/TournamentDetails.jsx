@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
-import { Trophy, Users, Calendar, MapPin, Zap, Info, Loader2, ArrowLeft, Trophy as TrophyIcon, CheckCircle2 } from "lucide-react";
+import { Trophy, Users, Calendar, MapPin, Zap, Info, Loader2, ArrowLeft, Trophy as TrophyIcon, CheckCircle2, Target } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from "../../components/StatusBadge";
@@ -13,6 +13,7 @@ const TournamentDetails = () => {
    const [tournament, setTournament] = useState(null);
    const [loading, setLoading] = useState(true);
    const [user, setUser] = useState(null);
+   const [activeTab, setActiveTab] = useState('info'); // 'info' or 'brackets'
 
    useEffect(() => {
       const fetchTournament = async () => {
@@ -24,12 +25,9 @@ const TournamentDetails = () => {
             setTournament(tRes.data);
             setUser(uRes.data);
 
-            // Check for hash and scroll
-            if (window.location.hash === '#bracket') {
-               setTimeout(() => {
-                  const el = document.getElementById('bracket');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-               }, 500);
+            // Auto-switch to brackets if ongoing/completed or hash is present
+            if (window.location.hash === '#bracket' || tRes.data.status === 'ongoing' || tRes.data.status === 'completed') {
+               setActiveTab('brackets');
             }
          } catch (err) {
             console.error("Error fetching tournament:", err);
@@ -45,7 +43,6 @@ const TournamentDetails = () => {
       try {
          await api.post(`/tournaments/${id}/join`);
          toast.success("Successfully joined the tournament!");
-         // Refresh data
          const { data } = await api.get(`/tournaments/${id}`);
          setTournament(data);
       } catch (err) {
@@ -79,175 +76,169 @@ const TournamentDetails = () => {
 
    const isPlayerConfirmed = tournament.confirmedPlayers?.some(p => p._id === user?._id);
    const isRegistrationOpen = tournament.status === 'open_for_players';
-   const isFull = tournament.confirmedPlayers?.length >= tournament.maxPlayers;
 
    return (
       <DashboardLayout title={tournament.name}>
-         <div className="max-w-[1400px] mx-auto space-y-8 animate-in fade-in duration-700">
+         <div className="max-w-[1400px] mx-auto space-y-6 animate-in fade-in duration-700">
             {/* Context Navigation */}
-            <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-text/60 hover:text-primary transition-colors font-bold text-sm">
-               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-               Back to Tournaments
-            </button>
+            <div className="flex items-center justify-between">
+               <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-text/60 hover:text-primary transition-colors font-bold text-sm">
+                  <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                  Back to Tournaments
+               </button>
+            </div>
 
-            {/* Registration Banner - Only show if not registered and tournament is open */}
+            {/* Registration Banner */}
             {!isPlayerConfirmed && isRegistrationOpen && (
                <div className="card-premium p-1 rounded-3xl bg-base2/50 border-none shadow-xl overflow-hidden">
-                  <div className="bg-base3 p-8 rounded-[1.5rem] flex flex-col md:flex-row items-center justify-between gap-8 border border-base2/50">
-                     <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 bg-green/10 text-green rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
-                           <Zap size={32} />
+                  <div className="bg-base3 p-6 rounded-[1.5rem] flex flex-col md:flex-row items-center justify-between gap-6 border border-base2/50">
+                     <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-green/10 text-green rounded-xl flex items-center justify-center shrink-0">
+                           <Zap size={24} />
                         </div>
                         <div>
-                           <h4 className="text-2xl font-black text-text-emphasis tracking-tight">
+                           <h4 className="text-xl font-black text-text-emphasis tracking-tight">
                               {tournament.status === 'full' ? 'Joining Closed' : 'Registration Open!'}
                            </h4>
-                           <p className="text-text/70 font-medium max-w-md leading-relaxed mt-1">
+                           <p className="text-xs text-text/60 font-medium">
                               {tournament.status === 'full' 
-                                 ? 'This tournament has reached its maximum capacity. Follow the bracket to stay updated!' 
-                                 : 'This tournament is open for public entry. Join now to compete for the championship!'}
+                                 ? 'Tournament at max capacity.' 
+                                 : 'Join now to compete for the championship!'}
                            </p>
                         </div>
                      </div>
-                     <div className="flex items-center gap-4 w-full md:w-auto">
-                        <button
-                           onClick={handleJoinTournament}
-                           disabled={tournament.status === 'full' || new Date(tournament.registrationDeadline) < new Date()}
-                           className={`w-full md:w-auto px-10 py-4 rounded-2xl ${tournament.status === 'full' ? 'bg-base2 text-text/40' : 'bg-green text-base3 shadow-green/20 hover:bg-green/90 hover:scale-105'} font-black shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-widest`}
-                        >
-                           {tournament.status === 'full' ? 'Tournament Full' : 'Join Tournament'}
-                        </button>
-                     </div>
+                     <button
+                        onClick={handleJoinTournament}
+                        disabled={tournament.status === 'full' || new Date(tournament.registrationDeadline) < new Date()}
+                        className="px-8 py-3 rounded-2xl bg-green text-base3 font-black shadow-lg shadow-green/20 hover:bg-green/90 transition-all active:scale-95 disabled:opacity-50 text-xs uppercase tracking-widest"
+                     >
+                        Join Tournament
+                     </button>
                   </div>
                </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
-               <div className="lg:col-span-2 space-y-8">
-                  <section className="card-premium p-8 rounded-3xl bg-base3">
-                     <div className="flex justify-between items-start mb-6">
-                        <div>
-                           <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} startDate={tournament.startDate} />
-                           <h3 className="text-4xl font-black text-text-emphasis mt-3 tracking-tight">{tournament.name}</h3>
-                        </div>
-                        <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-center min-w-[120px]">
-                           <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">Entry Type</p>
-                           <p className="font-bold text-text-emphasis">{(tournament.entryType || '').replace('_', ' ')}</p>
-                        </div>
-                     </div>
-
-                     <p className="text-lg text-text leading-relaxed mb-8">
-                        {tournament.description || 'No description provided for this tournament.'}
-                     </p>
-
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 border-t border-base2">
-                        <div className="flex items-center gap-3">
-                           <div className="w-10 h-10 rounded-xl bg-blue/10 text-blue flex items-center justify-center">
-                              <Calendar size={20} />
-                           </div>
-                           <div>
-                              <p className="text-[10px] font-bold text-text uppercase">Start Date</p>
-                              <p className="font-bold text-text-emphasis">{new Date(tournament.startDate).toLocaleDateString()}</p>
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                           <div className="w-10 h-10 rounded-xl bg-green/10 text-green flex items-center justify-center">
-                              <MapPin size={20} />
-                           </div>
-                           <div>
-                              <p className="text-[10px] font-bold text-text uppercase">Venue</p>
-                              <p className="font-bold text-text-emphasis">{tournament.venue}</p>
-                           </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                           <div className="w-10 h-10 rounded-xl bg-yellow/10 text-yellow flex items-center justify-center">
-                              <Users size={20} />
-                           </div>
-                           <div>
-                              <p className="text-[10px] font-bold text-text uppercase">Organizer</p>
-                              <p className="font-bold text-text-emphasis">{tournament.organizerId?.fullName || 'N/A'}</p>
-                           </div>
-                        </div>
-                     </div>
-                  </section>
-
-                  <section className="card-premium p-8 rounded-3xl">
-                     <h4 className="text-xl font-bold text-text-emphasis mb-6 flex items-center gap-2">
-                        <Info size={22} className="text-primary" />
-                        Tournament Format & Rules
-                     </h4>
-                     <div className="prose prose-slate max-w-none text-text">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                           <div className="p-4 bg-base2/30 rounded-2xl text-center">
-                              <p className="text-xs font-bold text-text uppercase mb-1">Format</p>
-                              <p className="font-bold text-text-emphasis capitalize">{(tournament.format || '').replace('_', ' ')}</p>
-                           </div>
-                           <div className="p-4 bg-base2/30 rounded-2xl text-center">
-                              <p className="text-xs font-bold text-text uppercase mb-1">No. of players</p>
-                              <p className="font-bold text-text-emphasis">{tournament.maxPlayers}</p>
-                           </div>
-                           <div className="p-4 bg-base2/30 rounded-2xl text-center">
-                              <p className="text-xs font-bold text-text uppercase mb-1">Confirmed</p>
-                              <p className="font-bold text-primary">{tournament.confirmedPlayers.length}</p>
-                           </div>
-                        </div>
-                        <p className="italic text-sm">
-                           {tournament.rules || 'Standard tournament rules apply. Contact the organizer for specific requirements.'}
-                        </p>
-                     </div>
-                  </section>
-               </div>
-
-               <div className="space-y-8">
-                  <section className="card-premium p-6 rounded-3xl bg-base3/50">
-                     <h4 className="font-bold text-text-emphasis mb-4 border-b border-base2 pb-2">Confirmed Players</h4>
-                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                        {tournament.confirmedPlayers?.length > 0 ? (
-                           tournament.confirmedPlayers.map((player) => (
-                              <div key={player._id} className="flex items-center justify-between p-3 bg-base3 rounded-xl border border-base2/50 group hover:border-primary/30 transition-all hover:translate-x-1">
-                                 <div className="flex items-center gap-3">
-                                    <img 
-                                       src={player.profilePhoto || `https://ui-avatars.com/api/?name=${player.fullName}&background=random`} 
-                                       alt={player.fullName} 
-                                       className="w-10 h-10 rounded-lg object-cover ring-2 ring-base2 group-hover:ring-primary/20"
-                                    />
-                                    <div>
-                                       <p className="text-sm font-bold text-text-emphasis">{player.fullName}</p>
-                                       <p className="text-[10px] text-text/50 font-black uppercase tracking-wider">Confirmed Entrance</p>
-                                    </div>
-                                 </div>
-                                 <div className="w-8 h-8 rounded-lg bg-green/10 text-green flex items-center justify-center">
-                                    <CheckCircle2 size={16} />
-                                 </div>
-                              </div>
-                           ))
-                        ) : (
-                           <p className="text-sm text-center text-text italic py-4">No players confirmed yet.</p>
-                        )}
-                     </div>
-                  </section>
-
-                  {tournament.status === 'completed' && tournament.winner && (
-                     <section className="card-premium p-6 rounded-3xl bg-yellow/5 border-yellow/20 ring-4 ring-yellow/5">
-                        <div className="flex flex-col items-center text-center">
-                           <TrophyIcon size={48} className="text-yellow mb-4" />
-                           <h4 className="text-xs font-bold uppercase tracking-widest text-yellow mb-1">Tournament Winner</h4>
-                           <p className="text-2xl font-black text-text-emphasis">{tournament.winner?.fullName || 'Winner Declared'}</p>
-                        </div>
-                     </section>
-                  )}
-               </div>
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-2 bg-base2/10 p-1.5 rounded-2xl w-fit">
+               <button
+                  onClick={() => setActiveTab('info')}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                     activeTab === 'info' 
+                        ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
+                        : 'text-text/40 hover:text-text hover:bg-base2/20'
+                  }`}
+               >
+                  <Info size={16} />
+                  Tournament Info
+               </button>
+               <button
+                  onClick={() => setActiveTab('brackets')}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                     activeTab === 'brackets' 
+                        ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
+                        : 'text-text/40 hover:text-text hover:bg-base2/20'
+                  }`}
+               >
+                  <Target size={16} />
+                  Brackets
+               </button>
             </div>
 
-            {/* Explicit Bracket Anchor */}
-            <div id="bracket" className="pt-8 active-anchor">
-               {(tournament.matches && tournament.matches.length > 0) ? (
-                  <BracketCanvas tournament={tournament} user={user} />
+            {/* Tab Content */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+               {activeTab === 'info' ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
+                     <div className="lg:col-span-2 space-y-8">
+                        <section className="card-premium p-8 rounded-3xl bg-base3">
+                           <div className="flex justify-between items-start mb-6">
+                              <div>
+                                 <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} startDate={tournament.startDate} />
+                                 <h3 className="text-3xl font-black text-text-emphasis mt-3 tracking-tight">{tournament.name}</h3>
+                              </div>
+                              <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-center min-w-[120px]">
+                                 <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">Entry</p>
+                                 <p className="font-bold text-text-emphasis text-sm">{(tournament.entryType || '').replace('_', ' ')}</p>
+                              </div>
+                           </div>
+                           <p className="text-base text-text leading-relaxed mb-8">
+                              {tournament.description || 'No description provided.'}
+                           </p>
+                           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 border-t border-base2">
+                              {[{ icon: Calendar, label: 'Date', val: new Date(tournament.startDate).toLocaleDateString(), color: 'blue' },
+                                { icon: MapPin, label: 'Venue', val: tournament.venue, color: 'green' },
+                                { icon: Users, label: 'Organizer', val: tournament.organizerId?.fullName, color: 'yellow' }].map((item, idx) => (
+                                 <div key={idx} className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-xl bg-${item.color}/10 text-${item.color} flex items-center justify-center`}>
+                                       <item.icon size={20} />
+                                    </div>
+                                    <div>
+                                       <p className="text-[10px] font-bold text-text uppercase">{item.label}</p>
+                                       <p className="font-bold text-text-emphasis text-sm">{item.val || 'N/A'}</p>
+                                    </div>
+                                 </div>
+                              ))}
+                           </div>
+                        </section>
+
+                        <section className="card-premium p-8 rounded-3xl">
+                           <h4 className="text-lg font-bold text-text-emphasis mb-6 flex items-center gap-2">
+                              <Info size={20} className="text-primary" />
+                              Format & Rules
+                           </h4>
+                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                              {[{ l: 'Format', v: tournament.format }, { l: 'Max Players', v: tournament.maxPlayers }, { l: 'Confirmed', v: tournament.confirmedPlayers.length }].map((stat, i) => (
+                                 <div key={i} className="p-4 bg-base2/30 rounded-2xl text-center">
+                                    <p className="text-[10px] font-bold text-text uppercase mb-1">{stat.l}</p>
+                                    <p className="font-bold text-text-emphasis capitalize text-sm">{(stat.v || '').toString().replace('_', ' ')}</p>
+                                 </div>
+                              ))}
+                           </div>
+                           <p className="italic text-sm text-text/70 bg-base2/10 p-4 rounded-xl border border-base2/30">
+                              {tournament.rules || 'Standard tournament rules apply.'}
+                           </p>
+                        </section>
+                     </div>
+
+                     <div className="space-y-8">
+                        <section className="card-premium p-6 rounded-3xl bg-base3/50">
+                           <h4 className="font-bold text-sm text-text-emphasis mb-4 border-b border-base2 pb-2 flex items-center gap-2">
+                              <Users size={16} className="text-primary" />
+                              Confirmed Players
+                           </h4>
+                           <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 thin-scrollbar">
+                              {tournament.confirmedPlayers.map((player) => (
+                                 <div key={player._id} className="flex items-center justify-between p-3 bg-base3 rounded-xl border border-base2/50 group transition-all hover:border-primary/30">
+                                    <div className="flex items-center gap-3">
+                                       <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-xs">
+                                          {player.fullName[0]}
+                                       </div>
+                                       <p className="text-sm font-bold text-text-emphasis truncate max-w-[120px]">{player.fullName}</p>
+                                    </div>
+                                    <CheckCircle2 size={16} className="text-green opacity-40" />
+                                 </div>
+                              ))}
+                           </div>
+                        </section>
+                        {tournament.status === 'completed' && tournament.winner && (
+                           <div className="card-premium p-6 rounded-3xl bg-yellow/5 border-yellow/20 text-center animate-in zoom-in-95">
+                              <Trophy size={40} className="text-yellow mx-auto mb-3" />
+                              <p className="text-[10px] font-black uppercase tracking-widest text-yellow mb-1">Champion</p>
+                              <p className="text-xl font-black text-text-emphasis">{tournament.winner.fullName}</p>
+                           </div>
+                        )}
+                     </div>
+                  </div>
                ) : (
-                  <div className="card-premium p-12 rounded-3xl bg-base3 flex flex-col items-center justify-center text-center py-20 min-h-[400px]">
-                     <Zap size={64} className="text-base2 mb-4" />
-                     <h4 className="text-2xl font-bold text-text-emphasis mb-2">Tournament Table Not Ready</h4>
-                     <p className="text-text max-w-md">The bracket will be generated once the tournament is full and the start date is reached.</p>
+                  <div className="space-y-4">
+                     {tournament.matches?.length > 0 ? (
+                        <BracketCanvas tournament={tournament} user={user} />
+                     ) : (
+                        <div className="card-premium p-12 rounded-3xl bg-base3 flex flex-col items-center justify-center text-center py-20 min-h-[400px]">
+                           <Zap size={48} className="text-base2 mb-4" />
+                           <h4 className="text-xl font-bold text-text-emphasis mb-2">Bracket Not Ready</h4>
+                           <p className="text-sm text-text/60 max-w-sm">The bracket will be generated once the tournament is and started by the moderator.</p>
+                        </div>
+                     )}
                   </div>
                )}
             </div>
