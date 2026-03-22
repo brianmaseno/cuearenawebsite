@@ -192,9 +192,9 @@ const TournamentManage = () => {
 
    return (
       <DashboardLayout title="Manage Tournament">
-         <div className="space-y-6 pb-20">
+         <div className="space-y-4 pb-8">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-base2">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-4 border-b border-base2">
                <div>
                   <div className="flex items-center gap-3 mb-2">
                      <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} startDate={tournament.startDate} />
@@ -203,7 +203,7 @@ const TournamentManage = () => {
                         Created {new Date(tournament.createdAt).toLocaleDateString()}
                      </div>
                   </div>
-                  <h2 className="text-3xl font-black text-text-emphasis tracking-tight">{tournament.name}</h2>
+                  <h2 className="text-2xl font-black text-text-emphasis tracking-tight">{tournament.name}</h2>
                   {tournament.status === 'full' && (
                      <div className="mt-2 flex items-center gap-2 text-primary font-bold bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 w-fit animate-pulse">
                         <Zap size={16} fill="currentColor" />
@@ -245,7 +245,7 @@ const TournamentManage = () => {
             <div className="flex items-center gap-2 bg-base2/10 p-1.5 rounded-2xl w-fit">
                <button
                   onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all ${
                      activeTab === 'overview' 
                         ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
                         : 'text-text/40 hover:text-text hover:bg-base2/20'

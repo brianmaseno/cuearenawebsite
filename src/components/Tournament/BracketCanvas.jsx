@@ -138,8 +138,8 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
 
                .bracket-compact-container {
                   display: flex;
-                  gap: 1.5rem;
-                  padding: 2.5rem 1rem;
+                  gap: 1rem;
+                  padding: 1rem 0.5rem;
                   transform-origin: top left;
                   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                }
@@ -148,34 +148,34 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                   display: flex;
                   flex-direction: column;
                   justify-content: space-around;
-                  gap: 1.5rem;
+                  gap: 0.5rem;
                   position: relative;
-                  width: 195px;
+                  width: 190px;
                }
 
                .round-header {
-                  padding: 0.5rem;
+                  padding: 0.25rem;
                   background: var(--color-base3);
-                  border-radius: 12px;
+                  border-radius: 10px;
                   text-align: center;
                   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-                  margin-bottom: 2rem;
+                  margin-bottom: 0.5rem;
                   border: 1px solid var(--color-base2);
                }
 
                .match-node {
                   position: relative;
                   z-index: 10;
-                  padding: 1rem 0;
+                  padding: 0.25rem 0;
                }
 
                /* Connectors */
                .match-node::after {
                   content: '';
                   position: absolute;
-                  right: -0.75rem;
+                  right: -0.5rem;
                   top: 50%;
-                  width: 0.75rem;
+                  width: 0.5rem;
                   height: 1.5px;
                   background: var(--color-base2);
                   opacity: 0.15;
@@ -186,7 +186,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                .round-column:not(:first-of-type) .match-node::before {
                   content: '';
                   position: absolute;
-                  left: -0.75rem;
+                  left: -0.5rem;
                   top: 0;
                   bottom: 0;
                   width: 1.5px;
@@ -196,10 +196,10 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
 
                .bracket-canvas-fixed {
                   background-image: radial-gradient(var(--color-base2) 0.5px, transparent 0.5px);
-                  background-size: 18px 18px;
-                  border-radius: 2rem;
+                  background-size: 16px 16px;
+                  border-radius: 1.5rem;
                   border: 1px border-base2/20;
-                  min-height: 480px;
+                  min-height: 400px;
                   display: flex;
                   justify-content: center;
                   overflow: hidden;
@@ -213,11 +213,11 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                {sortedRounds.map(roundNum => (
                   <div key={`round-${roundNum}`} className="round-column">
                      <div className="round-header">
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/70 font-sans">
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary/70 font-sans">
                            {roundNum === maxRound ? 'Final' : `Stage ${roundNum}`}
                         </span>
                      </div>
-                     <div className="flex-1 flex flex-col justify-around py-6">
+                     <div className="flex-1 flex flex-col justify-around py-2">
                         {tournament.matches
                            .filter(m => m.round === roundNum)
                            .sort((a, b) => a.matchIndex - b.matchIndex)
@@ -230,8 +230,8 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                                  />
                                  
                                  {match.status === 'ongoing' && roundNum < maxRound && (
-                                    <div className="absolute -right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
-                                       <Activity size={14} className="text-primary animate-pulse" />
+                                    <div className="absolute -right-5 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                                       <Activity size={12} className="text-primary animate-pulse" />
                                     </div>
                                  )}
                               </div>
