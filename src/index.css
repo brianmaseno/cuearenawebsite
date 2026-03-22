@@ -76,3 +76,27 @@
 .btn-primary:hover {
   background-color: var(--color-primary-dark);
 }
+/* Premium Brand Identity - Breathing Blue-Red */
+@keyframes breathe-blue-red {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 4px rgba(38, 139, 210, 0.4));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 10px rgba(220, 50, 47, 0.6));
+  }
+}
+
+.brand-premium {
+  background: linear-gradient(135deg, #268bd2, #dc322f, #268bd2);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  animation: breathe-blue-red 6s ease-in-out infinite;
+  display: inline-block;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}

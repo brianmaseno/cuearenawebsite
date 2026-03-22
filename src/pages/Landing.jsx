@@ -39,7 +39,7 @@ const Landing = () => {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-base3 group-hover:scale-105 transition-transform">
               <Target size={24} />
             </div>
-            <span className="text-xl font-bold text-text-emphasis tracking-tight">Cue-Arena</span>
+            <span className="text-xl brand-premium">Cue-Arena</span>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-text hover:text-primary font-medium transition-colors">Login</Link>
@@ -189,9 +189,9 @@ const Landing = () => {
             <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-base3">
               <Target size={18} />
             </div>
-            <span className="text-xl font-bold text-text-emphasis tracking-tight">Cue-Arena</span>
+            <span className="text-xl brand-premium">Cue-Arena</span>
           </div>
-          <p className="text-text mb-8">© 2026 Cue-Arena — Premium Pool Platform.</p>
+          <p className="text-text mb-8">© 2026 <span className="brand-premium align-middle transform scale-90">Cue-Arena</span> — Premium Pool Platform.</p>
           <div className="flex justify-center gap-6">
             <a href="#" className="text-text hover:text-primary transition-colors">Privacy</a>
             <a href="#" className="text-text hover:text-primary transition-colors">Terms</a>

@@ -43,7 +43,7 @@ const Register = () => {
             <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-base3 shadow-lg">
               <UserPlus size={28} />
             </div>
-            <span className="text-3xl font-extrabold text-text-emphasis tracking-tight">Join Cue-Arena</span>
+            <span className="text-3xl brand-premium">Join Cue-Arena</span>
           </Link>
           <p className="text-text">Join the premium pool community today</p>
         </div>

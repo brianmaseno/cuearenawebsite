@@ -66,7 +66,7 @@ const Sidebar = () => {
           <div className="w-9 h-9 flex items-center justify-center shrink-0">
             <img src="/favicon.png" alt="7 Ball" className="w-8 h-8 drop-shadow-md" />
           </div>
-          {!isCollapsed && <span className="text-xl font-bold text-text-emphasis truncate">Cue Arena</span>}
+          {!isCollapsed && <span className="text-xl brand-premium truncate shadow-brand">Cue Arena</span>}
         </Link>
         <button 
           onClick={toggleSidebar}
