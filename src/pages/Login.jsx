@@ -102,24 +102,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Helper for demo */}
-        <div className="mt-8 p-4 bg-yellow/10 border border-yellow/20 rounded-xl">
-          <p className="text-sm text-yellow font-medium">Demo Access:</p>
-          <div className="grid grid-cols-2 gap-2 mt-2 text-xs text-text">
-            <div>
-              <span className="font-bold">Player:</span> player1@cuearena.com
-            </div>
-            <div>
-              <span className="font-bold">Pass:</span> password123
-            </div>
-            <div>
-              <span className="font-bold">Moderator:</span> mod1@cuearena.com
-            </div>
-            <div>
-              <span className="font-bold">Pass:</span> password123
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
