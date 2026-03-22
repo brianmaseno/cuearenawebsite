@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Calendar, MapPin, Users, Info, ArrowLeft, CheckCircle, XCircle, Zap } from 'lucide-react';
+import { Trophy, Calendar, MapPin, Users, Info, ArrowLeft, CheckCircle, XCircle, Zap, Target, ChevronRight } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
@@ -146,7 +146,7 @@ const TournamentDetails = () => {
                      </div>
                      <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-center min-w-[120px]">
                         <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">Entry Type</p>
-                        <p className="font-bold text-text-emphasis">{tournament.entryType.replace('_', ' ')}</p>
+                        <p className="font-bold text-text-emphasis">{(tournament.entryType || '').replace('_', ' ')}</p>
                      </div>
                   </div>
 
@@ -179,7 +179,7 @@ const TournamentDetails = () => {
                         </div>
                         <div>
                            <p className="text-[10px] font-bold text-text uppercase">Organizer</p>
-                           <p className="font-bold text-text-emphasis">{tournament.organizerId.fullName}</p>
+                           <p className="font-bold text-text-emphasis">{tournament.organizerId?.fullName || 'N/A'}</p>
                         </div>
                      </div>
                   </div>
@@ -194,7 +194,7 @@ const TournamentDetails = () => {
                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                         <div className="p-4 bg-base2/30 rounded-2xl text-center">
                            <p className="text-xs font-bold text-text uppercase mb-1">Format</p>
-                           <p className="font-bold text-text-emphasis capitalize">{tournament.format.replace('_', ' ')}</p>
+                           <p className="font-bold text-text-emphasis capitalize">{(tournament.format || '').replace('_', ' ')}</p>
                         </div>
                         <div className="p-4 bg-base2/30 rounded-2xl text-center">
                            <p className="text-xs font-bold text-text uppercase mb-1">No. of players</p>
@@ -219,9 +219,9 @@ const TournamentDetails = () => {
                      {tournament.confirmedPlayers.map(p => (
                         <div key={p._id} className="flex items-center gap-3 p-2 bg-base3 rounded-xl border border-base2">
                            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
-                              {p.fullName[0]}
+                              {p.fullName?.[0] || '?'}
                            </div>
-                           <span className="text-sm font-bold text-text-emphasis">{p.fullName}</span>
+                           <span className="text-sm font-bold text-text-emphasis">{p.fullName || 'Anonymous'}</span>
                            <CheckCircle size={14} className="ml-auto text-green" />
                         </div>
                      ))}
@@ -236,7 +236,7 @@ const TournamentDetails = () => {
                      <div className="flex flex-col items-center text-center">
                         <Trophy size={48} className="text-yellow mb-4" />
                         <h4 className="text-xs font-bold uppercase tracking-widest text-yellow mb-1">Tournament Winner</h4>
-                        <p className="text-2xl font-black text-text-emphasis">{tournament.winner.fullName}</p>
+                        <p className="text-2xl font-black text-text-emphasis">{tournament.winner?.fullName || 'Winner Declared'}</p>
                      </div>
                   </section>
                )}
@@ -255,7 +255,7 @@ const TournamentDetails = () => {
 
                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 overflow-x-auto pb-8 snap-x thin-scrollbar">
                      {Object.entries(
-                        tournament.matches.reduce((acc, m) => {
+                        (tournament.matches || []).reduce((acc, m) => {
                            const r = m.round || 1;
                            if (!acc[r]) acc[r] = [];
                            acc[r].push(m);

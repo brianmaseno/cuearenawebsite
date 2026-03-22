@@ -127,21 +127,6 @@ const TournamentManage = () => {
       }
    };
 
-   const handleStartTournament = async () => {
-      if (tournament.confirmedPlayers.length < 2) {
-         return toast.error('Need at least 2 confirmed players to start');
-      }
-      setActionLoading(true);
-      try {
-         await api.post(`/tournaments/${id}/start`);
-         toast.success('Tournament started! Brackets generated.');
-         fetchTournamentData();
-      } catch (err) {
-         toast.error(err.response?.data?.message || 'Failed to start tournament');
-      } finally {
-         setActionLoading(false);
-      }
-   };
 
    const handlePublish = async () => {
       setActionLoading(true);
@@ -245,16 +230,6 @@ const TournamentManage = () => {
                      >
                         <Trophy size={20} />
                         {tournament.entryType === 'invite_only' ? 'Set to Private' : 'Open for Registration'}
-                     </button>
-                  )}
-                  {(tournament.status === 'open_for_players' || tournament.status === 'full' || tournament.status === 'draft') && (
-                     <button
-                        onClick={handleStartTournament}
-                        disabled={actionLoading || tournament.confirmedPlayers.length < 2}
-                        className="bg-primary hover:bg-primary-dark text-base3 px-8 py-3 rounded-2xl font-black shadow-lg shadow-primary/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
-                     >
-                        <Zap size={20} fill="currentColor" />
-                        Start Tournament
                      </button>
                   )}
                </div>

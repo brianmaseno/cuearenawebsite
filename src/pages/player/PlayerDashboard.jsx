@@ -105,7 +105,7 @@ const PlayerDashboard = () => {
             }`}
           >
             <Target size={18} />
-            Matches ({data.matches.length})
+            Matches ({data.matches.length + (data.tournamentMatches?.length || 0)})
           </button>
           <button
             onClick={() => setActiveTab('tournaments')}
