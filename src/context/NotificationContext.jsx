@@ -51,14 +51,19 @@ export const NotificationProvider = ({ children }) => {
   }, [socket]);
 
   const markAsRead = async (id) => {
+    // Optimistic update to UI state
+    setNotifications(prev => {
+      const next = prev.map(n => n._id === id ? { ...n, isRead: true } : n);
+      setUnreadCount(next.filter(n => !n.isRead).length);
+      return next;
+    });
+
     try {
       await api.put(`/notifications/${id}/read`);
-      setNotifications(prev => 
-        prev.map(n => n._id === id ? { ...n, isRead: true } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       console.error('Error marking as read:', err.message);
+      // Optional: fetch again on error to sync with server
+      // fetchNotifications();
     }
   };
 

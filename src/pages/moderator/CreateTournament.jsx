@@ -14,8 +14,9 @@ const CreateTournament = () => {
     venue: '',
     location: '',
     format: 'single_elimination',
-    maxPlayers: 16,
-    minPlayers: 4,
+    numPlayers: '',
+    maxPlayers: '',
+    minPlayers: '',
     entryType: 'open_request',
     startDate: '',
     registrationDeadline: '',
@@ -24,7 +25,12 @@ const CreateTournament = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === 'numPlayers') {
+      const val = value === '' ? '' : parseInt(value) || 0;
+      setFormData(prev => ({ ...prev, numPlayers: value, minPlayers: val, maxPlayers: val }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -132,27 +138,19 @@ const CreateTournament = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Min Players</label>
-                <input
-                  name="minPlayers"
-                  type="number"
-                  min="2"
-                  value={formData.minPlayers}
-                  onChange={handleChange}
-                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-text-emphasis mb-2">Max Players</label>
-                <input
-                  name="maxPlayers"
-                  type="number"
-                  min="2"
-                  value={formData.maxPlayers}
-                  onChange={handleChange}
-                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-                />
+                <label className="block text-sm font-bold text-text-emphasis mb-2">No. of players</label>
+                <div className="relative">
+                  <Users size={18} className="absolute left-3 top-3.5 text-base1" />
+                  <input
+                    name="numPlayers"
+                    type="number"
+                    min="2"
+                    value={formData.numPlayers}
+                    onChange={handleChange}
+                    placeholder="e.g., 16"
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none font-bold"
+                  />
+                </div>
               </div>
 
               <div>

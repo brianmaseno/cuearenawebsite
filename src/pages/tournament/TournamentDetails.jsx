@@ -176,11 +176,7 @@ const TournamentDetails = () => {
                            <p className="font-bold text-text-emphasis capitalize">{tournament.format.replace('_', ' ')}</p>
                         </div>
                         <div className="p-4 bg-base2/30 rounded-2xl text-center">
-                           <p className="text-xs font-bold text-text uppercase mb-1">Min Players</p>
-                           <p className="font-bold text-text-emphasis">{tournament.minPlayers}</p>
-                        </div>
-                        <div className="p-4 bg-base2/30 rounded-2xl text-center">
-                           <p className="text-xs font-bold text-text uppercase mb-1">Max Players</p>
+                           <p className="text-xs font-bold text-text uppercase mb-1">No. of players</p>
                            <p className="font-bold text-text-emphasis">{tournament.maxPlayers}</p>
                         </div>
                         <div className="p-4 bg-base2/30 rounded-2xl text-center">
