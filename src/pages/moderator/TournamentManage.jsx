@@ -245,7 +245,7 @@ const TournamentManage = () => {
             <div className="flex items-center gap-2 bg-base2/10 p-1.5 rounded-2xl w-fit">
                <button
                   onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all ${
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                      activeTab === 'overview' 
                         ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
                         : 'text-text/40 hover:text-text hover:bg-base2/20'

@@ -82,7 +82,7 @@ const TournamentDetails = () => {
          <div className="max-w-[1400px] mx-auto space-y-4 animate-in fade-in duration-700">
             {/* Context Navigation */}
             <div className="flex items-center justify-between">
-               <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-text/60 hover:text-primary transition-colors font-bold text-[10px] uppercase tracking-wider">
+               <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-text/60 hover:text-primary transition-colors font-bold text-xs uppercase tracking-wider">
                   <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                   Back
                </button>
@@ -97,10 +97,10 @@ const TournamentDetails = () => {
                            <Zap size={20} />
                         </div>
                         <div>
-                           <h4 className="text-lg font-black text-text-emphasis tracking-tight">
+                           <h4 className="text-xl font-black text-text-emphasis tracking-tight">
                               {tournament.status === 'full' ? 'Joining Closed' : 'Registration Open!'}
                            </h4>
-                           <p className="text-[10px] text-text/60 font-medium">
+                           <p className="text-xs text-text/60 font-medium">
                               {tournament.status === 'full' 
                                  ? 'Tournament at max capacity.' 
                                  : 'Join now to compete for the championship!'}
@@ -110,7 +110,7 @@ const TournamentDetails = () => {
                      <button
                         onClick={handleJoinTournament}
                         disabled={tournament.status === 'full' || new Date(tournament.registrationDeadline) < new Date()}
-                        className="px-6 py-2.5 rounded-xl bg-green text-base3 font-black shadow-lg shadow-green/20 hover:bg-green/90 transition-all active:scale-95 disabled:opacity-50 text-[10px] uppercase tracking-widest"
+                        className="px-6 py-2.5 rounded-xl bg-green text-base3 font-black shadow-lg shadow-green/20 hover:bg-green/90 transition-all active:scale-95 disabled:opacity-50 text-xs uppercase tracking-widest"
                      >
                         Join Tournament
                      </button>
@@ -122,7 +122,7 @@ const TournamentDetails = () => {
             <div className="flex items-center gap-2 bg-base2/10 p-1 rounded-2xl w-fit">
                <button
                   onClick={() => setActiveTab('info')}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all ${
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                      activeTab === 'info' 
                         ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
                         : 'text-text/40 hover:text-text hover:bg-base2/20'
@@ -133,7 +133,7 @@ const TournamentDetails = () => {
                </button>
                <button
                   onClick={() => setActiveTab('brackets')}
-                  className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] transition-all ${
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                      activeTab === 'brackets' 
                         ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
                         : 'text-text/40 hover:text-text hover:bg-base2/20'

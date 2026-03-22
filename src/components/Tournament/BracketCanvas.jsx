@@ -83,11 +83,11 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                            <div className={`w-1.5 h-1.5 rounded-full shadow-sm ${
                               p.id ? (p.accepted ? 'bg-green animate-pulse-slow' : 'bg-orange') : 'bg-base2/50'
                            }`}></div>
-                           <span className="text-[10px] font-bold font-sans tracking-tight truncate max-w-[125px] leading-tight">
+                           <span className="text-[12px] font-bold font-sans tracking-tight truncate max-w-[130px] leading-tight">
                               {p.id?.fullName || 'TBD'}
                            </span>
                         </div>
-                        <span className={`text-[11.5px] font-black font-mono shrink-0 ${isWinner ? 'text-green' : isOngoing ? 'text-primary' : 'text-text/40'}`}>
+                        <span className={`text-[14px] font-black font-mono shrink-0 ${isWinner ? 'text-green' : isOngoing ? 'text-primary' : 'text-text/40'}`}>
                            {p.score || 0}
                         </span>
                      </div>
@@ -104,8 +104,8 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
       return (
          <div className="bracket-canvas-fixed flex flex-col items-center justify-center p-8 text-center bg-base3/10 min-h-[400px]">
             <Trophy size={40} className="text-base2 mb-4 opacity-50" />
-            <h4 className="text-lg font-bold text-text-emphasis mb-2 opacity-60 font-sans">Bracket Will Appear Soon</h4>
-            <p className="text-[12px] text-text/40 max-w-sm font-sans mx-auto">
+            <h4 className="text-xl font-bold text-text-emphasis mb-2 opacity-60 font-sans">Bracket Will Appear Soon</h4>
+            <p className="text-sm text-text/40 max-w-sm font-sans mx-auto">
                The tournament tree will be generated once registration closes.
             </p>
          </div>
@@ -138,8 +138,8 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
 
                .bracket-compact-container {
                   display: flex;
-                  gap: 1rem;
-                  padding: 1rem 0.5rem;
+                  gap: 1.25rem;
+                  padding: 1.5rem 0.5rem;
                   transform-origin: top left;
                   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
                }
@@ -148,18 +148,18 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                   display: flex;
                   flex-direction: column;
                   justify-content: space-around;
-                  gap: 0.5rem;
+                  gap: 0.75rem;
                   position: relative;
-                  width: 190px;
+                  width: 200px;
                }
 
                .round-header {
-                  padding: 0.25rem;
+                  padding: 0.4rem;
                   background: var(--color-base3);
-                  border-radius: 10px;
+                  border-radius: 12px;
                   text-align: center;
                   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-                  margin-bottom: 0.5rem;
+                  margin-bottom: 1rem;
                   border: 1px solid var(--color-base2);
                }
 
@@ -173,9 +173,9 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                .match-node::after {
                   content: '';
                   position: absolute;
-                  right: -0.5rem;
+                  right: -0.625rem;
                   top: 50%;
-                  width: 0.5rem;
+                  width: 0.625rem;
                   height: 1.5px;
                   background: var(--color-base2);
                   opacity: 0.15;
@@ -186,7 +186,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                .round-column:not(:first-of-type) .match-node::before {
                   content: '';
                   position: absolute;
-                  left: -0.5rem;
+                  left: -0.625rem;
                   top: 0;
                   bottom: 0;
                   width: 1.5px;
@@ -213,7 +213,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                {sortedRounds.map(roundNum => (
                   <div key={`round-${roundNum}`} className="round-column">
                      <div className="round-header">
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary/70 font-sans">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 font-sans">
                            {roundNum === maxRound ? 'Final' : `Stage ${roundNum}`}
                         </span>
                      </div>
