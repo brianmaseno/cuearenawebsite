@@ -8,6 +8,8 @@ const StatusBadge = ({ status, entryType }) => {
     switch (status) {
       case 'open_for_players':
         return 'bg-green/10 text-green border-green/20';
+      case 'full':
+        return 'bg-violet/10 text-violet border-violet/20';
       case 'ongoing':
         return 'bg-blue/10 text-blue border-blue/20';
       case 'completed':
@@ -20,6 +22,8 @@ const StatusBadge = ({ status, entryType }) => {
         return 'bg-cyan/10 text-cyan border-cyan/20';
       case 'cancelled':
         return 'bg-red/10 text-red border-red/20';
+      case 'expired':
+        return 'bg-base2/10 text-text/40 border-base2/20';
       default:
         return 'bg-base2/50 text-text border-base2';
     }

@@ -16,7 +16,9 @@ import {
    Target as TargetIcon,
    Trash2,
    Search,
-   X
+   X,
+   Send,
+   Minus
 } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
@@ -34,6 +36,32 @@ const TournamentManage = () => {
    const [activeSetInModal, setActiveSetInModal] = useState(0);
    const [selectingWinnerForSetInModal, setSelectingWinnerForSetInModal] = useState(null);
    const [playerSearchQuery, setPlayerSearchQuery] = useState('');
+   const [selectedPlayers, setSelectedPlayers] = useState([]);
+
+   const togglePlayerSelection = (player) => {
+      setSelectedPlayers(prev => {
+         const exists = prev.find(p => p._id === player._id);
+         if (exists) return prev.filter(p => p._id !== player._id);
+         return [...prev, { _id: player._id, fullName: player.fullName, email: player.email }];
+      });
+   };
+
+   const handleBulkInvite = async () => {
+      if (selectedPlayers.length === 0) return;
+      setActionLoading(true);
+      try {
+         const { data } = await api.post(`/tournaments/${id}/invite-bulk`, {
+            playerIds: selectedPlayers.map(p => p._id)
+         });
+         toast.success(data.message);
+         setSelectedPlayers([]);
+         fetchTournamentData();
+      } catch (err) {
+         toast.error(err.response?.data?.message || 'Failed to send bulk invitations');
+      } finally {
+         setActionLoading(false);
+      }
+   };
 
    const fetchTournamentData = async () => {
       try {
@@ -181,6 +209,12 @@ const TournamentManage = () => {
                      </div>
                   </div>
                   <h2 className="text-3xl font-black text-text-emphasis tracking-tight">{tournament.name}</h2>
+                  {tournament.status === 'full' && (
+                     <div className="mt-2 flex items-center gap-2 text-primary font-bold bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 w-fit animate-pulse">
+                        <Zap size={16} fill="currentColor" />
+                        <span>Tournament full, set to start on {new Date(tournament.startDate).toLocaleDateString()} at {new Date(tournament.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                     </div>
+                  )}
                </div>
 
                <div className="flex items-center gap-3">
@@ -334,7 +368,7 @@ const TournamentManage = () => {
                      </h3>
 
                      {/* Search Input */}
-                     <div className="relative mb-4">
+                     <div className="relative mb-6">
                         <Search size={16} className="absolute left-3 top-2.5 text-text/40" />
                         <input
                            type="text"
@@ -345,7 +379,8 @@ const TournamentManage = () => {
                         />
                      </div>
 
-                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 thin-scrollbar">
+                     {/* 1. Search Results (Below Search) */}
+                     <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 thin-scrollbar">
                         {playerSearchQuery.trim().length >= 2 ? (
                            <>
                               {availablePlayers
@@ -355,24 +390,31 @@ const TournamentManage = () => {
                                     (p.email || '').toLowerCase().includes(playerSearchQuery.toLowerCase())
                                  )
                                  .map(p => (
-                                 <div key={p._id} className="flex items-center justify-between p-3 bg-base2/30 rounded-xl hover:bg-base2/50 transition-colors group">
+                                 <div key={p._id} className="flex items-center justify-between p-3 bg-base2/10 rounded-xl hover:bg-base2/20 transition-colors group">
                                     <div className="flex items-center gap-3">
                                        <div className="w-8 h-8 rounded-full bg-violet/10 text-violet flex items-center justify-center text-xs font-bold shadow-sm">
-                                          {p.fullName[0]}
+                                          {p.fullName?.[0]}
                                        </div>
                                        <div>
                                           <p className="text-sm font-bold text-text-emphasis leading-tight group-hover:text-primary transition-colors">{p.fullName}</p>
                                           <p className="text-[10px] text-text/40 font-medium">{p.email}</p>
                                        </div>
                                     </div>
-                                    <button
-                                       onClick={() => handleInvite(p._id)}
-                                       disabled={tournament.invitedPlayers?.some(ip => ip._id === p._id)}
-                                       className="text-primary disabled:opacity-30 hover:scale-110 transition-transform"
-                                       type="button"
-                                    >
-                                       <UserPlus size={18} />
-                                    </button>
+                                    {tournament.invitedPlayers?.some(ip => (ip._id || ip).toString() === p._id.toString()) ? (
+                                       <span className="text-[10px] font-black uppercase text-green tracking-widest bg-green/10 px-2 py-1 rounded-lg border border-green/20">Invited</span>
+                                    ) : (
+                                       <button
+                                          onClick={() => togglePlayerSelection(p)}
+                                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                                             selectedPlayers.some(sp => sp._id === p._id) 
+                                             ? 'bg-red text-base3 shadow-lg shadow-red/20 rotate-45' 
+                                             : 'bg-primary text-base3 shadow-lg shadow-primary/20'
+                                          }`}
+                                          type="button"
+                                       >
+                                          <UserPlus size={16} />
+                                       </button>
+                                    )}
                                  </div>
                               ))}
                               {availablePlayers
@@ -385,13 +427,60 @@ const TournamentManage = () => {
                               )}
                            </>
                         ) : (
-                           <div className="text-center py-8">
+                           <div className="text-center py-6">
                               <p className="text-xs text-text/40 font-black italic uppercase tracking-widest leading-relaxed">
                                 Enter at least 2 characters<br/>to search players
                               </p>
                            </div>
                         )}
                      </div>
+
+                     {/* 2. Attached Draft (Below Search Results) */}
+                     {selectedPlayers.length > 0 && (
+                        <div className="mt-8 pt-6 border-t border-base2/50 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                           <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-black uppercase text-violet tracking-widest">Selected for Invite ({selectedPlayers.length})</span>
+                              <button 
+                                 onClick={() => setSelectedPlayers([])}
+                                 className="text-[10px] font-black uppercase text-red hover:underline"
+                              >
+                                 Clear
+                              </button>
+                           </div>
+                           <div className="flex flex-wrap gap-2 p-3 bg-violet/5 rounded-2xl border border-violet/10">
+                              {selectedPlayers.map(p => (
+                                 <div key={p._id} className="flex items-center gap-2 bg-base3 px-3 py-1.5 rounded-xl border border-base2 shadow-sm animate-in zoom-in-95">
+                                    <span className="text-xs font-bold text-text-emphasis truncate max-w-[100px]">{p.fullName}</span>
+                                    <button onClick={() => togglePlayerSelection(p)} className="text-text/40 hover:text-red transition-colors">
+                                       <X size={14} />
+                                    </button>
+                                 </div>
+                              ))}
+                           </div>
+                           <button
+                              onClick={handleBulkInvite}
+                              disabled={actionLoading}
+                              className="w-full bg-violet hover:bg-violet-dark text-base3 py-3 rounded-2xl font-black shadow-lg shadow-violet/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+                           >
+                              {actionLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                              Send Invites to ({selectedPlayers.length})
+                           </button>
+                        </div>
+                     )}
+
+                     {/* 3. Already Invited List (Names only) */}
+                     {tournament.invitedPlayers && tournament.invitedPlayers.length > 0 && (
+                        <div className="mt-8 pt-6 border-t border-base2/50 space-y-3">
+                           <h4 className="text-[10px] font-black uppercase text-text/40 tracking-[0.2em]">Sent Invitations</h4>
+                           <div className="flex flex-wrap gap-x-2 gap-y-1">
+                              {tournament.invitedPlayers.map((p, idx) => (
+                                 <span key={p._id || idx} className="text-[11px] font-bold text-text/60 bg-base2/10 px-2.5 py-1 rounded-lg border border-base2/30">
+                                    {p.fullName}
+                                 </span>
+                               ))}
+                           </div>
+                        </div>
+                     )}
                   </div>
                </div>
             )}

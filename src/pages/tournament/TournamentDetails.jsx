@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Calendar, MapPin, Users, Info, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Trophy, Calendar, MapPin, Users, Info, ArrowLeft, CheckCircle, XCircle, Zap } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
@@ -85,6 +85,26 @@ const TournamentDetails = () => {
             <ArrowLeft size={20} /> Back to Browse
          </Link>
 
+         {new Date(tournament.registrationDeadline) < new Date() && tournament.status === 'open_for_players' && (
+            <div className="card-premium p-6 rounded-3xl bg-red/5 border-red/20 mb-8 flex items-center gap-4 text-red">
+               <XCircle size={32} />
+               <div>
+                  <p className="font-bold">Registration Closed</p>
+                  <p className="text-sm opacity-80">The registration deadline for this tournament has passed. Unfilled tournaments will be cancelled.</p>
+               </div>
+            </div>
+         )}
+
+         {tournament.status === 'full' && (
+            <div className="card-premium p-6 rounded-3xl bg-violet/5 border-violet/20 mb-8 flex items-center gap-4 text-violet">
+               <Zap size={32} fill="currentColor" />
+               <div>
+                  <p className="font-bold">Tournament Full & Scheduled</p>
+                  <p className="text-sm opacity-80">The tournament is full. Matches will be generated on {new Date(tournament.startDate).toLocaleDateString()} at {new Date(tournament.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.</p>
+               </div>
+            </div>
+         )}
+
          {pendingInvite && (
             <div className="card-premium p-8 rounded-3xl bg-orange/5 border-2 border-orange/20 mb-8 animate-in slide-in-from-top-4 duration-500">
                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -106,7 +126,8 @@ const TournamentDetails = () => {
                      </button>
                      <button
                         onClick={() => handleInviteResponse('accepted')}
-                        className="flex-1 md:flex-none px-8 py-3 rounded-xl bg-green text-base3 font-bold hover:opacity-90 shadow-lg shadow-green/20 transition-all text-sm"
+                        disabled={new Date(tournament.registrationDeadline) < new Date()}
+                        className="flex-1 md:flex-none px-8 py-3 rounded-xl bg-green text-base3 font-bold hover:opacity-90 shadow-lg shadow-green/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                      >
                         Join Tournament
                      </button>
@@ -220,6 +241,78 @@ const TournamentDetails = () => {
                   </section>
                )}
             </div>
+
+            {/* Tournament Bracket Section */}
+            {(tournament.matches && tournament.matches.length > 0) && (
+               <div className="mt-12 space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                  <div className="flex items-center gap-4 px-4 border-t border-base2 pt-8">
+                     <h3 className="text-2xl font-black text-text-emphasis tracking-tighter uppercase flex items-center gap-3">
+                        <Target size={24} className="text-primary" />
+                        Tournament Bracket
+                     </h3>
+                     <div className="h-px flex-1 bg-gradient-to-r from-base2 to-transparent opacity-50"></div>
+                  </div>
+
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 overflow-x-auto pb-8 snap-x thin-scrollbar">
+                     {Object.entries(
+                        tournament.matches.reduce((acc, m) => {
+                           const r = m.round || 1;
+                           if (!acc[r]) acc[r] = [];
+                           acc[r].push(m);
+                           return acc;
+                        }, {})
+                     ).sort((a, b) => a[0] - b[0]).map(([round, roundMatches]) => (
+                        <div key={round} className="space-y-6 min-w-[320px] snap-center">
+                           <div className="flex items-center gap-2 mb-4">
+                              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-sm border border-primary/20 shadow-sm">
+                                 {round}
+                               </span>
+                              <h4 className="font-black text-text-emphasis uppercase tracking-widest text-sm">Round {round}</h4>
+                           </div>
+                           
+                           <div className="grid grid-cols-1 gap-4">
+                              {roundMatches.map((match) => (
+                                 <div key={match._id} className="card-premium p-5 rounded-3xl bg-base3 border border-base2 hover:border-primary/30 transition-all group relative overflow-hidden shadow-lg">
+                                    <div className="absolute top-0 right-0 p-3">
+                                       <StatusBadge status={match.status} />
+                                    </div>
+                                    <div className="flex flex-col gap-2 mt-4">
+                                       <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${
+                                          (match.winnerId?._id || match.winnerId) === (match.player1Id?._id || match.player1Id) && match.status === 'completed'
+                                          ? 'bg-green/5 border-green/30 text-green shadow-sm' 
+                                          : 'bg-base2/20 border-base2'
+                                       }`}>
+                                          <div className="flex items-center gap-2">
+                                             <div className="w-6 h-6 rounded-full bg-base3 flex items-center justify-center text-[10px] font-bold shadow-xs">
+                                                {match.player1Id?.fullName?.[0] || '?'}
+                                             </div>
+                                             <span className="text-sm font-bold truncate max-w-[140px] uppercase tracking-tight">{match.player1Id?.fullName || 'TBD'}</span>
+                                          </div>
+                                          <span className="text-sm font-black font-mono">{match.scorePlayer1}</span>
+                                       </div>
+
+                                       <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all ${
+                                          (match.winnerId?._id || match.winnerId) === (match.player2Id?._id || match.player2Id) && match.status === 'completed'
+                                          ? 'bg-green/5 border-green/30 text-green shadow-sm' 
+                                          : 'bg-base2/20 border-base2'
+                                       }`}>
+                                          <div className="flex items-center gap-2">
+                                             <div className="w-6 h-6 rounded-full bg-base3 flex items-center justify-center text-[10px] font-bold shadow-xs">
+                                                {match.player2Id?.fullName?.[0] || '?'}
+                                             </div>
+                                             <span className="text-sm font-bold truncate max-w-[140px] uppercase tracking-tight">{match.player2Id?.fullName || 'TBD'}</span>
+                                          </div>
+                                          <span className="text-sm font-black font-mono">{match.scorePlayer2}</span>
+                                       </div>
+                                    </div>
+                                 </div>
+                              ))}
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            )}
          </div>
       </DashboardLayout>
    );
