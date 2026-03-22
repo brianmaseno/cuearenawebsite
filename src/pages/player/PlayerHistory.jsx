@@ -318,10 +318,10 @@ const PlayerHistory = () => {
                     {/* Completion Metadata Footer matching Match Style */}
                     <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
                       <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
-                        <div className="flex items-center gap-1.5 font-black uppercase tracking-wider">
-                          <ClockIcon size={12} className="text-primary/30" />
-                          History Archive
-                        </div>
+                        <Link to={`/dashboard/tournament/${t._id}#bracket`} className="flex items-center gap-1.5 font-black uppercase tracking-wider text-primary hover:text-primary-focus transition-colors">
+                          <TargetIcon size={12} />
+                          View Tournament Details
+                        </Link>
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-1.5">
                             {new Date(t.updatedAt).toLocaleDateString()}
