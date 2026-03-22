@@ -5,9 +5,11 @@ import api from '../../api/axios';
 import { Trophy, Calendar, MapPin, Users, Info, ArrowLeft, CheckCircle } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
+import { useSocket } from '../../context/SocketContext';
 
 const TournamentDetails = () => {
    const { id } = useParams();
+   const { socket, joinTournamentRoom, leaveTournamentRoom } = useSocket();
    const [tournament, setTournament] = useState(null);
    const [loading, setLoading] = useState(true);
    const [pendingInvite, setPendingInvite] = useState(null);
@@ -47,7 +49,32 @@ const TournamentDetails = () => {
    useEffect(() => {
       fetchTournament();
       checkPendingInvite();
+
+      if (id) {
+         joinTournamentRoom(id);
+      }
+
+      return () => {
+         if (id) leaveTournamentRoom(id);
+      };
    }, [id]);
+
+   useEffect(() => {
+      if (socket) {
+         socket.on('TOURNAMENT_UPDATE', (data) => {
+            if (data && data._id) {
+               setTournament(data);
+            } else {
+               fetchTournament();
+            }
+            toast.info('Tournament updated!', { id: 'tourney-update-view' });
+         });
+
+         return () => {
+            socket.off('TOURNAMENT_UPDATE');
+         };
+      }
+   }, [socket]);
 
    if (loading) return <DashboardLayout title="Tournament Details">Loading...</DashboardLayout>;
    if (!tournament) return <DashboardLayout title="Error">Tournament not found</DashboardLayout>;

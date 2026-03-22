@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
+import { useSocket } from './SocketContext';
+import { toast } from 'react-hot-toast';
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const { user } = useAuth();
+  const { socket } = useSocket();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -27,14 +30,25 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     if (user) {
       fetchNotifications();
-      // Poll every 1 minute for new notifications
-      const interval = setInterval(fetchNotifications, 60000);
-      return () => clearInterval(interval);
     } else {
       setNotifications([]);
       setUnreadCount(0);
     }
   }, [user, fetchNotifications]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('NOTIFICATION_NEW', (notification) => {
+        setNotifications(prev => [notification, ...prev]);
+        setUnreadCount(prev => prev + 1);
+        toast.success(`New Notification: ${notification.title}`);
+      });
+
+      return () => {
+        socket.off('NOTIFICATION_NEW');
+      };
+    }
+  }, [socket]);
 
   const markAsRead = async (id) => {
     try {

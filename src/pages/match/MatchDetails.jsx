@@ -5,10 +5,12 @@ import api from '../../api/axios';
 import { Target, Users, MapPin, Calendar, CheckCircle, Trophy, Loader2, ArrowLeft, X } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
+import { useSocket } from '../../context/SocketContext';
 
 const MatchDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { socket, joinMatchRoom, leaveMatchRoom } = useSocket();
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSet, setActiveSet] = useState(0);
@@ -96,7 +98,28 @@ const MatchDetails = () => {
   useEffect(() => {
     fetchMatch();
     checkPendingInvite();
+
+    if (id) {
+      joinMatchRoom(id);
+    }
+
+    return () => {
+      if (id) leaveMatchRoom(id);
+    };
   }, [id]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('MATCH_UPDATE', (updatedMatch) => {
+        setMatch(updatedMatch);
+        toast.info('Match updated!', { id: 'match-update' });
+      });
+
+      return () => {
+        socket.off('MATCH_UPDATE');
+      };
+    }
+  }, [socket]);
 
   const handleRecordResult = async (e) => {
     e.preventDefault();

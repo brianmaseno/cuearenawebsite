@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { SocketProvider } from './context/SocketContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SidebarProvider } from './context/SidebarContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -31,102 +32,104 @@ import Profile from './pages/Profile';
 function App() {
   return (
     <AuthProvider>
-      <NotificationProvider>
-        <SidebarProvider>
-          <div className="min-h-screen font-sans">
-          <Toaster position="top-right" />
-          <InactivityTimer />
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/tournaments" element={<PublicTournaments />} />
+        <SocketProvider>
+          <NotificationProvider>
+            <SidebarProvider>
+              <div className="min-h-screen font-sans">
+                <Toaster position="top-right" />
+                <InactivityTimer />
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/tournaments" element={<PublicTournaments />} />
 
-            {/* Player Routes */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute roles={['player']}>
-                <PlayerDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/history" element={
-              <ProtectedRoute roles={['player']}>
-                <PlayerHistory />
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/match/:id" element={
-              <ProtectedRoute roles={['player', 'moderator', 'admin']}>
-                <MatchDetails />
-              </ProtectedRoute>
-            } />
-            <Route path="/dashboard/tournament/:id" element={
-              <ProtectedRoute roles={['player', 'moderator', 'admin']}>
-                <TournamentDetails />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
+                  {/* Player Routes */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute roles={['player']}>
+                      <PlayerDashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/history" element={
+                    <ProtectedRoute roles={['player']}>
+                      <PlayerHistory />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/match/:id" element={
+                    <ProtectedRoute roles={['player', 'moderator', 'admin']}>
+                      <MatchDetails />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/tournament/:id" element={
+                    <ProtectedRoute roles={['player', 'moderator', 'admin']}>
+                      <TournamentDetails />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } />
 
-            {/* Moderator Routes */}
-            <Route path="/moderator" element={<Navigate to="/moderator/ongoing" replace />} />
-            <Route path="/moderator/create-tournament" element={
-              <ProtectedRoute roles={['moderator']}>
-                <CreateTournament />
-              </ProtectedRoute>
-            } />
-            <Route path="/moderator/manage-tournament/:id" element={
-              <ProtectedRoute roles={['moderator']}>
-                <TournamentManage />
-              </ProtectedRoute>
-            } />
-            <Route path="/moderator/create-match" element={
-              <ProtectedRoute roles={['moderator']}>
-                <CreateMatch />
-              </ProtectedRoute>
-            } />
-            <Route path="/moderator/match/:id" element={
-              <ProtectedRoute roles={['moderator']}>
-                <MatchDetails />
-              </ProtectedRoute>
-            } />
-            <Route path="/moderator/ongoing" element={
-              <ProtectedRoute roles={['moderator']}>
-                <OngoingActivities />
-              </ProtectedRoute>
-            } />
-            <Route path="/moderator/history" element={
-              <ProtectedRoute roles={['moderator']}>
-                <History />
-              </ProtectedRoute>
-            } />
+                  {/* Moderator Routes */}
+                  <Route path="/moderator" element={<Navigate to="/moderator/ongoing" replace />} />
+                  <Route path="/moderator/create-tournament" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <CreateTournament />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/manage-tournament/:id" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <TournamentManage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/create-match" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <CreateMatch />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/match/:id" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <MatchDetails />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/ongoing" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <OngoingActivities />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/history" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <History />
+                    </ProtectedRoute>
+                  } />
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={
-              <ProtectedRoute roles={['admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/logs" element={
-              <ProtectedRoute roles={['admin']}>
-                <AdminLogs />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/users" element={
-              <ProtectedRoute roles={['admin']}>
-                <AdminUsers />
-              </ProtectedRoute>
-            } />
+                  {/* Admin Routes */}
+                  <Route path="/admin" element={
+                    <ProtectedRoute roles={['admin']}>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/logs" element={
+                    <ProtectedRoute roles={['admin']}>
+                      <AdminLogs />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/users" element={
+                    <ProtectedRoute roles={['admin']}>
+                      <AdminUsers />
+                    </ProtectedRoute>
+                  } />
 
-            {/* 404/Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-        </SidebarProvider>
-      </NotificationProvider>
-    </AuthProvider>
+                  {/* 404/Fallback */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </div>
+            </SidebarProvider>
+          </NotificationProvider>
+        </SocketProvider>
+      </AuthProvider>
   );
 }
 

@@ -19,10 +19,12 @@ import {
 } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
+import { useSocket } from '../../context/SocketContext';
 
 const TournamentManage = () => {
    const { id } = useParams();
    const navigate = useNavigate();
+   const { socket, joinTournamentRoom, leaveTournamentRoom } = useSocket();
    const [tournament, setTournament] = useState(null);
    const [loading, setLoading] = useState(true);
    const [availablePlayers, setAvailablePlayers] = useState([]);
@@ -49,7 +51,34 @@ const TournamentManage = () => {
 
    useEffect(() => {
       fetchTournamentData();
+
+      if (id) {
+         joinTournamentRoom(id);
+      }
+
+      return () => {
+         if (id) leaveTournamentRoom(id);
+      };
    }, [id]);
+
+   useEffect(() => {
+      if (socket) {
+         socket.on('TOURNAMENT_UPDATE', (data) => {
+            // If data has full tournament object, use it. 
+            // If it's just a match update flag, fetch fresh data to get full bracket info.
+            if (data && data._id) {
+               setTournament(data);
+            } else {
+               fetchTournamentData();
+            }
+            toast.info('Tournament updated!', { id: 'tourney-update' });
+         });
+
+         return () => {
+            socket.off('TOURNAMENT_UPDATE');
+         };
+      }
+   }, [socket]);
 
    const handleInvite = async (playerId) => {
       setActionLoading(true);
