@@ -228,7 +228,7 @@ const PlayerDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="bg-base2/10 p-3 border-t border-base2 mt-auto">
+                  <div className="bg-base2/10 p-3 border-t border-base2 mt-auto space-y-2">
                      {match.myStatus === 'pending' ? (
                         <div className="flex gap-2">
                            <button
@@ -246,20 +246,32 @@ const PlayerDashboard = () => {
                              Accept Match
                            </button>
                         </div>
-                     ) : match.status === 'completed' ? (
-                        <div className={`w-full py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2 ${
-                           match.winnerId === userId ? 'bg-green/10 text-green' : 'bg-red/10 text-red'
-                        }`}>
-                           {match.winnerId === userId ? '🏆 YOU WON!' : '❌ MATCH LOST'}
-                        </div>
-                     ) : (match.player1Accepted && match.player2Accepted) ? (
-                        <div className="w-full bg-primary/10 text-primary py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
-                           ⚡ ONGOING
-                        </div>
                      ) : (
-                        <div className="w-full bg-orange/10 text-orange py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
-                           ⏳ READY
-                        </div>
+                        <>
+                           {match.status === 'completed' ? (
+                              <div className={`w-full py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2 ${
+                                 match.winnerId === userId ? 'bg-green/10 text-green' : 'bg-red/10 text-red'
+                              }`}>
+                                 {match.winnerId === userId ? '🏆 YOU WON!' : '❌ MATCH LOST'}
+                              </div>
+                           ) : (match.player1Accepted && match.player2Accepted) ? (
+                              <div className="w-full bg-primary/10 text-primary py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
+                                 ⚡ ONGOING
+                              </div>
+                           ) : (
+                              <div className="w-full bg-orange/10 text-orange py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
+                                 ⏳ READY
+                              </div>
+                           )}
+                           
+                           <Link 
+                             to={`/dashboard/match/${match._id}`}
+                             className="w-full bg-base3 border border-base2 text-primary py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-base2/30 transition-all shadow-sm"
+                           >
+                             See More (Match Sets)
+                             <ChevronRight size={14} />
+                           </Link>
+                        </>
                      )}
                   </div>
                 </div>

@@ -6,11 +6,13 @@ import { Target, Users, MapPin, Calendar, CheckCircle, Trophy, Loader2, ArrowLef
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
 const MatchDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { socket, joinMatchRoom, leaveMatchRoom } = useSocket();
+  const { user } = useAuth();
   const [match, setMatch] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSet, setActiveSet] = useState(0);
@@ -251,7 +253,7 @@ const MatchDetails = () => {
              <div className="flex items-center justify-between border-b border-base2 pb-4">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                    <Target size={20} className="text-primary" />
-                   Match Console (Sets Management)
+                    {user?.role === 'player' ? 'Match Scoreboard' : 'Match Console (Sets Management)'}
                 </h3>
                 <div className="text-[10px] font-black uppercase tracking-widest text-text/40">
                    Best of {match.setsCount} Sets
@@ -280,12 +282,22 @@ const MatchDetails = () => {
                     let winnerColor = '';
                     
                     if (sRes) {
-                       if (sRes.winnerId === match.player1Id._id) {
-                          tabLabel = match.player1Id.fullName.split(' ')[0];
-                          winnerColor = 'text-primary';
+                       const isP1Winner = sRes.winnerId === match.player1Id._id;
+                       const userIsP1 = user?._id === match.player1Id._id;
+                       const userIsP2 = user?._id === match.player2Id._id;
+
+                       if (user?.role === 'player' && (userIsP1 || userIsP2)) {
+                          const userWon = sRes.winnerId === user._id;
+                          tabLabel = userWon ? 'WON' : 'LOST';
+                          winnerColor = userWon ? 'text-green' : 'text-red';
                        } else {
-                          tabLabel = match.player2Id.fullName.split(' ')[0];
-                          winnerColor = 'text-violet';
+                          if (isP1Winner) {
+                             tabLabel = match.player1Id.fullName.split(' ')[0];
+                             winnerColor = 'text-primary';
+                          } else {
+                             tabLabel = match.player2Id.fullName.split(' ')[0];
+                             winnerColor = 'text-violet';
+                          }
                        }
                     }
 
@@ -294,7 +306,7 @@ const MatchDetails = () => {
                           <button
                             disabled={(isLocked || !isOngoing) && match.status !== 'completed'}
                             onClick={() => {
-                               if (!isLocked && isOngoing && !sRes && match.status !== 'completed') {
+                               if (user?.role !== 'player' && !isLocked && isOngoing && !sRes && match.status !== 'completed') {
                                   setSelectingWinnerForSet(idx);
                                } else {
                                   setActiveSet(idx);
@@ -357,56 +369,58 @@ const MatchDetails = () => {
               </div>
 
 
-             <div className="pt-4 border-t border-base2">
-                <h4 className="text-xs font-black uppercase tracking-widest text-text/30 mb-4">Manual Override (Final Score)</h4>
-                <form onSubmit={handleRecordResult} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                    <div>
-                       <label className="block text-[10px] font-black uppercase text-text/50 mb-2">{match.player1Id.fullName} Final Score</label>
-                       <input 
-                          type="number" 
-                          value={resultData.scorePlayer1}
-                          onChange={(e) => setResultData({...resultData, scorePlayer1: parseInt(e.target.value)})}
-                          className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
-                       />
-                    </div>
-                    <div>
-                       <label className="block text-[10px] font-black uppercase text-text/50 mb-2">{match.player2Id.fullName} Final Score</label>
-                       <input 
-                          type="number" 
-                          value={resultData.scorePlayer2}
-                          onChange={(e) => setResultData({...resultData, scorePlayer2: parseInt(e.target.value)})}
-                          className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
-                       />
-                    </div>
-                    <button type="submit" className="btn-primary py-3.5 rounded-xl font-bold shadow-lg">
-                       Force Final Result
-                    </button>
-                    
-                    <div className="md:col-span-3">
-                       <label className="block text-[10px] font-black uppercase text-text/50 mb-2">Winner Selection</label>
-                       <div className="flex gap-4">
-                          <button 
-                            type="button"
-                            onClick={() => setResultData({...resultData, winnerId: match.player1Id._id})}
-                            className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
-                              resultData.winnerId === match.player1Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3 text-text/50'
-                            }`}
-                          >
-                             {match.player1Id.fullName}
-                          </button>
-                          <button 
-                            type="button"
-                            onClick={() => setResultData({...resultData, winnerId: match.player2Id._id})}
-                            className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
-                              resultData.winnerId === match.player2Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3 text-text/50'
-                            }`}
-                          >
-                             {match.player2Id.fullName}
-                          </button>
-                       </div>
-                    </div>
-                </form>
-             </div>
+             {user?.role !== 'player' && (
+               <div className="pt-4 border-t border-base2">
+                  <h4 className="text-xs font-black uppercase tracking-widest text-text/30 mb-4">Manual Override (Final Score)</h4>
+                  <form onSubmit={handleRecordResult} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                      <div>
+                         <label className="block text-[10px] font-black uppercase text-text/50 mb-2">{match.player1Id.fullName} Final Score</label>
+                         <input 
+                            type="number" 
+                            value={resultData.scorePlayer1}
+                            onChange={(e) => setResultData({...resultData, scorePlayer1: parseInt(e.target.value)})}
+                            className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
+                         />
+                      </div>
+                      <div>
+                         <label className="block text-[10px] font-black uppercase text-text/50 mb-2">{match.player2Id.fullName} Final Score</label>
+                         <input 
+                            type="number" 
+                            value={resultData.scorePlayer2}
+                            onChange={(e) => setResultData({...resultData, scorePlayer2: parseInt(e.target.value)})}
+                            className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-lg font-bold"
+                         />
+                      </div>
+                      <button type="submit" className="btn-primary py-3.5 rounded-xl font-bold shadow-lg">
+                         Force Final Result
+                      </button>
+                      
+                      <div className="md:col-span-3">
+                         <label className="block text-[10px] font-black uppercase text-text/50 mb-2">Winner Selection</label>
+                         <div className="flex gap-4">
+                            <button 
+                              type="button"
+                              onClick={() => setResultData({...resultData, winnerId: match.player1Id._id})}
+                              className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
+                                resultData.winnerId === match.player1Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3 text-text/50'
+                              }`}
+                            >
+                               {match.player1Id.fullName}
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => setResultData({...resultData, winnerId: match.player2Id._id})}
+                              className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${
+                                resultData.winnerId === match.player2Id._id ? 'border-primary bg-primary/10 text-primary' : 'border-base2 bg-base3 text-text/50'
+                              }`}
+                            >
+                               {match.player2Id.fullName}
+                            </button>
+                         </div>
+                      </div>
+                  </form>
+               </div>
+             )}
           </section>
         )}
       </div>
