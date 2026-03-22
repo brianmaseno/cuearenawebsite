@@ -6,6 +6,7 @@ import { SocketProvider } from './context/SocketContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SidebarProvider } from './context/SidebarContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthGuard from './components/AuthGuard';
 import InactivityTimer from './components/InactivityTimer';
 
 // Shared / Auth
@@ -39,11 +40,15 @@ function App() {
                 <Toaster position="top-right" />
                 <InactivityTimer />
                 <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<Landing />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/tournaments" element={<PublicTournaments />} />
+                  {/* Public-ish Routes with Auth Guards */}
+                  <Route path="/" element={<AuthGuard><Landing /></AuthGuard>} />
+                  <Route path="/login" element={<AuthGuard><Login /></AuthGuard>} />
+                  <Route path="/register" element={<AuthGuard><Register /></AuthGuard>} />
+                  <Route path="/tournaments" element={
+                    <ProtectedRoute>
+                      <PublicTournaments />
+                    </ProtectedRoute>
+                  } />
 
                   {/* Player Routes */}
                   <Route path="/dashboard" element={

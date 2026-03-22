@@ -306,7 +306,7 @@ const OngoingActivities = () => {
                      <div className="flex flex-wrap gap-2 justify-center relative">
                         {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                           const sRes = match.setsResults?.find(s => s.setIndex === idx);
-                          const isActive = activeSetMap[match._id] === idx;
+                          const isActive = currentActiveSet === idx;
                           // Lock if match not ongoing (unless it's already completed history)
                           const isLocked = !isOngoing && !isMatchFinished ? true : (idx > defaultActive);
                           
@@ -339,7 +339,7 @@ const OngoingActivities = () => {
                                   }}
                                   className={`w-full px-1 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-tight transition-all border-2 flex flex-col items-center justify-center ${
                                     isActive 
-                                      ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105 z-10' 
+                                      ? 'bg-blue text-base3 border-blue shadow-[0_12px_24px_-8px_rgba(38,139,210,0.5)] -translate-y-1.5 scale-110 z-20' 
                                       : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 hover:opacity-100 hover:border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
                                   } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                                 >
