@@ -35,9 +35,6 @@ const Login = () => {
         {/* Brand */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-base3 shadow-lg">
-              <Trophy size={28} />
-            </div>
             <span className="text-3xl brand-premium">Cue Arena</span>
           </Link>
           <h2 className="text-2xl font-bold text-text-emphasis">Welcome Back</h2>

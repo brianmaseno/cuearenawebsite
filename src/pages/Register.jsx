@@ -40,10 +40,7 @@ const Register = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-base3 shadow-lg">
-              <UserPlus size={28} />
-            </div>
-            <span className="text-3xl brand-premium">Join Cue-Arena</span>
+            <span className="text-3xl brand-premium">Cue-Arena</span>
           </Link>
           <p className="text-text">Join the premium pool community today</p>
         </div>

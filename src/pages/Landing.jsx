@@ -36,9 +36,6 @@ const Landing = () => {
       <nav className="border-b border-base2 bg-base3/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-base3 group-hover:scale-105 transition-transform">
-              <Target size={24} />
-            </div>
             <span className="text-xl brand-premium">Cue-Arena</span>
           </Link>
           <div className="flex items-center gap-4">
@@ -186,12 +183,9 @@ const Landing = () => {
       <footer className="py-12 border-t border-base2 bg-base2/20">
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-base3">
-              <Target size={18} />
-            </div>
             <span className="text-xl brand-premium">Cue-Arena</span>
           </div>
-          <p className="text-text mb-8">© 2026 <span className="brand-premium align-middle transform scale-90">Cue-Arena</span> — Premium Pool Platform.</p>
+          <p className="text-text mb-8">© 2026 <span className="brand-premium">Cue-Arena</span> — Premium Pool Platform.</p>
           <div className="flex justify-center gap-6">
             <a href="#" className="text-text hover:text-primary transition-colors">Privacy</a>
             <a href="#" className="text-text hover:text-primary transition-colors">Terms</a>

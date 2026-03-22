@@ -63,10 +63,7 @@ const Sidebar = () => {
     }`}>
       <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
         <Link to={dashboardPath} className="flex items-center gap-3">
-          <div className="w-9 h-9 flex items-center justify-center shrink-0">
-            <img src="/favicon.png" alt="7 Ball" className="w-8 h-8 drop-shadow-md" />
-          </div>
-          {!isCollapsed && <span className="text-xl brand-premium truncate shadow-brand">Cue Arena</span>}
+          {!isCollapsed && <span className="text-xl brand-premium truncate">Cue Arena</span>}
         </Link>
         <button 
           onClick={toggleSidebar}

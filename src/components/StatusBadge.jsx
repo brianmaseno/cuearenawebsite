@@ -38,6 +38,7 @@ const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => 
 
   const formatStatus = (s) => {
     if (isExpired) return 'EXPIRED';
+    if (!s) return 'UNKNOWN';
     if (s === 'open_for_players' && entryType === 'invite_only') return 'PRIVATE';
     return s.replace(/_/g, ' ').toUpperCase();
   };
