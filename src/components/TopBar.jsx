@@ -112,7 +112,11 @@ const TopBar = ({ title }) => {
                         
                         // Direct Navigation Logic
                         const rolePath = user?.role === 'moderator' ? '/moderator' : '/dashboard';
-                        if (n.type.includes('tournament')) {
+                        const isCompleted = n.message?.toLowerCase().includes('completed') || n.title?.toLowerCase().includes('completed');
+
+                        if (isCompleted) {
+                          navigate(`${rolePath}/history`);
+                        } else if (n.type.includes('tournament')) {
                           navigate(`${rolePath}/${user?.role === 'moderator' ? 'manage-tournament' : 'tournament'}/${n.relatedId}`);
                         } else if (n.type.includes('match') || n.type === 'result_recorded') {
                           navigate(rolePath);
