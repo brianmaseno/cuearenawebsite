@@ -20,69 +20,18 @@ import {
    Send,
    Minus
 } from 'lucide-react';
+import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 
-const BracketMatchCard = ({ match, isFinal = false, onClick }) => {
-   const { user } = useAuth();
-   return (
-   <div 
-      onClick={onClick}
-      className={`group relative p-3.5 rounded-2xl bg-base3/80 backdrop-blur-md border border-base2/50 transition-all shadow-sm min-w-[160px] cursor-pointer
-         ${isFinal ? 'ring-2 ring-yellow/40 bg-yellow/5 hover:border-yellow/60' : 'hover:border-primary/40 hover:shadow-md'}
-      `}
-   >
-      {/* Subtle Status Indicator */}
-      <div className="absolute -top-1 -right-1">
-         {match.status === 'pending_invites' ? (
-            <span className="flex h-2 w-2">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-2 w-2 bg-orange"></span>
-            </span>
-         ) : match.status === 'ongoing' ? (
-            <span className="flex h-2 w-2">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-         ) : null}
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-         {[
-            { id: match.player1Id, score: match.scorePlayer1, accepted: match.player1Accepted },
-            { id: match.player2Id, score: match.scorePlayer2, accepted: match.player2Accepted }
-         ].map((p, i) => {
-            const isWinner = (match.winnerId?._id || match.winnerId) === (p.id?._id || p.id) && match.status === 'completed';
-            const isLoser = (match.winnerId?._id || match.winnerId) && (match.winnerId?._id || match.winnerId) !== (p.id?._id || p.id) && match.status === 'completed';
-            return (
-               <div key={i} className={`flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-300 ${
-                  isWinner ? 'bg-green/10 text-green font-bold scale-[1.02] shadow-sm' : 
-                  isLoser ? 'opacity-40 grayscale-[0.5]' : 'text-text/80'
-               }`}>
-                  <div className="flex items-center gap-2.5 overflow-hidden mr-4">
-                     <div className={`w-1.5 h-1.5 rounded-full ${p.id ? (p.accepted ? 'bg-green' : 'bg-orange') : 'bg-base2'}`}></div>
-                     <span className="text-sm font-bold tracking-tight truncate max-w-[110px]">
-                        {p.id?.fullName || 'TBD'}
-                        {p.id?._id === user?._id && <span className="opacity-70 text-[10px] ml-1">(me)</span>}
-                     </span>
-                  </div>
-                  <span className={`text-sm font-black font-mono shrink-0 ${isWinner ? 'text-green' : 'text-primary'}`}>
-                     {p.score || 0}/{match.setsCount || 1}
-                  </span>
-               </div>
-            );
-         })}
-      </div>
-   </div>
-   );
-};
 
 const TournamentManage = () => {
    const { id } = useParams();
    const navigate = useNavigate();
    const { socket, joinTournamentRoom, leaveTournamentRoom } = useSocket();
+   const { user } = useAuth();
    const [tournament, setTournament] = useState(null);
    const [loading, setLoading] = useState(true);
    const [availablePlayers, setAvailablePlayers] = useState([]);
@@ -241,7 +190,7 @@ const TournamentManage = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-base2">
                <div>
                   <div className="flex items-center gap-3 mb-2">
-                     <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} />
+                     <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} startDate={tournament.startDate} />
                      <div className="flex items-center gap-2 text-text/40 text-xs font-bold uppercase tracking-widest">
                         <Calendar size={14} />
                         Created {new Date(tournament.createdAt).toLocaleDateString()}
@@ -286,205 +235,11 @@ const TournamentManage = () => {
             </div>
 
             {/* Brackets Section - Minimalist */}
-            {(tournament.status === 'ongoing' || tournament.status === 'completed') && (
-               <section className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                  <style>
-                     {`
-                        .bracket-column {
-                           display: flex;
-                           flex-direction: column;
-                           justify-content: space-around;
-                           gap: 1.5rem;
-                           position: relative;
-                        }
-                        .match-card-wrapper {
-                           position: relative;
-                           padding: 0.25rem 0;
-                           z-index: 10;
-                        }
-
-                        /* Professional Connectors - Left Side */
-                        .left-wing .bracket-column::after {
-                           content: '';
-                           position: absolute;
-                           right: -4rem;
-                           top: 25%;
-                           bottom: 25%;
-                           width: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-
-                        .left-wing .match-card-wrapper::after {
-                           content: '';
-                           position: absolute;
-                           right: -4rem;
-                           top: 50%;
-                           width: 4rem;
-                           height: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-                        
-                        .left-wing .match-card-wrapper.has-prev::before {
-                           content: '';
-                           position: absolute;
-                           left: -4rem;
-                           top: 50%;
-                           width: 4rem;
-                           height: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-
-                        /* Professional Connectors - Right Side */
-                        .right-wing .bracket-column::after {
-                           content: '';
-                           position: absolute;
-                           left: -4rem;
-                           top: 25%;
-                           bottom: 25%;
-                           width: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-
-                        .right-wing .match-card-wrapper::after {
-                           content: '';
-                           position: absolute;
-                           left: -4rem;
-                           top: 50%;
-                           width: 4rem;
-                           height: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-                        
-                        .right-wing .match-card-wrapper.has-prev::before {
-                           content: '';
-                           position: absolute;
-                           right: -4rem;
-                           top: 50%;
-                           width: 4rem;
-                           height: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-
-                        /* Final Stage Connectors */
-                        .final-match-card::before {
-                           content: '';
-                           position: absolute;
-                           left: -5rem;
-                           top: 50%;
-                           width: 5rem;
-                           height: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-                        .final-match-card::after {
-                           content: '';
-                           position: absolute;
-                           right: -5rem;
-                           top: 50%;
-                           width: 5rem;
-                           height: 2px;
-                           background: var(--color-base2);
-                           opacity: 0.5;
-                        }
-
-                        .thin-scrollbar::-webkit-scrollbar {
-                           height: 4px;
-                        }
-                        .thin-scrollbar::-webkit-scrollbar-thumb {
-                           background: var(--color-primary);
-                           border-radius: 10px;
-                        }
-                     `}
-                  </style>
-
-                  <div className="overflow-x-auto pb-8 pt-2 px-2 thin-scrollbar">
-                     <div className="min-w-[1000px] flex justify-center items-stretch gap-0">
-                        
-                        {/* LEFT WING */}
-                        <div className="flex gap-32 items-stretch left-wing">
-                           {tournament.matches && [...new Set(tournament.matches.map(m => m.round))]
-                              .filter(r => r < Math.max(...tournament.matches.map(m => m.round)))
-                              .sort((a, b) => a - b)
-                              .map(roundNum => (
-                                 <div key={`left-r-${roundNum}`} className="bracket-column">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary text-center mb-4">Round {roundNum}</h4>
-                                    {tournament.matches
-                                        .filter(m => m.round === roundNum && m.matchIndex < (tournament.matches.filter(mf => mf.round === roundNum).length / 2))
-                                        .map(match => (
-                                           <div key={match._id} className={`match-card-wrapper ${roundNum > 1 ? 'has-prev' : ''}`}>
-                                              <BracketMatchCard match={match} onClick={() => { setSelectedMatchForSets(match); setActiveSetInModal(null); }} />
-                                              {match.winnerId && tournament.status !== 'pending_invites' && (
-                                                 <div className="absolute right-[-4rem] top-1/2 -translate-y-1/2 w-[4rem] flex items-center justify-center z-10 pointer-events-none">
-                                                    <div className="bg-base2 border-y border-x border-primary/20 shadow-md px-2 py-0.5 rounded text-center truncate max-w-[95%]">
-                                                       <span className="text-[10px] font-black text-primary truncate leading-tight">{match.winnerId.fullName}</span>
-                                                    </div>
-                                                 </div>
-                                              )}
-                                           </div>
-                                        ))}
-                                 </div>
-                              ))}
-                        </div>
-
-                           {/* CENTER STAGE - Finals */}
-                           <div className="flex flex-col items-center justify-center px-16 relative">
-                              {/* Vertical Divider Decoration */}
-                              <div className="absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-base2 to-transparent opacity-50"></div>
-                              <div className="absolute top-0 bottom-0 right-0 w-px bg-gradient-to-b from-transparent via-base2 to-transparent opacity-50"></div>
-                              
-                              <h4 className="text-[12px] font-black uppercase tracking-[0.3em] text-yellow mb-8 animate-pulse">Championship Final</h4>
-
-                              {tournament.status === 'completed' && tournament.winner && (
-                                 <div className="flex items-center gap-2 mb-4 bg-yellow/10 px-6 py-2 rounded-full border border-yellow/20 animate-in zoom-in-95 duration-700">
-                                    <Trophy size={16} className="text-yellow" />
-                                    <span className="text-sm font-black text-text-emphasis truncate">{tournament.winner.fullName}</span>
-                                 </div>
-                              )}
-
-                              {tournament.matches && tournament.matches
-                               .filter(m => m.round === Math.max(...tournament.matches.map(mf => mf.round)))
-                               .map(match => (
-                                  <div key={match._id} className="scale-110 final-match-card relative z-20">
-                                     <BracketMatchCard match={match} isFinal={true} onClick={() => { setSelectedMatchForSets(match); setActiveSetInModal(null); }} />
-                                  </div>
-                               ))}
-                        </div>
-
-                        {/* RIGHT WING - Rounds before Final (Reversed) */}
-                        <div className="flex gap-32 items-stretch right-wing">
-                           {tournament.matches && [...new Set(tournament.matches.map(m => m.round))]
-                              .filter(r => r < Math.max(...tournament.matches.map(m => m.round)))
-                              .sort((a, b) => b - a)
-                              .map(roundNum => (
-                                 <div key={`right-r-${roundNum}`} className="bracket-column">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary text-center mb-4">Round {roundNum}</h4>
-                                    {tournament.matches
-                                        .filter(m => m.round === roundNum && m.matchIndex >= (tournament.matches.filter(mf => mf.round === roundNum).length / 2))
-                                        .map(match => (
-                                           <div key={match._id} className={`match-card-wrapper ${roundNum > 1 ? 'has-prev' : ''}`}>
-                                              <BracketMatchCard match={match} onClick={() => { setSelectedMatchForSets(match); setActiveSetInModal(null); }} />
-                                              {match.winnerId && tournament.status !== 'pending_invites' && (
-                                                 <div className="absolute left-[-4rem] top-1/2 -translate-y-1/2 w-[4rem] flex items-center justify-center z-10 pointer-events-none">
-                                                    <div className="bg-base2 border-y border-x border-primary/20 shadow-md px-2 py-0.5 rounded text-center truncate max-w-[95%]">
-                                                       <span className="text-[10px] font-black text-primary truncate leading-tight">{match.winnerId.fullName}</span>
-                                                    </div>
-                                                 </div>
-                                              )}
-                                           </div>
-                                        ))}
-                                 </div>
-                              ))}
-                        </div>
-                     </div>
-                  </div>
-               </section>
-            )}
+            <BracketCanvas 
+               tournament={tournament} 
+               onMatchClick={(match) => { setSelectedMatchForSets(match); setActiveSetInModal(null); }}
+               user={user}
+            />
 
             {/* Players & Invite Sidebar */}
             {tournament.status !== 'ongoing' && tournament.status !== 'completed' && (

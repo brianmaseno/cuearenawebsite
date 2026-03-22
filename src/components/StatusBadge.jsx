@@ -1,10 +1,14 @@
 import React from 'react';
 
-const StatusBadge = ({ status, entryType, registrationDeadline }) => {
-  const isExpired = status === 'open_for_players' && registrationDeadline && new Date(registrationDeadline) < new Date();
+const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => {
+  const isExpired = status === 'expired' || 
+    (['open_for_players', 'full'].includes(status) && (
+      (registrationDeadline && new Date(registrationDeadline) < new Date()) || 
+      (startDate && new Date(startDate) < new Date())
+    ));
   
   const getStyles = () => {
-    if (isExpired) return 'bg-base2/10 text-text/40 border-base2/20';
+    if (isExpired) return 'bg-red/10 text-red border-red/20';
     if (status === 'open_for_players' && entryType === 'invite_only') {
       return 'bg-violet/10 text-violet border-violet/20';
     }
@@ -26,7 +30,7 @@ const StatusBadge = ({ status, entryType, registrationDeadline }) => {
       case 'cancelled':
         return 'bg-red/10 text-red border-red/20';
       case 'expired':
-        return 'bg-base2/10 text-text/40 border-base2/20';
+        return 'bg-red/10 text-red border-red/20';
       default:
         return 'bg-base2/50 text-text border-base2';
     }
@@ -39,7 +43,7 @@ const StatusBadge = ({ status, entryType, registrationDeadline }) => {
   };
 
   return (
-    <span className={`px-2 py-1 rounded-md text-[10px] font-bold border ${getStyles()}`}>
+    <span className={`px-2 py-1 rounded-md text-[10px] font-bold border transition-colors ${getStyles()}`}>
       {formatStatus(status)}
     </span>
   );

@@ -388,11 +388,25 @@ const OngoingActivities = () => {
                         )}
                      </div>
 
-                     {isMatchFinished && (
+                     {isMatchFinished ? (
                         <div className="w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border bg-green/10 text-green border-green/20">
                            🏆 MATCH COMPLETED: {match.scorePlayer1} - {match.scorePlayer2}
                         </div>
-                     )}
+                     ) : (match.player1Status === 'accepted' && match.player2Status === 'accepted') ? (
+                        match.isTournamentMatch ? (
+                           <Link 
+                              to={`/moderator/manage-tournament/${match.tournamentId?._id || match.tournamentId}`}
+                              className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
+                           >
+                              <Trophy size={14} />
+                              ENTER ROOM
+                           </Link>
+                        ) : (
+                           <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
+                              ⚡ ONGOING MATCH
+                           </div>
+                        )
+                     ) : null}
                   </div>
                 </div>
                 );
@@ -412,7 +426,7 @@ const OngoingActivities = () => {
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <Trophy size={16} />
                     </div>
-                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} />
+                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} />
                   </div>
                   
                   <div className="p-5">

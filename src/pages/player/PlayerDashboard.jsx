@@ -306,9 +306,19 @@ const PlayerDashboard = () => {
                                  {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}
                               </div>
                            ) : (match.player1Accepted && match.player2Accepted) ? (
-                              <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
-                                 ⚡ ONGOING MATCH
-                              </div>
+                              match.type === 'tournament' ? (
+                                 <Link 
+                                    to={`/dashboard/tournament/${match.tournamentId?._id || match.tournamentId}#bracket`}
+                                    className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
+                                 >
+                                    <Trophy size={14} />
+                                    ENTER ROOM
+                                 </Link>
+                              ) : (
+                                 <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
+                                    ⚡ ONGOING MATCH
+                                 </div>
+                              )
                            ) : (
                               <div className="w-full bg-orange/5 text-orange py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 border border-orange/20 shadow-sm">
                                  ⏳ WAITING FOR OPPONENT
@@ -345,7 +355,7 @@ const PlayerDashboard = () => {
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <Trophy size={16} />
                     </div>
-                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} />
+                     <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} />
                   </div>
                   
                   <div className="p-5 flex-1">
@@ -375,7 +385,7 @@ const PlayerDashboard = () => {
                             <CheckCircle2 size={14} />
                             Accept Tournament
                           </button>
-                        </div>
+                       </div>
                      ) : t.myStatus === 'available' ? (
                        <Link 
                          to={`/dashboard/tournament/${t._id}`}
@@ -389,7 +399,7 @@ const PlayerDashboard = () => {
                          to={`/dashboard/tournament/${t._id}`}
                          className="w-full bg-primary text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all"
                        >
-                         Tournament Room
+                         Enter Room
                          <ChevronRight size={14} />
                        </Link>
                      )}
