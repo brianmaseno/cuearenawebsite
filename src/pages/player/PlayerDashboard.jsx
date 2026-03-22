@@ -11,6 +11,7 @@ const PlayerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [userId, setUserId] = useState(null);
+  const [activeSetMap, setActiveSetMap] = useState({});
 
   const fetchData = async () => {
     try {
@@ -141,7 +142,21 @@ const PlayerDashboard = () => {
               [
                 ...data.matches.map(m => ({ ...m, type: 'direct' })), 
                 ...data.tournamentMatches.map(m => ({ ...m, type: 'tournament' }))
-              ].map((match) => (
+              ].map((match) => {
+                let defaultActive = 0;
+                if (match.setsResults && match.status !== 'completed') {
+                  for (let i = 0; i < (match.setsCount || 1); i++) {
+                    if (!match.setsResults.find(s => s.setIndex === i)) {
+                      defaultActive = i;
+                      break;
+                    }
+                  }
+                }
+                const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
+                const activeSetRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
+                const isMatchFinished = match.status === 'completed';
+
+                return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                      <div className="flex items-center gap-3">
@@ -168,7 +183,8 @@ const PlayerDashboard = () => {
                             src={match.player1Id?.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id?.fullName}&background=random`} 
                             alt={match.player1Id?.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.player1Id?._id === match.winnerId ? 'ring-green scale-105' : 'ring-base3'
+                               (match.winnerId?._id || match.winnerId || '').toString() === (match.player1Id?._id || '').toString() ? 'ring-green scale-105' : 
+                               ((activeSetRes?.winnerId?._id || activeSetRes?.winnerId || '').toString() === (match.player1Id?._id || '').toString() ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
                             }`}
                           />
                         </div>
@@ -207,7 +223,8 @@ const PlayerDashboard = () => {
                             src={match.player2Id?.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id?.fullName}&background=random`} 
                             alt={match.player2Id?.fullName} 
                             className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${
-                               match.player2Id?._id === match.winnerId ? 'ring-green scale-105' : 'ring-base3'
+                               (match.winnerId?._id || match.winnerId || '').toString() === (match.player2Id?._id || '').toString() ? 'ring-green scale-105' : 
+                               ((activeSetRes?.winnerId?._id || activeSetRes?.winnerId || '').toString() === (match.player2Id?._id || '').toString() ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
                             }`}
                           />
                         </div>
@@ -228,7 +245,7 @@ const PlayerDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="bg-base2/10 p-3 border-t border-base2 mt-auto space-y-2">
+                  <div className="bg-base2/10 p-3 border-t border-base2 mt-auto space-y-3 relative">
                      {match.myStatus === 'pending' ? (
                         <div className="flex gap-2">
                            <button
@@ -247,35 +264,76 @@ const PlayerDashboard = () => {
                            </button>
                         </div>
                      ) : (
-                        <>
+                        <div className="space-y-3">
+                           {/* Set Scoreboard */}
+                           <div className="flex flex-wrap gap-1.5 justify-center">
+                              {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
+                                 const sRes = match.setsResults?.find(s => s.setIndex === idx);
+                                 const isActive = currentActiveSet === idx;
+                                 const isP1 = userId === (match.player1Id?._id || '').toString();
+                                 const isP2 = userId === (match.player2Id?._id || '').toString();
+                                 const isParticipant = isP1 || isP2;
+                                 
+                                 let tabLabel = `SET ${idx + 1}`;
+                                 let winnerColor = '';
+                                 
+                                 if (sRes) {
+                                    const winnerIdStr = (sRes.winnerId?._id || sRes.winnerId || '').toString();
+                                    if (isParticipant) {
+                                       const userWon = winnerIdStr === (userId || '').toString();
+                                       tabLabel = userWon ? 'WON' : 'LOST';
+                                       winnerColor = userWon ? 'text-green' : 'text-red';
+                                    } else {
+                                       if (winnerIdStr === (match.player1Id?._id || '').toString()) {
+                                          tabLabel = match.player1Id?.fullName.split(' ')[0] || 'P1';
+                                          winnerColor = 'text-primary';
+                                       } else {
+                                          tabLabel = match.player2Id?.fullName.split(' ')[0] || 'P2';
+                                          winnerColor = 'text-violet';
+                                       }
+                                    }
+                                 }
+
+                                 return (
+                                    <button
+                                       key={idx}
+                                       onClick={() => setActiveSetMap(prev => ({ ...prev, [match._id]: idx }))}
+                                       className={`flex-1 min-w-[50px] py-3 rounded-xl text-[9px] font-black uppercase transition-all border flex flex-col items-center justify-center gap-0.5 ${
+                                          isActive 
+                                             ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/10' 
+                                             : (sRes ? 'bg-base2/10 border-base2/30 opacity-70 hover:opacity-100' : 'bg-base2/5 border-transparent text-text/20')
+                                       }`}
+                                    >
+                                       <span className={winnerColor || (isActive ? 'text-base3' : 'text-text/40')}>
+                                          {tabLabel}
+                                       </span>
+                                    </button>
+                                 );
+                              })}
+                           </div>
+
+                           {/* Match Status Header */}
                            {match.status === 'completed' ? (
-                              <div className={`w-full py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2 ${
-                                 match.winnerId === userId ? 'bg-green/10 text-green' : 'bg-red/10 text-red'
+                              <div className={`w-full py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-2 shadow-sm ${
+                                 (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border border-green/20' : 'bg-red/10 text-red border border-red/20'
                               }`}>
-                                 {match.winnerId === userId ? '🏆 YOU WON!' : '❌ MATCH LOST'}
+                                 {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? '🏆 YOU WON THE MATCH' : '❌ MATCH LOST'}
                               </div>
                            ) : (match.player1Accepted && match.player2Accepted) ? (
-                              <div className="w-full bg-primary/10 text-primary py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
+                              <div className="w-full bg-primary/10 text-primary py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
                                  ⚡ ONGOING
                               </div>
                            ) : (
-                              <div className="w-full bg-orange/10 text-orange py-2 rounded-lg text-xs font-black flex items-center justify-center gap-2">
+                              <div className="w-full bg-orange/10 text-orange py-2 rounded-lg text-[10px] font-black flex items-center justify-center gap-2 border border-orange/20">
                                  ⏳ READY
                               </div>
                            )}
-                           
-                           <Link 
-                             to={`/dashboard/match/${match._id}`}
-                             className="w-full bg-base3 border border-base2 text-primary py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-base2/30 transition-all shadow-sm"
-                           >
-                             See More (Match Sets)
-                             <ChevronRight size={14} />
-                           </Link>
-                        </>
+                        </div>
                      )}
                   </div>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
         ) : (

@@ -115,7 +115,7 @@ const TopBar = ({ title }) => {
                         if (n.type.includes('tournament')) {
                           navigate(`${rolePath}/${user?.role === 'moderator' ? 'manage-tournament' : 'tournament'}/${n.relatedId}`);
                         } else if (n.type.includes('match') || n.type === 'result_recorded') {
-                          navigate(`${rolePath}/match/${n.relatedId}`);
+                          navigate(rolePath);
                         } else if (n.type === 'invite_accepted') {
                           // Try to guess or just go to invitations if ambiguous
                           navigate(`${rolePath}/invitations`);

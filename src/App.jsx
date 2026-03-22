@@ -23,7 +23,7 @@ import CreateMatch from './pages/moderator/CreateMatch';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLogs from './pages/admin/AdminLogs';
 import AdminUsers from './pages/admin/AdminUsers';
-import MatchDetails from './pages/match/MatchDetails';
+// MatchDetails removed - consoles are now inline in dashboards
 import PlayerHistory from './pages/player/PlayerHistory';
 import OngoingActivities from './pages/moderator/OngoingActivities';
 import History from './pages/moderator/History';
@@ -56,11 +56,7 @@ function App() {
                       <PlayerHistory />
                     </ProtectedRoute>
                   } />
-                  <Route path="/dashboard/match/:id" element={
-                    <ProtectedRoute roles={['player', 'moderator', 'admin']}>
-                      <MatchDetails />
-                    </ProtectedRoute>
-                  } />
+                  {/* Match details are now handled inline in the player dashboard */}
                   <Route path="/dashboard/tournament/:id" element={
                     <ProtectedRoute roles={['player', 'moderator', 'admin']}>
                       <TournamentDetails />
@@ -89,11 +85,7 @@ function App() {
                       <CreateMatch />
                     </ProtectedRoute>
                   } />
-                  <Route path="/moderator/match/:id" element={
-                    <ProtectedRoute roles={['moderator']}>
-                      <MatchDetails />
-                    </ProtectedRoute>
-                  } />
+                  {/* Match details are now handled inline in the moderator dashboard */}
                   <Route path="/moderator/ongoing" element={
                     <ProtectedRoute roles={['moderator']}>
                       <OngoingActivities />
