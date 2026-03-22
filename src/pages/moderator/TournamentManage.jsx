@@ -23,11 +23,16 @@ import {
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
-const BracketMatchCard = ({ match, onClick, isFinal = false }) => (
+const BracketMatchCard = ({ match, isFinal = false, onClick }) => {
+   const { user } = useAuth();
+   return (
    <div 
       onClick={onClick}
-      className={`group relative p-3.5 rounded-2xl bg-base3/80 backdrop-blur-md border border-base2/50 hover:border-primary/40 transition-all shadow-sm hover:shadow-md cursor-pointer min-w-[160px] ${isFinal ? 'ring-2 ring-yellow/40 bg-yellow/5' : ''}`}
+      className={`group relative p-3.5 rounded-2xl bg-base3/80 backdrop-blur-md border border-base2/50 transition-all shadow-sm min-w-[160px] cursor-pointer
+         ${isFinal ? 'ring-2 ring-yellow/40 bg-yellow/5 hover:border-yellow/60' : 'hover:border-primary/40 hover:shadow-md'}
+      `}
    >
       {/* Subtle Status Indicator */}
       <div className="absolute -top-1 -right-1">
@@ -60,6 +65,7 @@ const BracketMatchCard = ({ match, onClick, isFinal = false }) => (
                      <div className={`w-1.5 h-1.5 rounded-full ${p.id ? (p.accepted ? 'bg-green' : 'bg-orange') : 'bg-base2'}`}></div>
                      <span className="text-sm font-bold tracking-tight truncate max-w-[110px]">
                         {p.id?.fullName || 'TBD'}
+                        {p.id?._id === user?._id && <span className="opacity-70 text-[10px] ml-1">(me)</span>}
                      </span>
                   </div>
                   <span className={`text-sm font-black font-mono shrink-0 ${isWinner ? 'text-green' : 'text-primary'}`}>
@@ -70,7 +76,8 @@ const BracketMatchCard = ({ match, onClick, isFinal = false }) => (
          })}
       </div>
    </div>
-);
+   );
+};
 
 const TournamentManage = () => {
    const { id } = useParams();

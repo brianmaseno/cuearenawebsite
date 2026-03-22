@@ -6,8 +6,11 @@ import { Trophy, Calendar, MapPin, Users, Info, ArrowLeft, CheckCircle, XCircle,
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
+import { useAuth } from '../../context/AuthContext';
 
-const BracketMatchCard = ({ match, isFinal = false }) => (
+const BracketMatchCard = ({ match, isFinal = false }) => {
+   const { user } = useAuth();
+   return (
    <div className={`group relative p-3.5 rounded-2xl bg-base3/80 backdrop-blur-md border border-base2/50 hover:border-primary/40 transition-all shadow-sm hover:shadow-md min-w-[160px] ${isFinal ? 'ring-2 ring-yellow/40 bg-yellow/5' : ''}`}>
       {/* Subtle Status Indicator */}
       <div className="absolute -top-1 -right-1">
@@ -40,6 +43,7 @@ const BracketMatchCard = ({ match, isFinal = false }) => (
                      <div className={`w-1.5 h-1.5 rounded-full ${p.id ? (p.accepted ? 'bg-green' : 'bg-orange') : 'bg-base2'}`}></div>
                      <span className="text-sm font-bold tracking-tight truncate max-w-[110px]">
                         {p.id?.fullName || 'TBD'}
+                        {p.id?._id === user?._id && <span className="opacity-70 text-[10px] ml-1">(me)</span>}
                      </span>
                   </div>
                   <span className={`text-sm font-black font-mono shrink-0 ${isWinner ? 'text-green' : 'text-primary'}`}>
@@ -50,11 +54,13 @@ const BracketMatchCard = ({ match, isFinal = false }) => (
          })}
       </div>
    </div>
-);
+   );
+};
 
 const TournamentDetails = () => {
    const { id } = useParams();
    const location = useLocation();
+   const { user } = useAuth();
    const { socket, joinTournamentRoom, leaveTournamentRoom } = useSocket();
    const [tournament, setTournament] = useState(null);
    const [loading, setLoading] = useState(true);
@@ -293,7 +299,10 @@ const TournamentDetails = () => {
                                  <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
                                     {p.fullName?.[0] || '?'}
                                  </div>
-                                 <span className="text-sm font-bold text-text-emphasis">{p.fullName || 'Anonymous'}</span>
+                                 <span className="text-sm font-bold text-text-emphasis">
+                                    {p.fullName || 'Anonymous'}
+                                    {p._id === user?._id && <span className="opacity-70 text-[10px] ml-1">(me)</span>}
+                                 </span>
                                  <CheckCircle size={14} className="ml-auto text-green" />
                               </div>
                            ))}
