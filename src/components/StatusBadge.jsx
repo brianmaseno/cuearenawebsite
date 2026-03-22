@@ -1,7 +1,10 @@
 import React from 'react';
 
-const StatusBadge = ({ status, entryType }) => {
+const StatusBadge = ({ status, entryType, registrationDeadline }) => {
+  const isExpired = status === 'open_for_players' && registrationDeadline && new Date(registrationDeadline) < new Date();
+  
   const getStyles = () => {
+    if (isExpired) return 'bg-base2/10 text-text/40 border-base2/20';
     if (status === 'open_for_players' && entryType === 'invite_only') {
       return 'bg-violet/10 text-violet border-violet/20';
     }
@@ -30,6 +33,7 @@ const StatusBadge = ({ status, entryType }) => {
   };
 
   const formatStatus = (s) => {
+    if (isExpired) return 'EXPIRED';
     if (s === 'open_for_players' && entryType === 'invite_only') return 'PRIVATE';
     return s.replace(/_/g, ' ').toUpperCase();
   };

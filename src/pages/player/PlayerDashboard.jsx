@@ -82,20 +82,17 @@ const PlayerDashboard = () => {
       <div className="space-y-8 pb-20">
         
         {/* Alerts Container */}
-        {(data.invitations.length > 0 || unreadNotifs > 0) && (
+        {unreadNotifs > 0 && (
           <div className="flex flex-wrap items-center gap-3">
-            {data.invitations.length > 0 && (
-              <Link 
-                to="/dashboard/invitations" 
-                className="group flex items-center gap-2 px-6 py-2 bg-orange/5 border border-orange/10 rounded-full hover:bg-orange/10 transition-all animate-in slide-in-from-top duration-700"
-              >
-                <span className="text-sm font-bold text-text/60 group-hover:text-text transition-colors">
-                  You have <span className="text-orange font-black">{data.invitations.length}</span> pending {data.invitations.length === 1 ? 'invite' : 'invites'}
-                </span>
-                <ArrowRight size={14} className="text-orange opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-              </Link>
-            )}
-
+            <Link 
+              to="/notifications" 
+              className="group flex items-center gap-2 px-6 py-2 bg-blue/5 border border-blue/10 rounded-full hover:bg-blue/10 transition-all animate-in slide-in-from-top duration-700"
+            >
+              <span className="text-sm font-bold text-text/60 group-hover:text-text transition-colors">
+                You have <span className="text-blue font-black">{unreadNotifs}</span> unread {unreadNotifs === 1 ? 'notification' : 'notifications'}
+              </span>
+              <ArrowRight size={14} className="text-blue opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+            </Link>
           </div>
         )}
 
@@ -338,7 +335,7 @@ const PlayerDashboard = () => {
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <Trophy size={16} />
                     </div>
-                    <StatusBadge status={t.status} entryType={t.entryType} />
+                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} />
                   </div>
                   
                   <div className="p-5 flex-1">

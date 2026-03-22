@@ -107,7 +107,7 @@ const Landing = () => {
                   </div>
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="flex justify-between items-start mb-4">
-                      <StatusBadge status={t.status} />
+                      <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
                       <span className="text-xs font-bold text-text bg-base2 px-2 py-0.5 rounded uppercase tracking-tighter">
                         {t.format.replace('_', ' ')}
                       </span>

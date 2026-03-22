@@ -228,7 +228,7 @@ const AdminDashboard = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                           <StatusBadge status={item.status} className="text-[9px] px-2 py-0.5 font-black uppercase rounded-full shadow-sm" />
+                           <StatusBadge status={item.status} registrationDeadline={item.registrationDeadline} className="text-[9px] px-2 py-0.5 font-black uppercase rounded-full shadow-sm" />
                         </td>
                         <td className="px-6 py-4">
                            <div className="text-xs font-bold text-text-emphasis leading-tight">{item.organizerId?.fullName || 'System'}</div>

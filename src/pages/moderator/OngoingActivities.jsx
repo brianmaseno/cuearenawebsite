@@ -412,7 +412,7 @@ const OngoingActivities = () => {
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <Trophy size={16} />
                     </div>
-                    <StatusBadge status={t.status} entryType={t.entryType} />
+                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} />
                   </div>
                   
                   <div className="p-5">

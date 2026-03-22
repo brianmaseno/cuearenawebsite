@@ -37,6 +37,7 @@ const TournamentManage = () => {
    const [selectingWinnerForSetInModal, setSelectingWinnerForSetInModal] = useState(null);
    const [playerSearchQuery, setPlayerSearchQuery] = useState('');
    const [selectedPlayers, setSelectedPlayers] = useState([]);
+   const [invitations, setInvitations] = useState([]);
 
    const togglePlayerSelection = (player) => {
       setSelectedPlayers(prev => {
@@ -63,14 +64,17 @@ const TournamentManage = () => {
       }
    };
 
+
    const fetchTournamentData = async () => {
       try {
-         const [{ data: tourney }, { data: players }] = await Promise.all([
+         const [{ data: tourney }, { data: players }, { data: invites }] = await Promise.all([
             api.get(`/tournaments/${id}`),
-            api.get('/users/players')
+            api.get('/users/players'),
+            api.get(`/invitations/tournament/${id}`)
          ]);
          setTournament(tourney);
          setAvailablePlayers(players);
+         setInvitations(invites);
       } catch (err) {
          toast.error('Failed to load tournament data');
          navigate('/moderator/ongoing');
@@ -202,7 +206,7 @@ const TournamentManage = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-base2">
                <div>
                   <div className="flex items-center gap-3 mb-2">
-                     <StatusBadge status={tournament.status} entryType={tournament.entryType} />
+                     <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} />
                      <div className="flex items-center gap-2 text-text/40 text-xs font-bold uppercase tracking-widest">
                         <Calendar size={14} />
                         Created {new Date(tournament.createdAt).toLocaleDateString()}
@@ -435,7 +439,7 @@ const TournamentManage = () => {
                         )}
                      </div>
 
-                     {/* 2. Attached Draft (Below Search Results) */}
+                     {/* 2. Attached Draft (Restore Bulk Invite) */}
                      {selectedPlayers.length > 0 && (
                         <div className="mt-8 pt-6 border-t border-base2/50 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                            <div className="flex items-center justify-between">
@@ -468,16 +472,29 @@ const TournamentManage = () => {
                         </div>
                      )}
 
-                     {/* 3. Already Invited List (Names only) */}
-                     {tournament.invitedPlayers && tournament.invitedPlayers.length > 0 && (
-                        <div className="mt-8 pt-6 border-t border-base2/50 space-y-3">
-                           <h4 className="text-[10px] font-black uppercase text-text/40 tracking-[0.2em]">Sent Invitations</h4>
-                           <div className="flex flex-wrap gap-x-2 gap-y-1">
-                              {tournament.invitedPlayers.map((p, idx) => (
-                                 <span key={p._id || idx} className="text-[11px] font-bold text-text/60 bg-base2/10 px-2.5 py-1 rounded-lg border border-base2/30">
-                                    {p.fullName}
-                                 </span>
-                               ))}
+                     {/* 3. Invitation Status Tracking (Restored & Refined) */}
+                     {invitations.filter(inv => inv.status !== 'accepted').length > 0 && (
+                        <div className="mt-8 pt-6 border-t border-base2/50 space-y-4">
+                           <h4 className="text-[10px] font-black uppercase text-text/40 tracking-[0.2em] mb-4">Sent Invitation Status</h4>
+                           <div className="space-y-2">
+                              {invitations
+                                 .filter(inv => inv.status !== 'accepted')
+                                 .map((inv) => (
+                                 <div key={inv._id} className="flex items-center justify-between p-2.5 bg-base2/10 rounded-xl border border-base2/30">
+                                    <div className="min-w-0">
+                                       <p className="text-[11px] font-bold text-text-emphasis truncate">{inv.playerId?.fullName}</p>
+                                       <p className="text-[9px] text-text/40">{inv.playerId?.email}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 shrink-0">
+                                       <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${
+                                          inv.status === 'pending' ? 'bg-orange/10 text-orange' : 
+                                          inv.status === 'declined' ? 'bg-red/10 text-red' : 'bg-base2 text-text/40'
+                                       }`}>
+                                          {inv.status}
+                                       </span>
+                                    </div>
+                                 </div>
+                              ))}
                            </div>
                         </div>
                      )}

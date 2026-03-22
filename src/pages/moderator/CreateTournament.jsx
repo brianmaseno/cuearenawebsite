@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 const CreateTournament = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -35,6 +36,12 @@ const CreateTournament = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Date validation
+    if (new Date(formData.startDate) < new Date(formData.registrationDeadline)) {
+      return toast.error('Start date cannot be before the registration deadline');
+    }
+
     setLoading(true);
     try {
       await api.post('/tournaments', formData);
@@ -172,6 +179,7 @@ const CreateTournament = () => {
                   name="startDate"
                   type="date"
                   required
+                  min={today}
                   value={formData.startDate}
                   onChange={handleChange}
                   className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
@@ -184,6 +192,7 @@ const CreateTournament = () => {
                   name="registrationDeadline"
                   type="date"
                   required
+                  min={today}
                   value={formData.registrationDeadline}
                   onChange={handleChange}
                   className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
