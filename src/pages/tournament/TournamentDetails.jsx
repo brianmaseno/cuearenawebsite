@@ -193,57 +193,61 @@ const TournamentDetails = () => {
                   </div>
                )}
 
-               {pendingInvite && (
-                  <div className="card-premium p-8 rounded-3xl bg-orange/5 border-2 border-orange/20 mb-8 animate-in slide-in-from-top-4 duration-500">
-                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex gap-4">
-                           <div className="w-14 h-14 rounded-2xl bg-orange/20 text-orange flex items-center justify-center shrink-0">
-                              <Trophy size={32} />
+                {pendingInvite && (
+                  <div className="card-premium p-8 rounded-[2rem] bg-gradient-to-br from-orange/10 via-orange/5 to-transparent border-2 border-orange/20 mb-8 animate-in slide-in-from-top-4 duration-500 shadow-xl shadow-orange/5 relative overflow-hidden group">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-orange/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:bg-orange/10"></div>
+                     <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                        <div className="flex gap-6 items-center">
+                           <div className="w-16 h-16 rounded-2xl bg-orange/20 text-orange flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                              <Trophy size={36} />
                            </div>
                            <div>
-                              <h4 className="text-xl font-bold text-text-emphasis">Tournament Invitation</h4>
-                              <p className="text-text">You have been invited to join <span className="font-bold">{tournament.name}</span> by <span className="font-bold">{pendingInvite.sentBy?.fullName}</span>.</p>
+                              <h4 className="text-2xl font-black text-text-emphasis tracking-tight">Tournament Invitation</h4>
+                              <p className="text-text/70 font-medium max-w-md leading-relaxed mt-1">
+                                 You've been invited to join <span className="text-text-emphasis font-bold">{tournament.name}</span> by <span className="text-text-emphasis font-bold">{pendingInvite.sentBy?.fullName}</span>.
+                              </p>
                            </div>
                         </div>
-                        <div className="flex items-center gap-3 w-full md:w-auto">
+                        <div className="flex items-center gap-4 w-full md:w-auto">
                            <button
                               onClick={() => handleInviteResponse('declined')}
-                              className="flex-1 md:flex-none px-8 py-3 rounded-xl border border-red/20 text-red font-bold hover:bg-red/5 transition-all text-sm"
+                              className="flex-1 md:flex-none px-8 py-4 rounded-2xl border-2 border-red/20 text-red font-black hover:bg-red/5 transition-all text-sm uppercase tracking-widest"
                            >
                               Decline
                            </button>
                            <button
                               onClick={() => handleInviteResponse('accepted')}
                               disabled={new Date(tournament.registrationDeadline) < new Date()}
-                              className="flex-1 md:flex-none px-8 py-3 rounded-xl bg-green text-base3 font-bold hover:opacity-90 shadow-lg shadow-green/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="flex-1 md:flex-none px-10 py-4 rounded-2xl bg-green text-base3 font-black hover:bg-green/90 shadow-lg shadow-green/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-widest"
                            >
                               Join Tournament
                            </button>
                         </div>
                      </div>
                   </div>
-               )}
+                )}
 
-               {!pendingInvite && 
+                {!pendingInvite && 
                   tournament.entryType === 'open_request' && 
                   tournament.status === 'open_for_players' && 
-                  !tournament.confirmedPlayers.some(p => p._id.toString() === user?._id?.toString()) && (
-                  <div className="card-premium p-8 rounded-3xl bg-green/5 border-2 border-green/20 mb-8 animate-in slide-in-from-top-4 duration-500 shadow-lg shadow-green/5">
-                     <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex gap-4">
-                           <div className="w-14 h-14 rounded-2xl bg-green/20 text-green flex items-center justify-center shrink-0">
-                              <Trophy size={32} />
+                  !tournament.confirmedPlayers.some(p => (p._id || p).toString() === (user?._id || '').toString()) && (
+                  <div className="card-premium p-8 rounded-[2rem] bg-gradient-to-br from-green/10 via-green/5 to-transparent border-2 border-green/20 mb-8 animate-in slide-in-from-top-4 duration-500 shadow-xl shadow-green/5 relative overflow-hidden group">
+                     <div className="absolute top-0 right-0 w-32 h-32 bg-green/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:bg-green/10"></div>
+                     <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                        <div className="flex gap-6 items-center">
+                           <div className="w-16 h-16 rounded-2xl bg-green/20 text-green flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                              <Trophy size={36} />
                            </div>
                            <div>
-                              <h4 className="text-xl font-bold text-text-emphasis">Open Tournament</h4>
-                              <p className="text-text">This tournament is open for public registration. Join now to secure your spot!</p>
+                              <h4 className="text-2xl font-black text-text-emphasis tracking-tight">Registration Open!</h4>
+                              <p className="text-text/70 font-medium max-w-md leading-relaxed mt-1">This tournament is open for public entry. Join now to compete for the championship!</p>
                            </div>
                         </div>
-                        <div className="flex items-center gap-3 w-full md:w-auto">
+                        <div className="flex items-center gap-4 w-full md:w-auto">
                            <button
                               onClick={handleJoinTournament}
                               disabled={new Date(tournament.registrationDeadline) < new Date()}
-                              className="flex-1 md:flex-none px-12 py-3 rounded-xl bg-green text-base3 font-bold hover:bg-green/90 shadow-lg shadow-green/20 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="w-full md:w-auto px-10 py-4 rounded-2xl bg-green text-base3 font-black hover:bg-green/90 shadow-lg shadow-green/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-widest"
                            >
                               Join Tournament
                            </button>
