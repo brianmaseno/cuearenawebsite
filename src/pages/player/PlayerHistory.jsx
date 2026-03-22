@@ -15,9 +15,12 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
+import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const PlayerHistory = () => {
+  const { user } = useAuth();
+  const userId = user?._id;
   const [data, setData] = useState({ tournaments: [], matches: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
@@ -133,6 +136,10 @@ const PlayerHistory = () => {
                 const isCancelled = match.status === 'cancelled';
 
                 const winnerName = match.winnerId?.fullName || (isP1Winner ? match.player1Id?.fullName : isP2Winner ? match.player2Id?.fullName : null);
+                
+                const myWon = winnerIdObj?.toString() === userId?.toString();
+                const winLossText = myWon ? 'You Won!' : 'You Lost!';
+                const winLossColor = myWon ? 'text-green' : 'text-red';
 
                 return (
                   <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
@@ -227,11 +234,11 @@ const PlayerHistory = () => {
 
                     <div className="bg-base2/10 p-4 border-t border-base2 space-y-3 relative overflow-visible mt-auto">
                       <div className="flex flex-col items-center justify-center text-center space-y-2">
-                        <div className={`flex items-center gap-2 font-black uppercase tracking-widest text-[11px] ${isCancelled ? 'text-red/60' : 'text-green'}`}>
+                        <div className={`flex items-center gap-2 font-black uppercase tracking-widest text-[11px] ${isCancelled ? 'text-red/60' : winLossColor}`}>
                           {isCancelled ? <CancelIcon size={16} /> : <AwardIcon size={16} />}
                           {isCancelled ? (
                             match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
-                          ) : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
+                          ) : (winnerIdObj ? winLossText : 'No Winner Announced')}
                         </div>
                         <div className="flex items-center gap-4 text-text/40 font-bold text-[10px]">
                           <div className="flex items-center gap-1.5 leading-none">

@@ -317,7 +317,7 @@ const PlayerDashboard = () => {
                               <div className={`w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border ${
                                  (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
                               }`}>
-                                 {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? '🏆 YOU WON THE MATCH' : '❌ MATCH LOST'}
+                                 {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}
                               </div>
                            ) : (match.player1Accepted && match.player2Accepted) ? (
                               <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
