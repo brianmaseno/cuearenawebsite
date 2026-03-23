@@ -142,57 +142,152 @@ const Landing = () => {
         </div>
       </header>
 
-      {/* Leaderboard Section */}
-      <section className="py-24 bg-background relative overflow-hidden">
+      {/* Tournaments & Leaderboard Split Section */}
+      <section id="tournaments-section" className="py-24 bg-base3/50 relative overflow-hidden">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite Champions</h2>
-            <p className="text-xl text-text/70 font-medium">The most prestigious players climbing the global ranks.</p>
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-base3/50 backdrop-blur-xl border border-base2 rounded-[32px] overflow-hidden shadow-2xl relative">
-              <div className="absolute -top-[200px] -right-[200px] w-[400px] h-[400px] bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
-              {leaderboard.length === 0 ? (
-                <div className="p-12 text-center text-text/50 font-medium font-bold">Rankings are currently calculating...</div>
-              ) : (
-                <div className="divide-y divide-base2/50">
-                  {leaderboard.map((player, index) => (
-                    <motion.div 
-                      key={player._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center gap-3 md:gap-5 p-3 hover:bg-base2/20 transition-colors group"
-                    >
-                      <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-inner ${index === 0 ? 'bg-yellow/10 text-yellow ring-1 ring-yellow/30' : index === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : index === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>
-                        #{index + 1}
-                      </div>
-                      <div className="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-primary to-special-red flex-shrink-0">
-                        <img src={player.profilePhoto || `https://ui-avatars.com/api/?name=${player.fullName.split(' ')[0]}&background=random`} alt={player.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" />
-                        {index === 0 && <div className="absolute -top-1.5 -right-1.5 bg-yellow text-background p-0.5 rounded-full shadow-lg"><Trophy size={10} strokeWidth={3} /></div>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm md:text-base font-black text-text-emphasis truncate group-hover:text-primary transition-colors">{player.fullName}</h3>
-                        <p className="text-[10px] md:text-xs font-bold text-text/50 truncate">{player.bio || 'Rising Star Elite'}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 leading-none">
-                          {player.points || 0}
-                        </div>
-                        <div className="text-[8px] md:text-[9px] uppercase font-black tracking-widest text-text/40">Points</div>
-                      </div>
-                    </motion.div>
-                  ))}
+          <div className="flex flex-col xl:flex-row gap-12">
+            
+            {/* Left Column: Active Arenas */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                <div>
+                  <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Active Arenas</h2>
+                  <p className="text-lg text-text/70 font-medium">Join high-stakes competitions and prove your mastery.</p>
                 </div>
-              )}
+                <Link to="/register" className="inline-flex items-center gap-2 text-primary font-black group px-6 py-3 bg-primary/5 rounded-xl hover:bg-primary/10 transition-all active:scale-95 text-sm whitespace-nowrap">
+                  Explore All <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
+              <AnimatePresence mode="wait">
+                {loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="h-80 bg-base2/30 rounded-3xl animate-pulse"></div>
+                    ))}
+                  </div>
+                ) : tournaments.length > 0 ? (
+                  <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  >
+                    {tournaments.map(t => (
+                      <motion.div 
+                        key={t._id} 
+                        variants={itemVariants}
+                        className="group relative h-full bg-base3 border border-base2/50 rounded-3xl overflow-hidden hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500"
+                      >
+                        <div className="absolute top-0 left-0 w-full h-1.5 bg-base2">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }}
+                            transition={{ duration: 1.5, ease: "easeOut" }}
+                            className={`h-full ${t.status === 'ongoing' ? 'bg-blue pulse' : 'bg-primary'}`}
+                          />
+                        </div>
+                        <div className="p-6 flex flex-col h-full">
+                          <div className="flex justify-between items-start mb-4">
+                            <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
+                            <span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">
+                              {t.format.replace('_', ' ')}
+                            </span>
+                          </div>
+                          <h3 className="text-xl font-black text-text-emphasis mb-5 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                            {t.name}
+                          </h3>
+                          <div className="grid grid-cols-1 gap-3 mb-6 flex-1 text-xs font-bold text-text/80">
+                            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-base2/30 group-hover:bg-base2/50 transition-colors">
+                              <MapPin size={16} className="text-primary shrink-0" />
+                              <span className="truncate">{t.venue}</span>
+                            </div>
+                            <div className="flex flex-row gap-3">
+                               <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30 group-hover:bg-base2/50 transition-colors">
+                                 <Users size={16} className="text-blue shrink-0" />
+                                 <span className="truncate">{t.confirmedPlayers.length}/{t.maxPlayers}</span>
+                               </div>
+                               <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30 group-hover:bg-base2/50 transition-colors">
+                                 <Calendar size={16} className="text-special-red shrink-0" />
+                                 <span className="truncate">{new Date(t.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                               </div>
+                            </div>
+                          </div>
+                          <Link to={`/register`} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-base2 font-black text-text-emphasis text-sm group-hover:bg-primary group-hover:text-base3 transition-all active:scale-[0.98]">
+                            Join Arena <ArrowRight size={16} />
+                          </Link>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }}
+                    className="text-center py-20 bg-base3/30 border-2 border-dashed border-base2 rounded-[32px] h-full flex flex-col justify-center"
+                  >
+                    <div className="w-16 h-16 bg-base2 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Trophy size={32} className="text-text/30" />
+                    </div>
+                    <h3 className="text-xl font-black text-text-emphasis mb-2">The arena is silent.</h3>
+                    <p className="text-sm text-text/60 font-medium">Be the first to host a tournament.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+
+            {/* Right Column: Elite Champions */}
+            <div className="w-full xl:w-[420px] shrink-0">
+              <div className="mb-10 text-center xl:text-left">
+                <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite Rank</h2>
+                <p className="text-lg text-text/70 font-medium">The most prestigious players.</p>
+              </div>
+              <div className="bg-base3/50 backdrop-blur-xl border border-base2 rounded-[32px] overflow-hidden shadow-2xl relative h-auto">
+                <div className="absolute -top-[200px] -right-[200px] w-[400px] h-[400px] bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
+                {leaderboard.length === 0 ? (
+                  <div className="p-12 text-center text-text/50 font-medium font-bold">Rankings calculating...</div>
+                ) : (
+                  <div className="divide-y divide-base2/50 max-h-[850px] overflow-y-auto custom-scrollbar">
+                    {leaderboard.map((player, index) => (
+                      <motion.div 
+                        key={player._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex items-center gap-3 p-3 hover:bg-base2/20 transition-colors group relative"
+                      >
+                        <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-inner ${index === 0 ? 'bg-yellow/10 text-yellow ring-1 ring-yellow/30' : index === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : index === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>
+                          #{index + 1}
+                        </div>
+                        <div className="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-primary to-special-red flex-shrink-0">
+                          <img src={player.profilePhoto || `https://ui-avatars.com/api/?name=${player.fullName.split(' ')[0]}&background=random`} alt={player.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" />
+                          {index === 0 && <div className="absolute -top-1.5 -right-1.5 bg-yellow text-background p-0.5 rounded-full shadow-lg z-10"><Trophy size={10} strokeWidth={3} /></div>}
+                        </div>
+                        <div className="flex-1 min-w-0 pr-2">
+                          <h3 className="text-sm font-black text-text-emphasis truncate group-hover:text-primary transition-colors">{player.fullName}</h3>
+                          <p className="text-[10px] font-bold text-text/50 truncate">{player.bio || 'Rising Star Elite'}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 leading-none">
+                            {player.points || 0}
+                          </div>
+                          <div className="text-[8px] uppercase font-black tracking-widest text-text/40">Points</div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
       {/* Why Choose Section */}
-      <section className="py-24 relative">
+      <section className="py-24 bg-background relative">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl font-black text-text-emphasis mb-4 tracking-tight">Engineered for Victory</h2>
@@ -221,101 +316,6 @@ const Landing = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Tournaments Section */}
-      <section id="tournaments-section" className="py-24 bg-base3/50 relative overflow-hidden">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-            <div className="max-w-2xl">
-              <h2 className="text-5xl font-black text-text-emphasis mb-6 tracking-tight">Active Arenas</h2>
-              <p className="text-xl text-text/70 font-medium">Join high-stakes competitions and prove your mastery on the green felt.</p>
-            </div>
-            <Link to="/register" className="inline-flex items-center gap-3 text-primary font-black group px-8 py-4 bg-primary/5 rounded-2xl hover:bg-primary/10 transition-all active:scale-95">
-              Register to Explore <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="h-96 bg-base2/30 rounded-3xl animate-pulse"></div>
-                ))}
-              </div>
-            ) : tournaments.length > 0 ? (
-              <motion.div 
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-              >
-                {tournaments.map(t => (
-                  <motion.div 
-                    key={t._id} 
-                    variants={itemVariants}
-                    className="group relative h-full bg-base3 border border-base2/50 rounded-3xl overflow-hidden hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
-                  >
-                    {/* Status Progress Bar */}
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-base2">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                        className={`h-full ${t.status === 'ongoing' ? 'bg-blue pulse' : 'bg-primary'}`}
-                      />
-                    </div>
-
-                    <div className="p-8 flex flex-col h-full">
-                      <div className="flex justify-between items-start mb-6">
-                        <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
-                        <span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">
-                          {t.format.replace('_', ' ')}
-                        </span>
-                      </div>
-
-                      <h3 className="text-2xl font-black text-text-emphasis mb-6 group-hover:text-primary transition-colors line-clamp-2 leading-tight">
-                        {t.name}
-                      </h3>
-
-                      <div className="grid grid-cols-1 gap-4 mb-8 flex-1 text-sm font-bold text-text/80">
-                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-base2/30 group-hover:bg-base2/50 transition-colors">
-                          <MapPin size={18} className="text-primary" />
-                          <span className="truncate">{t.venue}</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-base2/30 group-hover:bg-base2/50 transition-colors">
-                          <Users size={18} className="text-blue" />
-                          <span>{t.confirmedPlayers.length} / {t.maxPlayers} Slots</span>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-base2/30 group-hover:bg-base2/50 transition-colors">
-                          <Calendar size={18} className="text-special-red" />
-                          <span>{new Date(t.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                        </div>
-                      </div>
-
-                      <Link to={`/register`} className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-base2 font-black text-text-emphasis group-hover:bg-primary group-hover:text-base3 transition-all active:scale-[0.98]">
-                        Join Arena <ArrowRight size={18} />
-                      </Link>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }}
-                className="text-center py-24 bg-base3/30 border-2 border-dashed border-base2 rounded-[40px]"
-              >
-                <div className="w-20 h-20 bg-base2 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                  <Trophy size={40} className="text-text/30" />
-                </div>
-                <h3 className="text-2xl font-black text-text-emphasis mb-2">The arena is silent.</h3>
-                <p className="text-text/60 font-medium">Be the first to host a tournament and lead the conquest.</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </section>
 
