@@ -39,6 +39,7 @@ const Sidebar = () => {
       return [
         { label: 'Admin Panel', path: '/admin', icon: Shield },
         { label: 'Users', path: '/admin/users', icon: Users },
+        { label: 'Mod Requests', path: '/admin/moderator-requests', icon: Shield },
         { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
       ];
     }

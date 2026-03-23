@@ -119,6 +119,12 @@ const Register = () => {
               <Link to="/login" className="text-primary font-bold hover:underline">Sign In</Link>
             </p>
           </div>
+          <div className="mt-8 pt-8 border-t border-base2/50 text-center">
+            <p className="text-text/60 font-medium mb-1">Looking to manage the arena?</p>
+            <Link to="/moderator-apply" className="text-primary font-black hover:underline tracking-tight">
+              APPLY AS MODERATOR
+            </Link>
+          </div>
         </div>
       </div>
     </div>

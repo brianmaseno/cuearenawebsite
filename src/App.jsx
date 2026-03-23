@@ -29,6 +29,8 @@ import PlayerHistory from './pages/player/PlayerHistory';
 import OngoingActivities from './pages/moderator/OngoingActivities';
 import History from './pages/moderator/History';
 import Profile from './pages/Profile';
+import ModeratorApplication from './pages/ModeratorApplication';
+import AdminModeratorRequests from './pages/admin/AdminModeratorRequests';
 
 function App() {
   return (
@@ -118,6 +120,12 @@ function App() {
                       <AdminUsers />
                     </ProtectedRoute>
                   } />
+                  <Route path="/admin/moderator-requests" element={
+                    <ProtectedRoute roles={['admin']}>
+                      <AdminModeratorRequests />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator-apply" element={<ModeratorApplication />} />
 
                   {/* 404/Fallback */}
                   <Route path="*" element={<Navigate to="/" replace />} />
