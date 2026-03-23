@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
-import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star, Wallet as WalletIcon } from 'lucide-react';
+import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star, Wallet as WalletIcon, DollarSign, ShieldCheck, ArrowDownLeft } from 'lucide-react';
 import api from '../api/axios';
 
 const TopBar = ({ title }) => {
@@ -55,6 +55,12 @@ const TopBar = ({ title }) => {
       case 'result_recorded': return <Info className="text-blue" size={14} />;
       case 'tournament_started': return <Trophy className="text-primary" size={14} />;
       case 'tournament_completed': return <CheckCircle className="text-green" size={14} />;
+      case 'wallet_deposit': return <WalletIcon className="text-emerald-500" size={14} />;
+      case 'wallet_withdrawal': return <WalletIcon className="text-rose-500" size={14} />;
+      case 'stake_locked': return <Clock className="text-amber-500" size={14} />;
+      case 'stake_refund': return <ArrowDownLeft className="text-blue-500" size={14} />;
+      case 'fee_payout': return <ShieldCheck className="text-indigo-500" size={14} />;
+      case 'prize_payout': return <Trophy className="text-yellow-500" size={14} />;
       default: return <Bell className="text-primary" size={14} />;
     }
   };
@@ -146,8 +152,9 @@ const TopBar = ({ title }) => {
                         } else if (n.type.includes('match') || n.type === 'result_recorded') {
                           navigate(rolePath);
                         } else if (n.type === 'invite_accepted') {
-                          // Try to guess or just go to invitations if ambiguous
                           navigate(`${rolePath}/invitations`);
+                        } else if (n.type.startsWith('wallet_') || n.type.includes('stake_') || n.type.includes('fee_') || n.type.includes('prize_')) {
+                          navigate('/wallet');
                         } else {
                           navigate('/notifications');
                         }
@@ -208,10 +215,10 @@ const TopBar = ({ title }) => {
 
         <div className="flex items-center gap-3 pl-6 border-l border-base2">
             <div className="flex items-center gap-2">
-              {(user?.role === 'player' || user?.role === 'moderator') && (
+              {(user?.role === 'player' || user?.role === 'moderator' || user?.role === 'admin') && (
                 <>
                   <Link to="/wallet" className="px-4 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5 hover:bg-emerald-500/20 transition-colors">
-                    <WalletIcon size={12} className="fill-emerald-500" /> KES {liveBalance.toLocaleString()}
+                    <WalletIcon size={12} className="fill-emerald-500" /> {user?.role === 'admin' ? 'Revenue: ' : ''} KES {liveBalance.toLocaleString()}
                   </Link>
                   {user?.role === 'player' && (
                     <span className="px-4 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5">

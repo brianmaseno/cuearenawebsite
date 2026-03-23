@@ -38,7 +38,8 @@ const useActivityTracker = () => {
     }
   }, [user, flushLogs]);
 
-  // Track Navigation
+  // Track Navigation - DISABLED (Too much noise)
+  /*
   useEffect(() => {
     if (user) {
       const isSignificantPath = ['/admin', '/moderator', '/dashboard'].some(prefix => 
@@ -50,8 +51,10 @@ const useActivityTracker = () => {
       }
     }
   }, [location.pathname, user, addLog]);
+  */
 
-  // Track Clicks
+  // Track Clicks - DISABLED (Too much noise)
+  /*
   useEffect(() => {
     if (!user) return;
 
@@ -65,11 +68,9 @@ const useActivityTracker = () => {
       const type = target.tagName.toLowerCase() === 'button' ? 'BUTTON_CLICK' : 
                    target.tagName.toLowerCase() === 'a' ? 'LINK_CLICK' : 'ELEMENT_CLICK';
       
-      // Filter for major activities
       const majorKeywords = ['create', 'post', 'confirm', 'approve', 'submit', 'reject', 'delete', 'save', 'enter', 'accept', 'decline', 'record', 'update', 'toggle', 'suspend', 'block'];
       const isMajor = majorKeywords.some(kw => text.includes(kw));
       
-      // OR if it's a navigation link to a management area
       const href = target.getAttribute('href') || '';
       const isManagementNav = href.startsWith('/admin') || href.startsWith('/moderator');
 
@@ -81,6 +82,7 @@ const useActivityTracker = () => {
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, [user, addLog]);
+  */
 
   // Periodic Flush
   useEffect(() => {

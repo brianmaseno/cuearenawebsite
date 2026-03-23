@@ -166,9 +166,16 @@ const OngoingActivities = () => {
                         </h3>
                      </div>
                     <div className="flex items-center gap-2">
-                      {match.stakeAmount > 0 && (
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                          KES {match.stakeAmount.toLocaleString()}
+                       {match.stakeAmount > 0 && !match.isTournamentMatch && (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                           <Award size={10} className="text-emerald-500" />
+                           PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
+                        </span>
+                      )}
+                      {match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0 && (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                           <Award size={10} className="text-emerald-500" />
+                           PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
                         </span>
                       )}
                       <div className="flex items-center gap-1">
@@ -335,7 +342,7 @@ const OngoingActivities = () => {
                           }
 
                           return (
-                            <div key={idx} className="flex-1 min-w-[48px] max-w-[70px]">
+                            <div key={idx} className="flex-1 min-w-[56px] max-w-[85px]">
                                  <button
                                   disabled={(isLocked || !isOngoing) && !isMatchFinished}
                                   onClick={() => {
@@ -346,59 +353,44 @@ const OngoingActivities = () => {
                                         setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; });
                                      }
                                   }}
-                                  className={`w-full px-1 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
+                                  className={`w-full px-2 py-2 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center min-h-[44px] ${
                                     isActive 
                                       ? 'bg-blue text-base3 border-blue shadow-lg shadow-blue/20 -translate-y-1 z-20' 
                                       : (sRes ? 'bg-base3/80 border-base2/50 opacity-90' : 'bg-base2/5 border-transparent text-text/10')
                                   } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-30 cursor-not-allowed grayscale' : ''}`}
                                 >
-                                   <span className={`truncate max-w-full ${isWon ? 'text-[10px]' : ''}`}>{tabLabel}</span>
+                                   <span className={`truncate max-w-full ${isWon ? 'text-[11px]' : ''}`}>{tabLabel}</span>
                                 </button>
                             </div>
                           );
                         })}
 
-                        {/* Enhanced Overlay for Winner Selection */}
+                        {/* Centered Overlay for Winner Selection */}
                         {selectingSetIdx !== undefined && (
-                           <div className="absolute inset-0 bg-base3/95 backdrop-blur-md flex flex-col items-center justify-center z-50 rounded-xl border-2 border-primary/30 p-4 animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
-                              <div className="flex items-center justify-between w-full mb-4">
-                                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
-                                    Select Winner for Set {selectingSetIdx + 1}
-                                 </h4>
-                                 <button 
-                                   onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
-                                   className="w-6 h-6 flex items-center justify-center rounded-full bg-base2/50 text-text/40 hover:bg-red hover:text-base3 transition-all"
-                                 >
-                                    <X size={12} />
-                                 </button>
-                              </div>
-                              
-                              <div className="flex gap-4 h-14 justify-center">
+                           <div className="absolute inset-x-0 inset-y-[-6px] flex justify-center z-50">
+                              <div className="w-[420px] bg-base3 rounded-2xl shadow-2xl flex items-center p-2.5 gap-2.5 animate-in zoom-in-95 duration-200 border border-base2/50">
                                  <button 
                                    disabled={!match.player1Id}
                                    onClick={() => match.player1Id && handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
-                                   className={`min-w-[140px] px-6 flex items-center justify-center bg-primary/10 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl border border-primary/20 ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                   className={`flex-1 flex items-center justify-center h-12 bg-primary/10 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-sm font-black px-4 text-center border border-primary/20 ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
-                                    <span className="text-sm font-black truncate">
-                                       {match.player1Id?.fullName || 'TBD'}
-                                    </span>
+                                    {match.player1Id?.fullName || 'TBD'}
                                  </button>
-                                 
-                                 <div className="flex h-full items-center">
-                                    <div className="w-px h-6 bg-base2/50"></div>
-                                 </div>
-
+                                 <div className="w-px h-8 bg-base2/50"></div>
                                  <button 
                                    disabled={!match.player2Id}
                                    onClick={() => match.player2Id && handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
-                                   className={`min-w-[140px] px-6 flex items-center justify-center bg-violet/10 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl border border-violet/20 ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                   className={`flex-1 flex items-center justify-center h-12 bg-violet/10 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-sm font-black px-4 text-center border border-violet/20 ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
-                                    <span className="text-sm font-black truncate">
-                                       {match.player2Id?.fullName || 'TBD'}
-                                    </span>
+                                    {match.player2Id?.fullName || 'TBD'}
+                                 </button>
+                                 <button 
+                                   onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
+                                   className="w-8 h-8 flex items-center justify-center text-text/20 hover:text-red transition-colors"
+                                 >
+                                    <X size={16} />
                                  </button>
                               </div>
-                              
                            </div>
                         )}
 
@@ -460,10 +452,10 @@ const OngoingActivities = () => {
                          <Users size={12} className="text-primary" />
                          {t.confirmedPlayers.length}/{t.maxPlayers}
                       </div>
-                      {t.stakePerPlayer > 0 && (
+                       {t.stakePerPlayer > 0 && (
                         <div className="flex items-center gap-1.5 font-bold text-emerald-600">
-                          <WalletIcon size={12} className="fill-emerald-600/20" />
-                          KES {t.stakePerPlayer.toLocaleString()}
+                          <Trophy size={12} className="text-emerald-600" />
+                          PRIZE: KES {((t.stakePerPlayer * (t.confirmedPlayers?.length || t.maxPlayers)) * 0.85).toLocaleString()}
                         </div>
                       )}
                       <div className="flex items-center gap-1.5 font-bold capitalize">

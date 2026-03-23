@@ -55,129 +55,128 @@ const AdminFinance = () => {
       <div className="space-y-8 max-w-[1600px] mx-auto pb-20">
         
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
-                <ShieldCheck size={24} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Escrow</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
+            <div className="p-3 bg-indigo-50/50 text-indigo-600 rounded-full shrink-0">
+              <ShieldCheck size={20} />
             </div>
-            <p className="text-2xl font-black text-slate-800">KES {stats.totalEscrow.toLocaleString()}</p>
-            <p className="text-xs text-slate-400 mt-1">Locked in active events</p>
+            <div>
+              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Total Escrow</span>
+              <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalEscrow.toLocaleString()}</p>
+            </div>
           </div>
 
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
-                <TrendingUp size={24} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Platform Revenue</span>
+          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
+            <div className="p-3 bg-emerald-50/50 text-emerald-600 rounded-full shrink-0">
+              <TrendingUp size={20} />
             </div>
-            <p className="text-2xl font-black text-slate-800">KES {stats.totalRevenue.toLocaleString()}</p>
-            <p className="text-xs text-slate-400 mt-1">Total fees collected (5%)</p>
+            <div>
+              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Revenue</span>
+              <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalRevenue.toLocaleString()}</p>
+            </div>
           </div>
 
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl">
-                <ArrowUpRight size={24} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Deposits</span>
+          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
+            <div className="p-3 bg-amber-50/50 text-amber-600 rounded-full shrink-0">
+              <ArrowUpRight size={20} />
             </div>
-            <p className="text-2xl font-black text-slate-800">KES {stats.totalDeposits.toLocaleString()}</p>
-            <p className="text-xs text-slate-400 mt-1">Lifetime player deposits</p>
+            <div>
+              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Deposits</span>
+              <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalDeposits.toLocaleString()}</p>
+            </div>
           </div>
 
-          <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-rose-50 text-rose-600 rounded-2xl">
-                <ArrowDownLeft size={24} />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Withdrawals</span>
+          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
+            <div className="p-3 bg-rose-50/50 text-rose-600 rounded-full shrink-0">
+              <ArrowDownLeft size={20} />
             </div>
-            <p className="text-2xl font-black text-slate-800">KES {stats.totalWithdrawals.toLocaleString()}</p>
-            <p className="text-xs text-slate-400 mt-1">Processed payouts</p>
+            <div>
+              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Withdrawals</span>
+              <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalWithdrawals.toLocaleString()}</p>
+            </div>
           </div>
         </div>
 
         {/* Filters & Search */}
-        <div className="bg-white p-4 rounded-3xl border border-slate-100 flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-base3 p-3 rounded-2xl border border-base2/50 flex flex-wrap items-center justify-between gap-4 shadow-sm">
           <div className="flex gap-2 flex-wrap">
             {['all', 'deposit', 'withdrawal', 'platform_fee', 'moderation_fee', 'prize_payout', 'stake_lock', 'stake_refund'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold capitalize transition-all ${
-                  filter === f ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'
+                className={`px-4 py-1.5 rounded-full text-[11px] font-bold capitalize transition-all duration-300 ${
+                  filter === f 
+                    ? 'bg-primary text-base3 shadow-md shadow-primary/30 ring-2 ring-primary/10' 
+                    : 'text-text/60 bg-base2/20 hover:bg-base2/40 hover:text-text'
                 }`}
               >
                 {f.replace('_', ' ')}
               </button>
             ))}
           </div>
-          <div className="relative min-w-[300px]">
-            <Search size={18} className="absolute left-3 top-2.5 text-slate-400" />
+          <div className="relative min-w-[300px] flex-1 md:flex-none">
+            <Search size={16} className="absolute left-4 top-2.5 text-text/40" />
             <input 
               type="text" 
               placeholder="Search by User ID or Ref..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-sm outline-none focus:ring-2 focus:ring-slate-200"
+              className="w-full pl-10 pr-4 py-2 bg-base2/20 border-none rounded-full text-xs font-bold outline-none focus:ring-2 focus:ring-primary/10 transition-all placeholder:text-text/30 shadow-inner"
             />
           </div>
         </div>
 
         {/* Transaction Table */}
-        <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-base3 rounded-[2rem] border border-base2/50 shadow-sm overflow-hidden transform transition-all">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">User</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Type</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reference</th>
+              <tr className="bg-base2/10 border-b border-base2/50">
+                <th className="px-6 py-3 text-[10px] font-black text-text/40 uppercase tracking-widest">Date</th>
+                <th className="px-6 py-3 text-[10px] font-black text-text/40 uppercase tracking-widest">User</th>
+                <th className="px-6 py-3 text-[10px] font-black text-text/40 uppercase tracking-widest">Type</th>
+                <th className="px-6 py-3 text-[10px] font-black text-text/40 uppercase tracking-widest">Amount</th>
+                <th className="px-6 py-3 text-[10px] font-black text-text/40 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-3 text-[10px] font-black text-text/40 uppercase tracking-widest">Reference</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-base2/20">
               {filteredTransactions.map(tx => (
-                <tr key={tx._id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4">
-                    <p className="text-sm font-bold text-slate-800">{new Date(tx.createdAt).toLocaleDateString()}</p>
-                    <p className="text-[10px] text-slate-400">{new Date(tx.createdAt).toLocaleTimeString()}</p>
+                <tr key={tx._id} className="hover:bg-base2/10 transition-colors group">
+                  <td className="px-6 py-3">
+                    <p className="text-[12px] font-black text-text-emphasis tracking-tight">{new Date(tx.createdAt).toLocaleDateString()}</p>
+                    <p className="text-[9px] text-text/40 font-bold">{new Date(tx.createdAt).toLocaleTimeString()}</p>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className="text-sm font-medium text-slate-600">{tx.userId?.fullName || tx.userId || 'N/A'}</p>
+                  <td className="px-6 py-3">
+                    <p className="text-[12px] font-bold text-text/70">{tx.userId?.fullName || tx.userId || 'N/A'}</p>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 capitalize">
+                  <td className="px-6 py-3">
+                    <span className="text-[9px] font-black px-2.5 py-1 rounded-full bg-base2/40 text-text/50 uppercase tracking-widest border border-base2/30">
                       {tx.type.replace('_', ' ')}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <p className={`text-sm font-black ${
+                  <td className="px-6 py-3">
+                    <p className={`text-[13px] font-black tracking-tighter ${
                       ['deposit', 'platform_fee', 'moderation_fee'].includes(tx.type) ? 'text-emerald-600' : 
-                      tx.type === 'withdrawal' || tx.type === 'prize_payout' ? 'text-rose-600' : 'text-slate-900'
+                      ['withdrawal', 'prize_payout'].includes(tx.type) ? 'text-rose-600' : 'text-text-emphasis'
                     }`}>
                       KES {tx.amount.toLocaleString()}
                     </p>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  <td className="px-6 py-3">
+                    <span className={`text-[9px] font-black px-2.5 py-0.5 rounded-full border flex items-center gap-1 w-fit uppercase tracking-widest ${
                       tx.status === 'completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 
                       tx.status === 'failed' ? 'bg-rose-50 text-rose-700 border-rose-100' : 'bg-amber-50 text-amber-700 border-amber-100'
                     }`}>
+                      <div className={`w-1 h-1 rounded-full ${tx.status === 'completed' ? 'bg-emerald-500' : tx.status === 'failed' ? 'bg-rose-500' : 'bg-amber-500'}`} />
                       {tx.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-xs font-mono text-slate-400">
-                    {tx.referenceId ? tx.referenceId.toString().slice(-8).toUpperCase() : 'N/A'}
+                  <td className="px-6 py-3 text-[10px] font-mono font-bold text-text/20 group-hover:text-text/40 transition-colors">
+                    {tx.referenceId ? tx.referenceId.toString().slice(-12).toUpperCase() : 'N/A'}
                   </td>
                 </tr>
               ))}
               {filteredTransactions.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-slate-400 italic">
+                  <td colSpan="6" className="px-6 py-12 text-center text-text/30 italic font-medium text-xs">
                     No financial data found for the current filters.
                   </td>
                 </tr>

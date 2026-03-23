@@ -45,8 +45,14 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout log failed:', err);
+    }
     localStorage.removeItem('userInfo');
+    delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
 

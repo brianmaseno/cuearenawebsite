@@ -89,6 +89,7 @@ const WalletPage = () => {
       case 'stake_refund': return <ArrowDownLeft className="text-emerald-500" />;
       case 'prize_payout': return <Plus className="text-indigo-500" />;
       case 'moderation_fee': return <TrendingUp className="text-emerald-500" />;
+      case 'platform_fee': return <TrendingUp className="text-emerald-500" />;
       default: return <History className="text-slate-400" />;
     }
   };
@@ -118,11 +119,13 @@ const WalletPage = () => {
             <p className="text-slate-500">
               {userInfo?.role === 'moderator' 
                 ? 'Track your event commissions and manage earnings' 
-                : 'Manage your funds and track your tournament winnings'}
+                : userInfo?.role === 'admin'
+                  ? 'Monitor platform revenue and manage withdrawals'
+                  : 'Manage your funds and track your tournament winnings'}
             </p>
           </div>
           <div className="flex gap-2">
-            {userInfo?.role !== 'moderator' && (
+            {userInfo?.role === 'player' && (
               <button 
                 onClick={() => { setShowDeposit(true); setShowWithdraw(false); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-100 text-xs font-bold"
@@ -281,7 +284,7 @@ const WalletPage = () => {
                     <div key={tx._id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <div className={`p-3 rounded-2xl ${
-                          tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' ? 'bg-emerald-50' : 
+                          tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee' ? 'bg-emerald-50' : 
                           tx.type === 'withdrawal' ? 'bg-rose-50' : 'bg-slate-50'
                         }`}>
                           {getTransactionIcon(tx.type)}
@@ -296,9 +299,9 @@ const WalletPage = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className={`font-bold ${
-                          ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
+                          ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
                         }`}>
-                          {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
+                          {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
                         </p>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full border ${getStatusColor(tx.status)} font-medium`}>
                           {tx.status}

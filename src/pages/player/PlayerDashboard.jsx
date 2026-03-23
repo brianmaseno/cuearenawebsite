@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2 } from 'lucide-react';
+import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2, Award, Wallet as WalletIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
@@ -173,10 +173,19 @@ const PlayerDashboard = () => {
                      </div>
                     <div className="flex flex-col items-end gap-1">
                       <StatusBadge status={match.status} />
-                      {match.stakeAmount > 0 && (
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                          KES {match.stakeAmount.toLocaleString()}
-                        </span>
+                       {match.stakeAmount > 0 && (
+                        <div className="flex flex-wrap items-center justify-end gap-2 mt-1">
+                          <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                             STAKE: KES {match.stakeAmount.toLocaleString()}
+                          </span>
+                          <span className="text-[9px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-full border border-blue/10 flex items-center gap-1">
+                             <Award size={10} />
+                             PRIZE: KES {match.type === 'tournament' 
+                               ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
+                               : (match.stakeAmount * 2 * 0.85).toLocaleString()
+                             }
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -385,10 +394,16 @@ const PlayerDashboard = () => {
                          <Users size={12} className="text-primary" />
                          {t.confirmedPlayers?.length || 0}/{t.maxPlayers}
                       </div>
-                      {t.stakePerPlayer > 0 && (
-                        <div className="flex items-center gap-1.5 font-bold text-emerald-600">
-                          <WalletIcon size={12} className="fill-emerald-600/20" />
-                          KES {t.stakePerPlayer.toLocaleString()}
+                       {t.stakePerPlayer > 0 && (
+                        <div className="flex flex-wrap items-center gap-3">
+                          <div className="flex items-center gap-1.5 font-bold text-emerald-600 text-[9px]">
+                             <WalletIcon size={12} className="fill-emerald-600/20" />
+                             Entry: KES {t.stakePerPlayer.toLocaleString()}
+                          </div>
+                          <div className="flex items-center gap-1.5 font-bold text-blue text-[9px]">
+                             <Trophy size={12} className="text-blue" />
+                             Prize: KES {((t.stakePerPlayer * t.maxPlayers) * 0.85).toLocaleString()}
+                          </div>
                         </div>
                       )}
                     </div>

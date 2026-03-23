@@ -17,7 +17,8 @@ import {
   Activity,
   ChevronLeft,
   ChevronRight,
-  Wallet
+  Wallet,
+  TrendingUp
 } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
 
@@ -60,7 +61,8 @@ const Sidebar = () => {
         { label: 'Users', path: '/admin/users', icon: Users },
         { label: 'Mod Requests', path: '/admin/moderator-requests', icon: Shield },
         { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
-        { label: 'Finance', path: '/admin/finance', icon: Wallet },
+        { label: 'Finance', path: '/admin/finance', icon: TrendingUp },
+        { label: 'My Wallet', path: '/wallet', icon: Wallet },
       ];
     }
     if (user.role === 'moderator') {
