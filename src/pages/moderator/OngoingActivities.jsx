@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
+import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
 
 const OngoingActivities = () => {
@@ -103,6 +104,7 @@ const OngoingActivities = () => {
   return (
     <DashboardLayout title="Active Activities">
       <div className="space-y-6 pb-20">
+        <QuickStatsBar />
         {/* Tabs */}
         <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
           <button

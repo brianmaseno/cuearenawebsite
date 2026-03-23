@@ -41,7 +41,13 @@ const useActivityTracker = () => {
   // Track Navigation
   useEffect(() => {
     if (user) {
-      addLog('NAVIGATION', `User navigated to ${location.pathname}`);
+      const isSignificantPath = ['/admin', '/moderator', '/dashboard'].some(prefix => 
+        location.pathname.startsWith(prefix)
+      );
+      
+      if (isSignificantPath) {
+        addLog('NAVIGATION', `User accessed ${location.pathname}`);
+      }
     }
   }, [location.pathname, user, addLog]);
 
@@ -51,12 +57,24 @@ const useActivityTracker = () => {
 
     const handleClick = (e) => {
       const target = e.target.closest('button, a, [role="button"]');
-      if (target) {
-        const text = target.innerText || target.getAttribute('aria-label') || target.getAttribute('title') || 'unlabeled element';
-        const type = target.tagName.toLowerCase() === 'button' ? 'BUTTON_CLICK' : 
-                     target.tagName.toLowerCase() === 'a' ? 'LINK_CLICK' : 'ELEMENT_CLICK';
-        
-        addLog(type, `User clicked: "${text.trim().substring(0, 50)}"`);
+      if (!target) return;
+
+      const text = (target.innerText || target.getAttribute('aria-label') || target.getAttribute('title') || '').trim().toLowerCase();
+      if (!text) return;
+
+      const type = target.tagName.toLowerCase() === 'button' ? 'BUTTON_CLICK' : 
+                   target.tagName.toLowerCase() === 'a' ? 'LINK_CLICK' : 'ELEMENT_CLICK';
+      
+      // Filter for major activities
+      const majorKeywords = ['create', 'post', 'confirm', 'approve', 'submit', 'reject', 'delete', 'save', 'enter', 'accept', 'decline', 'record', 'update', 'toggle', 'suspend', 'block'];
+      const isMajor = majorKeywords.some(kw => text.includes(kw));
+      
+      // OR if it's a navigation link to a management area
+      const href = target.getAttribute('href') || '';
+      const isManagementNav = href.startsWith('/admin') || href.startsWith('/moderator');
+
+      if (isMajor || isManagementNav) {
+        addLog(type, `Major action: "${target.innerText.trim().substring(0, 30)}"`);
       }
     };
 

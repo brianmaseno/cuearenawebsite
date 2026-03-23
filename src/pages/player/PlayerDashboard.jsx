@@ -4,6 +4,7 @@ import api from '../../api/axios';
 import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
+import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
 
 const PlayerDashboard = () => {
@@ -95,6 +96,9 @@ const PlayerDashboard = () => {
             </Link>
           </div>
         )}
+
+        {/* Quick Stats */}
+        <QuickStatsBar />
 
         {/* Tabs */}
         <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
