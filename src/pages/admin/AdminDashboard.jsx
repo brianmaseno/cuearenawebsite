@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Users, Trophy, Target, Activity, ShieldAlert, CheckCircle, Zap, Shield, Clock, TrendingUp, TrendingDown, Server, Database } from 'lucide-react';
+import { Users, Trophy, Target, Activity, ShieldAlert, CheckCircle, Zap, Shield, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
 const AdminDashboard = () => {
@@ -19,27 +19,22 @@ const AdminDashboard = () => {
   });
   const [activityMatrix, setActivityMatrix] = useState([]);
   const [moderatorPulse, setModeratorPulse] = useState([]);
-  const [systemHealth, setSystemHealth] = useState({ backend: 'ONLINE', db: 'STABLE', sync: 'ACTIVE' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const [usersRes, tRes, mRes, logsRes, healthRes] = await Promise.all([
+        const [usersRes, tRes, mRes, logsRes] = await Promise.all([
           api.get('/users'),
           api.get('/tournaments'),
           api.get('/direct-matches'),
           api.get('/admin/logs'),
-          api.get('/admin/health'),
         ]);
 
         const users = usersRes.data;
         const tournaments = tRes.data;
         const matches = mRes.data;
         const logs = logsRes.data;
-        const health = healthRes.data;
-
-        setSystemHealth(health);
 
         const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
         const activeNow = users.filter(u => u.lastActive && new Date(u.lastActive) > fifteenMinsAgo).length;
@@ -251,38 +246,6 @@ const AdminDashboard = () => {
 
           {/* Right Sidebar: System Integrity & Pulse */}
           <div className="space-y-6">
-            {/* System Integrity Monitor */}
-            <section className="card-premium p-6 rounded-3xl border-base2 bg-base3/10 shadow-xl backdrop-blur-md">
-              <h3 className="text-[11px] font-black text-text/40 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                 <Server size={14} className="text-primary" /> System Integrity
-              </h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-green/5 border border-green/10">
-                   <div className="flex items-center gap-3">
-                      <Zap size={16} className="text-green" />
-                      <span className="text-[11px] font-black uppercase text-text/60">Backend API</span>
-                   </div>
-                   <span className="text-[10px] font-black text-green uppercase tracking-widest">{systemHealth.backend}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-blue/5 border border-blue/10">
-                   <div className="flex items-center gap-3">
-                      <Database size={16} className="text-blue" />
-                      <span className="text-[11px] font-black uppercase text-text/60">Database</span>
-                   </div>
-                   <span className="text-[10px] font-black text-blue uppercase tracking-widest">{systemHealth.db}</span>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-xl bg-violet/5 border border-violet/10">
-                   <div className="flex items-center gap-3">
-                      <Activity size={16} className="text-violet" />
-                      <span className="text-[11px] font-black uppercase text-text/60">Audit Sync</span>
-                   </div>
-                   <span className="text-[10px] font-black text-violet uppercase tracking-widest">{systemHealth.sync}</span>
-                </div>
-              </div>
-              <div className="mt-6 p-4 rounded-xl bg-base2/10 border border-base2/30 text-center">
-                 <span className="text-[10px] font-bold text-text/40 italic leading-none">All systems operational at peak performance</span>
-              </div>
-            </section>
 
             {/* Moderator Pulse Stream */}
             <section className="card-premium rounded-3xl overflow-hidden border-base2 bg-base3/10 shadow-xl backdrop-blur-md">

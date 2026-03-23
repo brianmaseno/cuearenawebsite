@@ -55,11 +55,7 @@ const QuickStatsBar = () => {
   if (!metrics || !metrics.stats) return null;
 
   return (
-    <div className="space-y-3 mb-8">
-      <div className="flex items-center gap-2">
-        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text/40">{metrics.title}</h4>
-        <div className="h-px flex-1 bg-gradient-to-r from-base2/50 to-transparent"></div>
-      </div>
+    <div className="mb-8">
       
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {metrics.stats.map((stat, idx) => {
@@ -76,9 +72,25 @@ const QuickStatsBar = () => {
                 <p className="text-[10px] font-black uppercase tracking-wider text-text/40 mb-1 group-hover:text-primary transition-colors">
                   {stat.label}
                 </p>
-                <p className="text-xl font-black text-text-emphasis leading-none tabular-nums tracking-tighter">
-                  {stat.value}
-                </p>
+                {stat.value && (
+                  <p className="text-xl font-black text-text-emphasis leading-none tabular-nums tracking-tighter">
+                    {stat.value}
+                  </p>
+                )}
+                {stat.form && (
+                  <div className="flex gap-1.5 mt-2">
+                    {stat.form.map((res, i) => (
+                      <span 
+                        key={i} 
+                        className={`w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-black shadow-sm ${
+                          res === 'W' ? 'bg-green text-base3' : 'bg-red text-base3'
+                        }`}
+                      >
+                        {res}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className={`p-2.5 rounded-xl bg-${stat.color || 'primary'}/10 text-${stat.color || 'primary'} group-hover:scale-110 transition-transform shadow-inner`}>
                 <Icon size={20} />

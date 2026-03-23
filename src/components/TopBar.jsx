@@ -2,14 +2,33 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
-import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff } from 'lucide-react';
+import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star } from 'lucide-react';
 
 const TopBar = ({ title }) => {
   const { user } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [livePoints, setLivePoints] = useState(user?.points || 0);
   const dropdownRef = useRef(null);
+
+  // Fetch live points from backend
+  useEffect(() => {
+    if (!user) return;
+    
+    const fetchPoints = async () => {
+      try {
+        const { data } = await api.get('/auth/me');
+        setLivePoints(data.points || 0);
+      } catch (err) {
+        console.error('Failed to fetch live points:', err);
+      }
+    };
+
+    fetchPoints();
+    const interval = setInterval(fetchPoints, 30000); // Sync every 30s
+    return () => clearInterval(interval);
+  }, [user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -182,9 +201,14 @@ const TopBar = ({ title }) => {
         </div>
 
         <div className="flex items-center gap-3 pl-6 border-l border-base2">
-          <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-text-emphasis">{user?.fullName}</p>
-            <p className="text-xs text-text capitalize">{user?.role}</p>
+          <div className="text-right hidden md:flex flex-col items-end gap-0.5">
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-black uppercase tracking-tighter flex items-center gap-1">
+                <Star size={10} className="fill-primary" /> {livePoints} pts
+              </span>
+              <p className="text-sm font-bold text-text-emphasis leading-none">{user?.fullName}</p>
+            </div>
+            <p className="text-[10px] text-text/40 font-black uppercase tracking-widest leading-none">{user?.role}</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-base2 flex items-center justify-center text-primary font-bold overflow-hidden border border-base1">
             {user?.profilePhoto ? (
