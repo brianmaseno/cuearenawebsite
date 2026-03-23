@@ -120,7 +120,7 @@ const Register = () => {
             </p>
           </div>
           <div className="mt-8 pt-8 border-t border-base2/50 text-center">
-            <p className="text-text/60 font-medium mb-1">Looking to manage the arena?</p>
+            <p className="text-text/60 font-medium mb-1">Looking to manage tournaments?</p>
             <Link to="/moderator-apply" className="text-primary font-black hover:underline tracking-tight">
               APPLY AS MODERATOR
             </Link>

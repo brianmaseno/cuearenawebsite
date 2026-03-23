@@ -201,7 +201,7 @@ const PlayerHistory = () => {
                             <p className="text-[10px] font-bold text-text/60">
                                {match.isTournamentMatch ? 'Tournament Match' : `Org: ${match.organizerId?.fullName}`}
                             </p>
-                            <p className="text-[10px] font-bold text-text/60">{match.location || match.venue || 'Cue Arena'}</p>
+                            <p className="text-[10px] font-bold text-text/60">{match.location || match.venue || 'Cue Tournament'}</p>
                           </div>
                         </div>
 

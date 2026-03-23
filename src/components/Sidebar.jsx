@@ -64,7 +64,7 @@ const Sidebar = () => {
     }`}>
       <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
         <Link to={dashboardPath} className="flex items-center gap-3">
-          {!isCollapsed && <span className="text-xl brand-premium truncate">Cue Arena</span>}
+          {!isCollapsed && <span className="text-xl brand-premium truncate">Cue Tournament</span>}
         </Link>
         <button 
           onClick={toggleSidebar}

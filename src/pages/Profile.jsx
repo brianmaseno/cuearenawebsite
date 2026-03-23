@@ -300,7 +300,7 @@ const Profile = () => {
                     </div>
                     <div>
                        <h4 className="text-[15px] font-medium text-text-emphasis tracking-tight">Deactivate Account</h4>
-                       <p className="text-[11px] text-text/40 font-medium leading-relaxed mt-0.5 max-w-[240px]">Permanently remove your arena presence.</p>
+                       <p className="text-[11px] text-text/40 font-medium leading-relaxed mt-0.5 max-w-[240px]">Permanently remove your tournament presence.</p>
                     </div>
                   </div>
                   <button 

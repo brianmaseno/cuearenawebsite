@@ -160,7 +160,7 @@ const OngoingActivities = () => {
                            <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
                         )}
                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
-                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Arena'}
+                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Tournament'}
                         </h3>
                      </div>
                     <div className="flex items-center gap-1">

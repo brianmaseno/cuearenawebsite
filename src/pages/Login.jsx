@@ -38,7 +38,7 @@ const Login = () => {
             <span className="text-3xl brand-premium">Cue Arena</span>
           </Link>
           <h2 className="text-2xl font-bold text-text-emphasis">Welcome Back</h2>
-          <p className="text-text">Enter your credentials to access the arena</p>
+          <p className="text-text">Enter your credentials to access your tournaments</p>
         </div>
 
         {/* Login Card */}

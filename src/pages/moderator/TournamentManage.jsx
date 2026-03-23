@@ -456,7 +456,7 @@ const TournamentManage = () => {
                      <div className="flex items-center gap-4">
                         <img src="/favicon.png" alt="7 Ball" className="w-10 h-10 drop-shadow-md" />
                         <div>
-                           <h3 className="text-3xl font-black text-text-emphasis tracking-tight">Cue Arena</h3>
+                           <h3 className="text-3xl font-black text-text-emphasis tracking-tight">Cue Tournament</h3>
                            <p className="text-xs font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
                         </div>
                      </div>

@@ -135,7 +135,7 @@ const History = () => {
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                       <div className="flex items-center gap-3">
                         <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
                       </div>
                       <div>
                         {isCancelled ? (
@@ -257,7 +257,7 @@ const History = () => {
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                       <div className="flex items-center gap-3">
                         <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Arena</h3>
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
                       </div>
                       <div>
                         {isCancelled ? (

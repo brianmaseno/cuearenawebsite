@@ -525,7 +525,7 @@ const AdminUsers = () => {
                      </p>
                   </div>
                   <div className="bg-yellow/5 p-3 rounded-xl border border-yellow/10 text-center">
-                     <p className="text-[8px] uppercase font-medium text-yellow/40 mb-0.5">Arena Victories</p>
+                     <p className="text-[8px] uppercase font-medium text-yellow/40 mb-0.5">Tournament Victories</p>
                      <p className="text-xl font-medium text-yellow leading-none">
                         <UserStatsValue userId={selectedUser._id} field="totalWins" />
                      </p>
