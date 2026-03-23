@@ -358,32 +358,47 @@ const OngoingActivities = () => {
                           );
                         })}
 
-                        {/* Centered Overlay for Winner Selection */}
+                        {/* Enhanced Overlay for Winner Selection */}
                         {selectingSetIdx !== undefined && (
-                           <div className="absolute inset-x-0 inset-y-[-4px] flex justify-center z-50">
-                              <div className="w-[380px] bg-base3 border-2 border-primary rounded-2xl shadow-2xl flex items-center p-2 gap-2 animate-in zoom-in-95 duration-200">
+                           <div className="absolute inset-0 bg-base3/95 backdrop-blur-md flex flex-col items-center justify-center z-50 rounded-xl border-2 border-primary/30 p-4 animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
+                              <div className="flex items-center justify-between w-full mb-4">
+                                 <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+                                    Select Winner for Set {selectingSetIdx + 1}
+                                 </h4>
+                                 <button 
+                                   onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
+                                   className="w-6 h-6 flex items-center justify-center rounded-full bg-base2/50 text-text/40 hover:bg-red hover:text-base3 transition-all"
+                                 >
+                                    <X size={12} />
+                                 </button>
+                              </div>
+                              
+                              <div className="flex gap-4 h-14 justify-center">
                                  <button 
                                    disabled={!match.player1Id}
                                    onClick={() => match.player1Id && handleRecordSetWinner(match, selectingSetIdx, (match.player1Id._id || match.player1Id))}
-                                   className={`flex-1 h-full py-2.5 bg-primary/5 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center border border-primary/10 ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                   className={`min-w-[140px] px-6 flex items-center justify-center bg-primary/10 hover:bg-primary text-primary hover:text-base3 transition-all rounded-xl border border-primary/20 ${!match.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
-                                    {match.player1Id?.fullName || 'TBD'}
+                                    <span className="text-sm font-black truncate">
+                                       {match.player1Id?.fullName || 'TBD'}
+                                    </span>
                                  </button>
-                                 <div className="w-px h-6 bg-base2"></div>
+                                 
+                                 <div className="flex h-full items-center">
+                                    <div className="w-px h-6 bg-base2/50"></div>
+                                 </div>
+
                                  <button 
                                    disabled={!match.player2Id}
                                    onClick={() => match.player2Id && handleRecordSetWinner(match, selectingSetIdx, (match.player2Id._id || match.player2Id))}
-                                   className={`flex-1 h-full py-2.5 bg-violet/5 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl text-[10px] font-black uppercase px-2 text-center border border-violet/10 ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                   className={`min-w-[140px] px-6 flex items-center justify-center bg-violet/10 hover:bg-violet text-violet hover:text-base3 transition-all rounded-xl border border-violet/20 ${!match.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                  >
-                                    {match.player2Id?.fullName || 'TBD'}
-                                 </button>
-                                 <button 
-                                   onClick={() => setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; })}
-                                   className="w-8 h-8 flex items-center justify-center text-text/20 hover:text-red transition-colors"
-                                 >
-                                    <X size={16} />
+                                    <span className="text-sm font-black truncate">
+                                       {match.player2Id?.fullName || 'TBD'}
+                                    </span>
                                  </button>
                               </div>
+                              
                            </div>
                         )}
 
