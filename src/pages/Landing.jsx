@@ -17,12 +17,12 @@ const Landing = () => {
         const [tResponse, sResponse, lResponse] = await Promise.all([
           api.get('/tournaments'),
           api.get('/tournaments/public/stats'),
-          api.get('/users/leaderboard?limit=10')
+          api.get('/users/leaderboard?limit=8')
         ]);
         
         const active = tResponse.data
-          .filter(t => t.status !== 'draft' && t.status !== 'cancelled' && t.entryType === 'open_request')
-          .slice(0, 6);
+          .filter(t => ['open_for_players', 'full', 'ongoing'].includes(t.status) && t.entryType === 'open_request')
+          .slice(0, 4);
         
         setTournaments(active);
         setStats(sResponse.data);
@@ -111,12 +111,6 @@ const Landing = () => {
               <Link to="/register" className="btn-primary text-xl px-12 py-5 rounded-2xl flex items-center gap-3 shadow-2xl shadow-primary/25 hover:shadow-primary/50 transition-all hover:scale-105 active:scale-95 group">
                 Register Arena <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button
-                onClick={scrollToTournaments}
-                className="px-12 py-5 rounded-2xl border-2 border-base2 hover:border-primary/50 hover:bg-base2/50 transition-all font-bold text-text-emphasis backdrop-blur-sm group"
-              >
-                Watch Matches
-              </button>
             </motion.div>
 
             {/* Stats Bar */}
@@ -154,9 +148,6 @@ const Landing = () => {
                   <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Active Arenas</h2>
                   <p className="text-lg text-text/70 font-medium">Join high-stakes competitions and prove your mastery.</p>
                 </div>
-                <Link to="/register" className="inline-flex items-center gap-2 text-primary font-black group px-6 py-3 bg-primary/5 rounded-xl hover:bg-primary/10 transition-all active:scale-95 text-sm whitespace-nowrap">
-                  Explore All <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
               </div>
 
               <AnimatePresence mode="wait">
@@ -167,13 +158,14 @@ const Landing = () => {
                     ))}
                   </div>
                 ) : tournaments.length > 0 ? (
-                  <motion.div 
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  >
+                  <div className="flex flex-col gap-6">
+                    <motion.div 
+                      variants={containerVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
                     {tournaments.map(t => (
                       <motion.div 
                         key={t._id} 
@@ -221,7 +213,13 @@ const Landing = () => {
                       </motion.div>
                     ))}
                   </motion.div>
-                ) : (
+                  <div className="flex justify-center mt-2">
+                    <Link to="/register" className="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-base2 border border-base2/50 hover:bg-base2/50 hover:border-primary/30 transition-all font-black text-text-emphasis hover:text-primary active:scale-95 group shadow-lg shadow-black/5 text-sm">
+                      View More Arenas <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
                   <motion.div 
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }}
@@ -269,11 +267,10 @@ const Landing = () => {
                           <h3 className="text-sm font-black text-text-emphasis truncate group-hover:text-primary transition-colors">{player.fullName}</h3>
                           <p className="text-[10px] font-bold text-text/50 truncate">{player.bio || 'Rising Star Elite'}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right flex flex-col justify-center">
                           <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 leading-none">
                             {player.points || 0}
                           </div>
-                          <div className="text-[8px] uppercase font-black tracking-widest text-text/40">Points</div>
                         </div>
                       </motion.div>
                     ))}

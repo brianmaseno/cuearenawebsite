@@ -62,7 +62,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center z-10 pointer-events-none">
                <div className="bg-base3/90 backdrop-blur-sm px-2 py-1 rounded-xl border border-primary/20 shadow-xl scale-90 group-hover:scale-100 transition-transform flex items-center gap-1.5">
                   {isModerator ? <Settings size={10} className="text-primary" /> : <Eye size={10} className="text-primary" />}
-                  <span className="text-[8px] font-black text-primary uppercase tracking-widest font-sans">{isModerator ? 'Manage' : 'Watch'}</span>
+                  <span className="text-[8px] font-black text-primary uppercase tracking-widest font-sans">{isModerator ? 'Manage' : 'View'}</span>
                </div>
             </div>
 
