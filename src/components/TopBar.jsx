@@ -203,9 +203,11 @@ const TopBar = ({ title }) => {
         <div className="flex items-center gap-3 pl-6 border-l border-base2">
           <div className="text-right hidden md:flex flex-col items-end gap-0.5">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-black uppercase tracking-tighter flex items-center gap-1">
-                <Star size={10} className="fill-primary" /> {livePoints} pts
-              </span>
+              {user?.role === 'player' && (
+                <span className="px-3 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-black uppercase tracking-tighter flex items-center gap-1">
+                  <Star size={10} className="fill-primary" /> {livePoints} pts
+                </span>
+              )}
               <p className="text-sm font-bold text-text-emphasis leading-none">{user?.fullName}</p>
             </div>
             <p className="text-[10px] text-text/40 font-black uppercase tracking-widest leading-none">{user?.role}</p>
