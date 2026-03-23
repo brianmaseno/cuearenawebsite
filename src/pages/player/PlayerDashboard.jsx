@@ -58,7 +58,30 @@ const PlayerDashboard = () => {
       fetchData();
     } catch (err) {
       console.error('Error responding to invitation:', err);
-      toast.error(err.response?.data?.message || 'Error responding to invitation');
+      const message = err.response?.data?.message || '';
+      
+      if (message.toLowerCase().includes('insufficient funds')) {
+        toast.error(
+          (t) => (
+            <div className="flex flex-col gap-2">
+              <span className="font-bold">Insufficient Funds</span>
+              <span className="text-xs opacity-90">You need more funds in your wallet to accept this invitation.</span>
+              <button 
+                onClick={() => {
+                  toast.dismiss(t.id);
+                  window.location.href = '/wallet';
+                }}
+                className="mt-1 bg-white text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
+              >
+                Go to Wallet <ArrowRight size={12} />
+              </button>
+            </div>
+          ),
+          { duration: 6000, position: 'top-center', style: { border: '1px solid #fee2e2', background: '#fef2f2', color: '#991b1b' } }
+        );
+      } else {
+        toast.error(message || 'Error responding to invitation');
+      }
     }
   };
 
@@ -129,7 +152,7 @@ const PlayerDashboard = () => {
                     }
                   }
                 }
-                const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
+                const currentActiveSet = defaultActive;
                 const activeSetRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
                 const isMatchFinished = match.status === 'completed';
 
@@ -279,19 +302,18 @@ const PlayerDashboard = () => {
                                  }
 
                                  return (
-                                    <button
+                                    <div
                                        key={idx}
-                                       onClick={() => setActiveSetMap(prev => ({ ...prev, [match._id]: idx }))}
                                        className={`flex-1 min-w-[40px] py-1 rounded-lg text-[9px] font-black uppercase transition-all border flex flex-col items-center justify-center ${
                                           isActive 
                                              ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105 z-10' 
-                                             : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 hover:opacity-100 hover:border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
+                                             : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 opacity-100 border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
                                        }`}
                                     >
                                        <span className={winnerColor || (isActive ? 'text-base3' : 'text-text/40')}>
                                           {tabLabel}
                                        </span>
-                                    </button>
+                                    </div>
                                  );
                               })}
                            </div>

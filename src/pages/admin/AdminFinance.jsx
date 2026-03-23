@@ -28,21 +28,13 @@ const AdminFinance = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const { data } = await api.get('/wallet/admin/all-transactions');
-      setTransactions(data);
+      const [txRes, statsRes] = await Promise.all([
+        api.get('/wallet/admin/transactions'),
+        api.get('/wallet/admin/stats')
+      ]);
       
-      // Calculate stats (Mock logic for now, should ideally come from backend)
-      const escrow = data.filter(t => t.status === 'pending').reduce((acc, t) => acc + t.amount, 0);
-      const revenue = data.filter(t => t.type === 'platform_fee').reduce((acc, t) => acc + t.amount, 0);
-      const deposits = data.filter(t => t.type === 'deposit').reduce((acc, t) => acc + t.amount, 0);
-      const withdrawals = data.filter(t => t.type === 'withdrawal').reduce((acc, t) => acc + t.amount, 0);
-      
-      setStats({
-        totalEscrow: escrow,
-        totalRevenue: revenue,
-        totalDeposits: deposits,
-        totalWithdrawals: withdrawals
-      });
+      setTransactions(txRes.data);
+      setStats(statsRes.data);
     } catch (err) {
       console.error('Failed to load admin finance data');
     } finally {
@@ -111,8 +103,8 @@ const AdminFinance = () => {
 
         {/* Filters & Search */}
         <div className="bg-white p-4 rounded-3xl border border-slate-100 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex gap-2">
-            {['all', 'deposit', 'withdrawal', 'platform_fee', 'stake_lock'].map(f => (
+          <div className="flex gap-2 flex-wrap">
+            {['all', 'deposit', 'withdrawal', 'platform_fee', 'moderation_fee', 'prize_payout', 'stake_lock', 'stake_refund'].map(f => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -164,7 +156,8 @@ const AdminFinance = () => {
                   </td>
                   <td className="px-6 py-4">
                     <p className={`text-sm font-black ${
-                      ['deposit', 'platform_fee', 'moderator_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
+                      ['deposit', 'platform_fee', 'moderation_fee'].includes(tx.type) ? 'text-emerald-600' : 
+                      tx.type === 'withdrawal' || tx.type === 'prize_payout' ? 'text-rose-600' : 'text-slate-900'
                     }`}>
                       KES {tx.amount.toLocaleString()}
                     </p>

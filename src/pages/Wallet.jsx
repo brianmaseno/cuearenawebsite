@@ -88,6 +88,7 @@ const WalletPage = () => {
       case 'stake_lock': return <Clock className="text-amber-500" />;
       case 'stake_refund': return <ArrowDownLeft className="text-emerald-500" />;
       case 'prize_payout': return <Plus className="text-indigo-500" />;
+      case 'moderation_fee': return <TrendingUp className="text-emerald-500" />;
       default: return <History className="text-slate-400" />;
     }
   };
@@ -114,7 +115,11 @@ const WalletPage = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Digital Wallet</h1>
-            <p className="text-slate-500">Manage your funds and track your earnings</p>
+            <p className="text-slate-500">
+              {userInfo?.role === 'moderator' 
+                ? 'Track your event commissions and manage earnings' 
+                : 'Manage your funds and track your tournament winnings'}
+            </p>
           </div>
           <div className="flex gap-2">
             {userInfo?.role !== 'moderator' && (
@@ -239,13 +244,17 @@ const WalletPage = () => {
                   <TrendingUp size={20} />
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 italic">YIELD</span>
+                  <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 italic">
+                    {userInfo?.role === 'moderator' ? 'EARNINGS' : 'YIELD'}
+                  </span>
                 </div>
               </div>
               <div className="relative z-10">
-                <p className="text-[10px] font-black text-slate-400 uppercase mb-0.5 tracking-tight">Net Returns</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase mb-0.5 tracking-tight">
+                  {userInfo?.role === 'moderator' ? 'Total Commission' : 'Net Returns'}
+                </p>
                 <p className="text-2xl font-black text-slate-900 tabular-nums tracking-tighter">
-                  KES {transactions?.filter(t => t.type === 'prize_payout').reduce((acc, t) => acc + t.amount, 0).toLocaleString()}
+                  KES {transactions?.filter(t => t.type === (userInfo?.role === 'moderator' ? 'moderation_fee' : 'prize_payout')).reduce((acc, t) => acc + t.amount, 0).toLocaleString()}
                 </p>
               </div>
               <div className="absolute -right-3 -bottom-3 opacity-[0.02] text-emerald-500 group-hover:scale-105 transition-transform pointer-events-none">
@@ -272,7 +281,7 @@ const WalletPage = () => {
                     <div key={tx._id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <div className={`p-3 rounded-2xl ${
-                          tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' ? 'bg-emerald-50' : 
+                          tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' ? 'bg-emerald-50' : 
                           tx.type === 'withdrawal' ? 'bg-rose-50' : 'bg-slate-50'
                         }`}>
                           {getTransactionIcon(tx.type)}
@@ -287,9 +296,9 @@ const WalletPage = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className={`font-bold ${
-                          ['deposit', 'prize_payout', 'stake_refund'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
+                          ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
                         }`}>
-                          {['deposit', 'prize_payout', 'stake_refund'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
+                          {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
                         </p>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full border ${getStatusColor(tx.status)} font-medium`}>
                           {tx.status}
