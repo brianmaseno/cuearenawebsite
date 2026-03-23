@@ -10,12 +10,15 @@ const AdminDashboard = () => {
     activeNow: 0,
     engagementPulse: 0,
     moderationCoverage: 0,
+    moderatorCount: 0,
     totalActivities: 0,
     ongoingCount: 0,
     completedCount: 0,
     cancelledCount: 0,
     newMembersToday: 0,
     platformGrowth: 0,
+    totalLogs: 0,
+    logsToday: 0,
   });
   const [activityMatrix, setActivityMatrix] = useState([]);
   const [moderatorPulse, setModeratorPulse] = useState([]);
@@ -69,17 +72,22 @@ const AdminDashboard = () => {
           growth = 100.0;
         }
 
+        const logsToday = logs.filter(l => new Date(l.createdAt) >= todayStart).length;
+
         setStats({
           totalUsers: users.length,
           activeNow,
           engagementPulse: pulse,
           moderationCoverage: coverage,
+          moderatorCount: moderators,
           totalActivities: tournaments.length + matches.length,
           ongoingCount: totalOngoing,
           completedCount: tournaments.filter(t => t.status === 'completed').length + matches.filter(m => m.status === 'completed').length,
           cancelledCount: tournaments.filter(t => t.status === 'cancelled').length + matches.filter(m => m.status === 'cancelled').length,
           newMembersToday,
           platformGrowth: growth,
+          totalLogs: logs.length,
+          logsToday,
         });
 
         // Unified Activity Matrix: Unified stream of latest platform competitions
@@ -109,7 +117,7 @@ const AdminDashboard = () => {
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
         {/* Strategic Hero Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-blue/10 to-transparent border-blue/20 hover:border-blue/40 shadow-xl shadow-blue/5 transition-all group overflow-hidden relative">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue/5 rounded-full blur-3xl group-hover:bg-blue/10 transition-colors" />
             <div className="flex justify-between items-start mb-4 relative z-10">
@@ -121,10 +129,10 @@ const AdminDashboard = () => {
                 {parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}{stats.platformGrowth}%
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Growth</div>
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Reach</div>
             <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalUsers}</h4>
             <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-               <span className="text-blue font-black">{stats.newMembersToday}</span> new registrations today
+               <span className="text-blue font-black">{stats.newMembersToday}</span> registrations today
             </div>
           </div>
 
@@ -138,10 +146,10 @@ const AdminDashboard = () => {
                  LIVE PULSE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Active Now</div>
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Live Pulse</div>
             <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.activeNow}</h4>
             <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic relative z-10">
-               System engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
+               Engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
             </div>
           </div>
 
@@ -152,10 +160,10 @@ const AdminDashboard = () => {
                 <Target size={24} />
               </div>
               <div className="flex items-center gap-1.5 text-green bg-green/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-green/10">
-                <TrendingUp size={12} /> {stats.ongoingCount} LIVE
+                {stats.ongoingCount} ACTIVE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Total Activities</div>
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Event Velocity</div>
             <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalActivities}</h4>
             <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
                <span className="text-green font-black">{stats.completedCount}</span> successfully archived
@@ -169,13 +177,30 @@ const AdminDashboard = () => {
                 <Shield size={24} />
               </div>
               <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-primary/10">
-                STABLE
+                STRICT
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Coverage</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderationCoverage}%</h4>
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Fleet</div>
+            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderatorCount}</h4>
             <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-               Optimized integrity ratio
+               System coverage <span className="text-primary font-black">{stats.moderationCoverage}%</span>
+            </div>
+          </div>
+
+          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-orange/10 to-transparent border-orange/20 hover:border-orange/40 shadow-xl shadow-orange/5 transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange/5 rounded-full blur-3xl group-hover:bg-orange/10 transition-colors" />
+            <div className="flex justify-between items-start mb-4 relative z-10">
+              <div className="w-12 h-12 bg-orange text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-orange/20 group-hover:rotate-6 transition-transform">
+                <Activity size={24} />
+              </div>
+              <div className="flex items-center gap-1.5 text-orange bg-orange/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-orange/10">
+                AUDIT
+              </div>
+            </div>
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Audit Pulse</div>
+            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalLogs}</h4>
+            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+               <span className="text-orange font-black">{stats.logsToday}</span> system events today
             </div>
           </div>
         </div>
