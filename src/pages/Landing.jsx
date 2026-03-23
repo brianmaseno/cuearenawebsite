@@ -1,15 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, User, Mail, Phone } from 'lucide-react';
 import api from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
+import toast from 'react-hot-toast';
 
 const Landing = () => {
   const [tournaments, setTournaments] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [stats, setStats] = useState({ totalTournaments: 0, totalMatches: 0, totalPlayers: 0 });
   const [loading, setLoading] = useState(true);
+  
+  // Footer Form State
+  const [footerForm, setFooterForm] = useState({ fullName: '', email: '', phone: '' });
+  const [footerSubmitting, setFooterSubmitting] = useState(false);
+
+  const handleFooterSubmit = async (e) => {
+    e.preventDefault();
+    if (!footerForm.fullName || !footerForm.email || !footerForm.phone) {
+      return toast.error('Please fill in Name, Email and Phone');
+    }
+
+    setFooterSubmitting(true);
+    try {
+      await api.post('/moderator-requests', {
+        ...footerForm,
+        experience: 'Applied via landing page footer.'
+      });
+      toast.success('Application sent! We will contact you soon.');
+      setFooterForm({ fullName: '', email: '', phone: '' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Submission failed');
+    } finally {
+      setFooterSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +61,6 @@ const Landing = () => {
     };
     fetchData();
   }, []);
-
-  const scrollToTournaments = () => {
-    document.getElementById('tournaments-section')?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -284,7 +306,7 @@ const Landing = () => {
       </section>
 
       {/* Why Choose Section */}
-      <section className="py-24 bg-background relative">
+      <section className="py-24 bg-background relative border-b border-base2/30">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl font-black text-text-emphasis mb-4 tracking-tight">Engineered for Victory</h2>
@@ -367,18 +389,56 @@ const Landing = () => {
               <ul className="space-y-4">
                 <li><Link to="/about" className="text-text/60 hover:text-primary transition-colors font-bold">Our Vision</Link></li>
                 <li><Link to="/contact" className="text-text/60 hover:text-primary transition-colors font-bold">Contact Support</Link></li>
+                <li><Link to="/moderator-apply" className="text-text/60 hover:text-primary transition-colors font-bold">Apply as Moderator</Link></li>
                 <li><Link to="/terms" className="text-text/60 hover:text-primary transition-colors font-bold">Legal Terms</Link></li>
               </ul>
             </div>
-            <div className="bg-base2/30 p-8 rounded-3xl border border-base2">
-               <h4 className="text-sm font-black text-text-emphasis uppercase tracking-[0.2em] mb-4">Elite Newsletter</h4>
-               <p className="text-xs text-text/60 font-bold mb-6 italic">Stay updated on top-tier events.</p>
-               <div className="relative">
-                 <input type="email" placeholder="Your email..." className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 text-sm focus:border-primary outline-none transition-all pr-12" />
-                 <button className="absolute right-2 top-1.5 p-2 bg-primary text-base3 rounded-lg hover:scale-105 transition-all">
-                   <ArrowRight size={16} />
+            <div className="bg-base2/30 p-8 rounded-3xl border border-primary/20 shadow-xl relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[40px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+               <h4 className="text-sm font-black text-text-emphasis uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                 <Shield size={16} className="text-primary" /> Want to be a Moderator?
+               </h4>
+               <p className="text-[10px] text-text/60 font-bold mb-6 italic leading-tight">Interested to organize tournaments and matches, apply to become a moderator</p>
+               
+               <form onSubmit={handleFooterSubmit} className="space-y-3 relative">
+                 <div className="relative">
+                   <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
+                   <input 
+                     type="text" 
+                     placeholder="Full Name" 
+                     value={footerForm.fullName}
+                     onChange={(e) => setFooterForm({ ...footerForm, fullName: e.target.value })}
+                     className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
+                   />
+                 </div>
+                 <div className="relative">
+                   <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
+                   <input 
+                     type="email" 
+                     placeholder="Email Address" 
+                     value={footerForm.email}
+                     onChange={(e) => setFooterForm({ ...footerForm, email: e.target.value })}
+                     className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
+                   />
+                 </div>
+                 <div className="relative">
+                   <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
+                   <input 
+                     type="text" 
+                     placeholder="Phone Number" 
+                     value={footerForm.phone}
+                     onChange={(e) => setFooterForm({ ...footerForm, phone: e.target.value })}
+                     className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
+                   />
+                 </div>
+                 <button 
+                   type="submit"
+                   disabled={footerSubmitting}
+                   className="w-full py-2.5 bg-primary text-base3 rounded-xl font-black text-xs hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                 >
+                   {footerSubmitting ? <Loader2 size={14} className="animate-spin" /> : <><Send size={14} /> Apply Now</>}
                  </button>
-               </div>
+               </form>
             </div>
           </div>
           

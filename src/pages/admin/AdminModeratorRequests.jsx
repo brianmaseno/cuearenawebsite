@@ -264,7 +264,11 @@ const AdminModeratorRequests = () => {
                     </span>
                     <h2 className="text-4xl font-black text-text-emphasis tracking-tight">{selectedRequest.fullName}</h2>
                     <p className="text-text/60 font-medium text-lg">{selectedRequest.email}</p>
-                    {selectedRequest.phone && <p className="text-text/40 font-bold text-sm mt-1">{selectedRequest.phone}</p>}
+                    {selectedRequest.phone && (
+                      <div className="flex items-center gap-2 text-text/40 font-bold text-sm mt-1">
+                        <Phone size={14} /> {selectedRequest.phone}
+                      </div>
+                    )}
                   </div>
                   <button onClick={() => setShowActionModal(false)} className="p-3 rounded-2xl hover:bg-base2/50 transition-colors">
                     <XCircle size={28} className="text-text/30" />
