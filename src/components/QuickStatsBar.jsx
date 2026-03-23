@@ -1,7 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { 
+  Loader2, 
+  Target, 
+  Trophy, 
+  Activity, 
+  Star, 
+  Shield, 
+  Users, 
+  ClipboardList, 
+  Clock 
+} from 'lucide-react';
+
+const icons = {
+  Target,
+  Trophy,
+  Activity,
+  Star,
+  Shield,
+  Users,
+  ClipboardList,
+  Clock
+};
 
 const QuickStatsBar = () => {
   const [metrics, setMetrics] = useState(null);
@@ -23,9 +44,10 @@ const QuickStatsBar = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-3 p-4 bg-base3/50 rounded-2xl border border-base2/50 animate-pulse">
-        <Loader2 size={16} className="animate-spin text-primary/40" />
-        <div className="h-4 bg-base2/50 rounded w-48"></div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="h-20 bg-base3/50 rounded-2xl border border-base2/50 animate-pulse" />
+        ))}
       </div>
     );
   }
@@ -33,33 +55,39 @@ const QuickStatsBar = () => {
   if (!metrics || !metrics.stats) return null;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 mb-8"
-    >
-      <div className="shrink-0">
-        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text/30 mb-1">{metrics.title}</h4>
-        <div className="h-1 w-8 bg-primary/20 rounded-full"></div>
+    <div className="space-y-3 mb-8">
+      <div className="flex items-center gap-2">
+        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text/40">{metrics.title}</h4>
+        <div className="h-px flex-1 bg-gradient-to-r from-base2/50 to-transparent"></div>
       </div>
       
-      <div className="flex flex-wrap gap-3 md:gap-6 items-center">
-        {metrics.stats.map((stat, idx) => (
-          <div key={idx} className="flex items-center gap-3 group">
-            <div className={`p-2 rounded-xl bg-${stat.color || 'primary'}/10 border border-${stat.color || 'primary'}/20 group-hover:scale-110 transition-transform`}>
-               <div className={`w-1.5 h-1.5 rounded-full bg-${stat.color || 'primary'}`} />
-            </div>
-            <div>
-              <p className="text-[9px] font-black uppercase tracking-wider text-text/40 leading-none mb-1">{stat.label}</p>
-              <p className="text-lg font-black text-text-emphasis leading-none tabular-nums tracking-tighter">{stat.value}</p>
-            </div>
-            {idx < metrics.stats.length - 1 && (
-              <div className="hidden md:block w-px h-6 bg-base2/50 ml-2" />
-            )}
-          </div>
-        ))}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {metrics.stats.map((stat, idx) => {
+          const Icon = icons[stat.icon] || Activity;
+          return (
+            <motion.div 
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="card-premium p-4 rounded-2xl flex items-center justify-between group cursor-default border-none ring-1 ring-base2 shadow-sm hover:shadow-md hover:ring-primary/20"
+            >
+              <div className="min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-wider text-text/40 mb-1 group-hover:text-primary transition-colors">
+                  {stat.label}
+                </p>
+                <p className="text-xl font-black text-text-emphasis leading-none tabular-nums tracking-tighter">
+                  {stat.value}
+                </p>
+              </div>
+              <div className={`p-2.5 rounded-xl bg-${stat.color || 'primary'}/10 text-${stat.color || 'primary'} group-hover:scale-110 transition-transform shadow-inner`}>
+                <Icon size={20} />
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

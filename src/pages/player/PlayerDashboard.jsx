@@ -76,26 +76,11 @@ const PlayerDashboard = () => {
     );
   }
 
-  const unreadNotifs = data.notifications.filter(n => !n.isRead).length;
 
   return (
     <DashboardLayout title="Active Activities">
       <div className="space-y-8 pb-20">
         
-        {/* Alerts Container */}
-        {unreadNotifs > 0 && (
-          <div className="flex flex-wrap items-center gap-3">
-            <Link 
-              to="/notifications" 
-              className="group flex items-center gap-2 px-6 py-2 bg-blue/5 border border-blue/10 rounded-full hover:bg-blue/10 transition-all animate-in slide-in-from-top duration-700"
-            >
-              <span className="text-sm font-bold text-text/60 group-hover:text-text transition-colors">
-                You have <span className="text-blue font-black">{unreadNotifs}</span> unread {unreadNotifs === 1 ? 'notification' : 'notifications'}
-              </span>
-              <ArrowRight size={14} className="text-blue opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-            </Link>
-          </div>
-        )}
 
         {/* Quick Stats */}
         <QuickStatsBar />
