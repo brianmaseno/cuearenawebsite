@@ -7,23 +7,26 @@ import StatusBadge from '../components/StatusBadge';
 
 const Landing = () => {
   const [tournaments, setTournaments] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [stats, setStats] = useState({ totalTournaments: 0, totalMatches: 0, totalPlayers: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [tResponse, sResponse] = await Promise.all([
+        const [tResponse, sResponse, lResponse] = await Promise.all([
           api.get('/tournaments'),
-          api.get('/tournaments/public/stats')
+          api.get('/tournaments/public/stats'),
+          api.get('/users/leaderboard?limit=10')
         ]);
         
         const active = tResponse.data
-          .filter(t => t.status !== 'draft' && t.status !== 'cancelled' && t.entryType === 'open')
+          .filter(t => t.status !== 'draft' && t.status !== 'cancelled' && t.entryType === 'open_request')
           .slice(0, 6);
         
         setTournaments(active);
         setStats(sResponse.data);
+        setLeaderboard(lResponse.data);
       } catch (err) {
         console.error('Error fetching landing data:', err);
       } finally {
@@ -138,6 +141,55 @@ const Landing = () => {
           </motion.div>
         </div>
       </header>
+
+      {/* Leaderboard Section */}
+      <section className="py-24 bg-background relative overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite Champions</h2>
+            <p className="text-xl text-text/70 font-medium">The most prestigious players climbing the global ranks.</p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-base3/50 backdrop-blur-xl border border-base2 rounded-[32px] overflow-hidden shadow-2xl relative">
+              <div className="absolute -top-[200px] -right-[200px] w-[400px] h-[400px] bg-primary/10 blur-[80px] rounded-full pointer-events-none"></div>
+              {leaderboard.length === 0 ? (
+                <div className="p-12 text-center text-text/50 font-medium font-bold">Rankings are currently calculating...</div>
+              ) : (
+                <div className="divide-y divide-base2/50">
+                  {leaderboard.map((player, index) => (
+                    <motion.div 
+                      key={player._id}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="flex items-center gap-3 md:gap-5 p-3 hover:bg-base2/20 transition-colors group"
+                    >
+                      <div className={`w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-xl font-black text-sm shadow-inner ${index === 0 ? 'bg-yellow/10 text-yellow ring-1 ring-yellow/30' : index === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : index === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>
+                        #{index + 1}
+                      </div>
+                      <div className="relative w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-primary to-special-red flex-shrink-0">
+                        <img src={player.profilePhoto || `https://ui-avatars.com/api/?name=${player.fullName.split(' ')[0]}&background=random`} alt={player.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" />
+                        {index === 0 && <div className="absolute -top-1.5 -right-1.5 bg-yellow text-background p-0.5 rounded-full shadow-lg"><Trophy size={10} strokeWidth={3} /></div>}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm md:text-base font-black text-text-emphasis truncate group-hover:text-primary transition-colors">{player.fullName}</h3>
+                        <p className="text-[10px] md:text-xs font-bold text-text/50 truncate">{player.bio || 'Rising Star Elite'}</p>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 leading-none">
+                          {player.points || 0}
+                        </div>
+                        <div className="text-[8px] md:text-[9px] uppercase font-black tracking-widest text-text/40">Points</div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Why Choose Section */}
       <section className="py-24 relative">

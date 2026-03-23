@@ -337,6 +337,7 @@ const AdminUsers = () => {
                         <th className="px-4 py-3 w-[10%] text-center uppercase font-black">Role</th>
                         <th className="px-4 py-3 w-[10%] text-center uppercase font-black">Auth</th>
                         <th className="px-4 py-3 w-[10%] text-center uppercase font-black">Joined</th>
+                        <th className="px-4 py-3 w-[10%] text-center uppercase font-black">Points</th>
                         <th className="px-4 py-3 w-[16%] text-center uppercase font-black">Activity Detail</th>
                         <th className="px-4 py-3 w-[24%] text-right uppercase font-black pr-6">Governing Options</th>
                       </tr>
@@ -390,6 +391,11 @@ const AdminUsers = () => {
                           <td className="px-4 py-2.5 text-center">
                             <span className="text-[10px] font-bold text-text/60 uppercase whitespace-nowrap">
                                 {new Date(u.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2.5 text-center">
+                            <span className="text-[12px] font-black text-primary/80 uppercase whitespace-nowrap">
+                                {u.points || 0}
                             </span>
                           </td>
                           <td className="px-4 py-2.5">
@@ -505,7 +511,13 @@ const AdminUsers = () => {
                </div>
 
                {/* Stats Overview */}
-               <div className="grid grid-cols-2 gap-2">
+               <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-primary/10 p-3 rounded-xl border border-primary/20 text-center">
+                     <p className="text-[8px] uppercase font-medium text-primary mb-0.5">Prestige Points</p>
+                     <p className="text-xl font-medium text-primary leading-none">
+                        {selectedUser.points || 0}
+                     </p>
+                  </div>
                   <div className="bg-base2/30 p-3 rounded-xl border border-base2/50 text-center">
                      <p className="text-[8px] uppercase font-medium text-text/40 mb-0.5">Total Battles</p>
                      <p className="text-xl font-medium text-text-emphasis leading-none">
