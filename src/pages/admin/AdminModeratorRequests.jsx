@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
+import DashboardLayout from '../../components/DashboardLayout';
 import { 
   Shield, 
   User, 
@@ -76,89 +77,100 @@ const AdminModeratorRequests = () => {
     }
   };
 
-  const filteredRequests = requests.filter(r => {
-    const matchesSearch = r.fullName.toLowerCase().includes(search.toLowerCase()) || 
-                         r.email.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredRequests = requests
+    .filter(r => {
+      const matchesSearch = r.fullName.toLowerCase().includes(search.toLowerCase()) || 
+                           r.email.toLowerCase().includes(search.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      if (a.status === 'pending' && b.status !== 'pending') return -1;
+      if (a.status !== 'pending' && b.status === 'pending') return 1;
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
 
   const getStatusStyle = (status) => {
     switch (status) {
       case 'pending': return 'bg-yellow/10 text-yellow border-yellow/20';
       case 'allocated': return 'bg-blue/10 text-blue border-blue/20';
-      case 'inprogress': return 'bg-violet/10 text-violet border-violet/20';
-      case 'closed': return 'bg-green-500/10 text-green-500 border-green-500/20';
+      case 'on-hold': return 'bg-orange/10 text-orange border-orange/20';
+      case 'rejected': return 'bg-red/10 text-red border-red/20';
+      case 'created': return 'bg-green-500/10 text-green-500 border-green-500/20';
       default: return 'bg-base2 text-text/40 border-base2';
     }
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <DashboardLayout title="Moderator Applications">
+      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-base3/30 p-8 rounded-[32px] border border-base2/50 backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-br from-base3/40 to-base2/20 p-6 rounded-[24px] border border-base2/50 backdrop-blur-md shadow-inner">
         <div>
-          <h1 className="text-3xl font-black text-text-emphasis mb-2 flex items-center gap-3">
-            <Shield className="text-primary" size={32} />
+          <h1 className="text-2xl font-black text-text-emphasis mb-1 flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-xl border border-primary/20 shadow-sm">
+              <Shield className="text-primary" size={24} />
+            </div>
             Moderator Applications
           </h1>
-          <p className="text-text/60 font-medium">Manage and allocate potential community managers.</p>
+          <p className="text-[11px] text-text/60 font-bold uppercase tracking-wider opacity-60">Elite Community Governance</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <div className="bg-base2/30 rounded-2xl px-4 py-2 border border-base2">
-            <span className="text-[10px] font-black uppercase tracking-widest text-text/40 block mb-1">Total Requests</span>
-            <span className="text-xl font-black text-text-emphasis">{requests.length}</span>
+          <div className="bg-base2/40 backdrop-blur-xl rounded-xl px-4 py-2 border border-base2/60 shadow-sm group hover:border-primary/20 transition-all">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text/40 block">Incoming Queue</span>
+            <span className="text-xl font-black text-text-emphasis tabular-nums">{requests.length}</span>
           </div>
-          <div className="bg-yellow/5 rounded-2xl px-4 py-2 border border-yellow/10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-yellow/50 block mb-1">Pending</span>
-            <span className="text-xl font-black text-yellow">{requests.filter(r => r.status === 'pending').length}</span>
+          <div className="bg-yellow/5 backdrop-blur-xl rounded-xl px-4 py-2 border border-yellow/20 shadow-sm group hover:border-yellow/50 transition-all">
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-yellow/50 block">Attention Required</span>
+            <span className="text-xl font-black text-yellow tabular-nums">{requests.filter(r => r.status === 'pending').length}</span>
           </div>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-3">
         <div className="flex-1 relative group">
-          <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-text/30 group-focus-within:text-primary transition-colors">
-            <Search size={20} />
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text/30 group-focus-within:text-primary transition-colors">
+            <Search size={18} />
           </div>
           <input
             type="text"
             placeholder="Search applicants..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-base3/50 border border-base2 rounded-[20px] pl-14 pr-6 py-4 text-text-emphasis focus:ring-2 focus:ring-primary/50 outline-none transition-all font-medium"
+            className="w-full bg-base3/30 border border-base2 rounded-xl pl-11 pr-4 py-2.5 text-sm text-text-emphasis focus:ring-1 focus:ring-primary/40 outline-none transition-all font-bold"
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <div className="relative">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none bg-base3/50 border border-base2 rounded-[20px] pl-6 pr-12 py-4 text-text-emphasis font-black text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all cursor-pointer"
+              className="appearance-none bg-base3/30 border border-base2 rounded-xl pl-4 pr-10 py-2.5 text-text-emphasis font-black text-[11px] uppercase tracking-wider focus:ring-1 focus:ring-primary/40 outline-none transition-all cursor-pointer"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
               <option value="allocated">Allocated</option>
-              <option value="inprogress">In Progress</option>
-              <option value="closed">Closed</option>
+              <option value="on-hold">On Hold</option>
+              <option value="rejected">Rejected</option>
+              <option value="created">Created</option>
             </select>
-            <Filter size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-text/30 pointer-events-none" />
+            <Filter size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-text/30 pointer-events-none" />
           </div>
         </div>
       </div>
 
       {/* Requests Grid/Table */}
-      <div className="bg-base3/30 border border-base2/50 rounded-[40px] overflow-hidden backdrop-blur-xl shadow-2xl shadow-black/10">
-        <div className="overflow-x-auto">
+      <div className="bg-base3/20 border border-base2/40 rounded-[20px] overflow-hidden glass shadow-xl shadow-black/[0.02]">
+        <div className="overflow-x-auto text-xs">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-base2/20 border-b border-base2/50">
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text/40">Applicant</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text/40">Status</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text/40">Assigned To</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text/40">Applied Date</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-text/40 text-right">Actions</th>
+              <tr className="bg-base2/10 border-b border-base2/40 backdrop-blur-md">
+                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-text/40">Identity</th>
+                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-text/40">Status</th>
+                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-text/40">Authority</th>
+                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-text/40">Date</th>
+                <th className="px-6 py-4 text-[9px] font-black uppercase tracking-[0.2em] text-text/40 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-base2/30">
@@ -179,29 +191,29 @@ const AdminModeratorRequests = () => {
                 </tr>
               ) : (
                 filteredRequests.map((request) => (
-                  <tr key={request._id} className="hover:bg-base2/10 transition-colors group">
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-blue-500/20 flex items-center justify-center border border-primary/20">
-                          <User size={20} className="text-primary" />
+                  <tr key={request._id} className="hover:bg-base2/5 transition-colors group">
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/10 to-blue/10 flex items-center justify-center border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">
+                          <User size={16} className="text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-black text-text-emphasis leading-tight">{request.fullName}</h3>
-                          <div className="flex items-center gap-2 text-xs font-medium text-text/50">
-                            <Mail size={12} /> {request.email}
+                          <h3 className="font-bold text-text-emphasis leading-tight group-hover:text-primary transition-colors text-sm">{request.fullName}</h3>
+                          <div className="flex items-center gap-1 text-[9px] font-bold text-text/40 uppercase tracking-tighter">
+                            <Mail size={9} /> {request.email}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusStyle(request.status)}`}>
+                    <td className="px-6 py-3">
+                      <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${getStatusStyle(request.status)}`}>
                         {request.status}
                       </span>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-3">
                       <div className="relative group/assign">
                         <select
-                          className="appearance-none bg-base2/50 border border-base2 rounded-xl pl-4 pr-10 py-2 text-xs font-black text-text-emphasis hover:bg-base2 transition-all cursor-pointer outline-none w-48"
+                          className="appearance-none bg-base2/30 border border-base2/50 rounded-lg pl-3 pr-8 py-1.5 text-[11px] font-bold text-text-emphasis hover:bg-base2/50 transition-all cursor-pointer outline-none w-40"
                           value={request.assignedAdmin?._id || ''}
                           onChange={(e) => handleAssign(request._id, e.target.value)}
                         >
@@ -210,25 +222,25 @@ const AdminModeratorRequests = () => {
                             <option key={admin._id} value={admin._id}>{admin.fullName}</option>
                           ))}
                         </select>
-                        <UserPlus size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-text/30 pointer-events-none" />
+                        <UserPlus size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text/30 pointer-events-none" />
                       </div>
                     </td>
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-2 text-xs font-bold text-text/60">
-                        <Calendar size={14} />
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-2 text-[11px] font-bold text-text/40">
+                        <Calendar size={12} />
                         {new Date(request.createdAt).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-right">
+                    <td className="px-6 py-3 text-right">
                       <button 
                         onClick={() => {
                           setSelectedRequest(request);
                           setNotes(request.adminNotes || '');
                           setShowActionModal(true);
                         }}
-                        className="p-3 rounded-xl bg-base2/50 text-text/40 hover:bg-primary hover:text-white transition-all active:scale-95"
+                        className="p-2 rounded-lg bg-base2/50 text-text/40 hover:bg-primary hover:text-base3 transition-all active:scale-95 shadow-sm border border-transparent hover:border-primary/20"
                       >
-                        <ArrowRight size={18} />
+                        <ArrowRight size={16} />
                       </button>
                     </td>
                   </tr>
@@ -251,12 +263,12 @@ const AdminModeratorRequests = () => {
               className="absolute inset-0 bg-background/80 backdrop-blur-xl"
             ></motion.div>
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-base3 border border-base2 rounded-[40px] shadow-2xl overflow-hidden"
+              exit={{ opacity: 0, scale: 0.9, y: 40 }}
+              className="relative w-full max-w-2xl bg-base3/90 backdrop-blur-2xl border border-base2 rounded-[32px] shadow-2xl overflow-hidden"
             >
-              <div className="p-10">
+              <div className="p-8">
                 <div className="flex justify-between items-start mb-8">
                   <div>
                     <span className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border mb-4 inline-block ${getStatusStyle(selectedRequest.status)}`}>
@@ -296,20 +308,27 @@ const AdminModeratorRequests = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button
-                      onClick={() => handleUpdateStatus(selectedRequest._id, 'inprogress')}
+                      onClick={() => handleUpdateStatus(selectedRequest._id, 'on-hold')}
                       disabled={updating}
-                      className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-violet/10 text-violet border border-violet/20 font-black hover:bg-violet/20 transition-all active:scale-95"
+                      className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-orange/10 text-orange border border-orange/20 font-black hover:bg-orange/20 transition-all active:scale-95"
                     >
-                      <Clock size={18} /> Move to Progress
+                      <Clock size={18} /> Mark On Hold
                     </button>
                     <button
-                      onClick={() => handleUpdateStatus(selectedRequest._id, 'closed')}
+                      onClick={() => handleUpdateStatus(selectedRequest._id, 'rejected')}
+                      disabled={updating}
+                      className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-red/10 text-red border border-red/20 font-black hover:bg-red/20 transition-all active:scale-95"
+                    >
+                      <XCircle size={18} /> Reject Application
+                    </button>
+                    <button
+                      onClick={() => handleUpdateStatus(selectedRequest._id, 'created')}
                       disabled={updating}
                       className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-green-500/10 text-green-500 border border-green-500/20 font-black hover:bg-green-500/20 transition-all active:scale-95"
                     >
-                      <CheckCircle2 size={18} /> Close & Finalize
+                      <CheckCircle2 size={18} /> Account Created
                     </button>
                   </div>
                 </div>
@@ -319,7 +338,8 @@ const AdminModeratorRequests = () => {
         )}
       </AnimatePresence>
     </div>
-  );
+  </DashboardLayout>
+);
 };
 
 export default AdminModeratorRequests;

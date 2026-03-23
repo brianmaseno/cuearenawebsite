@@ -64,6 +64,9 @@ const AdminLogs = () => {
       case 'CREATE_TOURNAMENT': 
       case 'CREATE_MATCH': return 'bg-primary/10 text-primary border-primary/20';
       case 'TOGGLE_USER_STATUS': return 'bg-red/10 text-red border-red/20';
+      case 'BUTTON_CLICK': return 'bg-violet/10 text-violet border-violet/20';
+      case 'NAVIGATION': return 'bg-orange/10 text-orange border-orange/20';
+      case 'LINK_CLICK': return 'bg-cyan/10 text-cyan border-cyan/20';
       default: return 'bg-base2 text-text border-base2';
     }
   };

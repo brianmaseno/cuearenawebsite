@@ -24,7 +24,25 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const navigate = useNavigate();
+  const [modRequestCount, setModRequestCount] = React.useState(0);
   const location = useLocation();
+
+  React.useEffect(() => {
+    if (user?.role === 'admin') {
+      const fetchCount = async () => {
+        try {
+          const { data } = await api.get('/moderator-requests/count/pending');
+          setModRequestCount(data.count);
+        } catch (err) {
+          console.error('Failed to fetch mod request count', err);
+        }
+      };
+      fetchCount();
+      // Optional: interval to keep it updated
+      const interval = setInterval(fetchCount, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -64,7 +82,7 @@ const Sidebar = () => {
     }`}>
       <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
         <Link to={dashboardPath} className="flex items-center gap-3">
-          {!isCollapsed && <span className="text-xl brand-premium truncate">Cue Tournament</span>}
+          {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter">Cue-Arena</span>}
         </Link>
         <button 
           onClick={toggleSidebar}
@@ -83,7 +101,7 @@ const Sidebar = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group relative ${
                 isActive 
                   ? 'bg-primary/10 text-primary shadow-sm' 
                   : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
@@ -91,7 +109,15 @@ const Sidebar = () => {
               title={isCollapsed ? link.label : ''}
             >
               <Icon size={20} className="shrink-0" />
-              {!isCollapsed && <span className="truncate">{link.label}</span>}
+              {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
+              {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
+                <span className="bg-red text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
+                  {modRequestCount}
+                </span>
+              )}
+              {isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
+                <div className="absolute top-2 right-2 w-2 h-2 bg-red rounded-full border border-base3 animate-pulse" />
+              )}
               {isCollapsed && (
                 <div className="absolute left-full ml-2 px-3 py-2 bg-base3 border border-base2 rounded-lg text-xs font-bold text-text-emphasis opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
                   {link.label}

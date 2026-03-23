@@ -8,6 +8,12 @@ import { SidebarProvider } from './context/SidebarContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthGuard from './components/AuthGuard';
 import InactivityTimer from './components/InactivityTimer';
+import useActivityTracker from './hooks/useActivityTracker';
+
+const ActivityTracker = () => {
+  useActivityTracker();
+  return null;
+};
 
 // Shared / Auth
 import Landing from './pages/Landing';
@@ -41,6 +47,7 @@ function App() {
               <div className="min-h-screen font-sans">
                 <Toaster position="top-right" />
                 <InactivityTimer />
+                <ActivityTracker />
                 <Routes>
                   {/* Public-ish Routes with Auth Guards */}
                   <Route path="/" element={<AuthGuard><Landing /></AuthGuard>} />

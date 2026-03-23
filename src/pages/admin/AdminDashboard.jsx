@@ -115,68 +115,72 @@ const AdminDashboard = () => {
         
         {/* Strategic Hero Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <div className="card-premium p-5 rounded-2xl bg-blue/5 border-blue/10 hover:border-blue/30 transition-all group">
-            <div className="flex justify-between items-start mb-3">
-              <div className="w-10 h-10 bg-blue text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-blue/20 group-hover:scale-110 transition-transform">
-                <Users size={20} />
+          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-blue/10 to-transparent border-blue/20 hover:border-blue/40 shadow-xl shadow-blue/5 transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue/5 rounded-full blur-3xl group-hover:bg-blue/10 transition-colors" />
+            <div className="flex justify-between items-start mb-4 relative z-10">
+              <div className="w-12 h-12 bg-blue text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-blue/20 group-hover:rotate-6 transition-transform">
+                <Users size={24} />
               </div>
-              <div className={`flex items-center gap-1 ${parseFloat(stats.platformGrowth) >= 0 ? 'text-green bg-green/10' : 'text-red bg-red/10'} px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter`}>
-                {parseFloat(stats.platformGrowth) >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />} 
+              <div className={`flex items-center gap-1.5 ${parseFloat(stats.platformGrowth) >= 0 ? 'text-green bg-green/10' : 'text-red bg-red/10'} px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-current/10`}>
+                {parseFloat(stats.platformGrowth) >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />} 
                 {parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}{stats.platformGrowth}%
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Platform Growth</div>
-            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.totalUsers}</h4>
-            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
-               <span className="text-blue">{stats.newMembersToday}</span> New members today
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Growth</div>
+            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalUsers}</h4>
+            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+               <span className="text-blue font-black">{stats.newMembersToday}</span> new registrations today
             </div>
           </div>
 
-          <div className="card-premium p-5 rounded-2xl bg-violet/5 border-violet/10 hover:border-violet/30 transition-all group">
-            <div className="flex justify-between items-start mb-3">
-              <div className="w-10 h-10 bg-violet text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-violet/20 group-hover:scale-110 transition-transform">
-                <Zap size={20} />
+          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-violet/10 to-transparent border-violet/20 hover:border-violet/40 shadow-xl shadow-violet/5 transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-violet/5 rounded-full blur-3xl group-hover:bg-violet/10 transition-colors" />
+            <div className="flex justify-between items-start mb-4 relative z-10">
+              <div className="w-12 h-12 bg-violet text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-violet/20 group-hover:rotate-6 transition-transform">
+                <Zap size={24} />
               </div>
-              <div className="flex items-center gap-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
+              <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-primary/10">
                  LIVE PULSE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Active Now</div>
-            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.activeNow}</h4>
-            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60 italic">
-               System engagement at <span className="text-violet">{stats.engagementPulse}%</span>
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Active Now</div>
+            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.activeNow}</h4>
+            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic relative z-10">
+               System engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
             </div>
           </div>
 
-          <div className="card-premium p-5 rounded-2xl bg-green/5 border-green/10 hover:border-green/30 transition-all group">
-            <div className="flex justify-between items-start mb-3">
-              <div className="w-10 h-10 bg-green text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-green/20 group-hover:scale-110 transition-transform">
-                <Target size={20} />
+          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-green/10 to-transparent border-green/20 hover:border-green/40 shadow-xl shadow-green/5 transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-green/5 rounded-full blur-3xl group-hover:bg-green/10 transition-colors" />
+            <div className="flex justify-between items-start mb-4 relative z-10">
+              <div className="w-12 h-12 bg-green text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-green/20 group-hover:rotate-6 transition-transform">
+                <Target size={24} />
               </div>
-              <div className="flex items-center gap-1 text-green bg-green/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                <TrendingUp size={10} /> {stats.ongoingCount} ONGOING
+              <div className="flex items-center gap-1.5 text-green bg-green/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-green/10">
+                <TrendingUp size={12} /> {stats.ongoingCount} LIVE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Total Activities</div>
-            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.totalActivities}</h4>
-            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
-               <span className="text-green">{stats.completedCount}</span> Activities completed successfully
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Total Activities</div>
+            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalActivities}</h4>
+            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+               <span className="text-green font-black">{stats.completedCount}</span> successfully archived
             </div>
           </div>
 
-          <div className="card-premium p-5 rounded-2xl bg-primary/5 border-primary/10 hover:border-primary/30 transition-all group">
-            <div className="flex justify-between items-start mb-3">
-              <div className="w-10 h-10 bg-primary text-base3 rounded-xl flex items-center justify-center shadow-xl shadow-primary/20 group-hover:scale-110 transition-transform">
-                <Shield size={20} />
+          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-primary/10 to-transparent border-primary/20 hover:border-primary/40 shadow-xl shadow-primary/5 transition-all group overflow-hidden relative">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
+            <div className="flex justify-between items-start mb-4 relative z-10">
+              <div className="w-12 h-12 bg-primary text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
+                <Shield size={24} />
               </div>
-              <div className="flex items-center gap-1 text-primary bg-primary/10 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                STABLE CAP
+              <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-primary/10">
+                STABLE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-widest mb-1">Moderator Coverage</div>
-            <h4 className="text-3xl font-black text-text-emphasis tracking-tight">{stats.moderationCoverage}%</h4>
-            <div className="mt-3 pt-3 border-t border-base2/50 text-[10px] font-bold text-text/60">
-               Ratio optimized for platform integrity
+            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Coverage</div>
+            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderationCoverage}%</h4>
+            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+               Optimized integrity ratio
             </div>
           </div>
         </div>

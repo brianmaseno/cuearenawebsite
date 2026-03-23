@@ -101,9 +101,6 @@ const Landing = () => {
             <span className="text-2xl brand-premium font-black tracking-tight">Cue-Arena</span>
           </Link>
           <div className="hidden md:flex items-center gap-10">
-            <Link to="/tournaments" className="text-text/70 hover:text-primary font-semibold transition-all hover:scale-105 active:scale-95">Tournaments</Link>
-            <Link to="/features" className="text-text/70 hover:text-primary font-semibold transition-all hover:scale-105 active:scale-95">Features</Link>
-            <div className="h-6 w-px bg-base2/50"></div>
             <Link to="/login" className="text-text hover:text-primary font-bold transition-all">Login</Link>
             <Link to="/register" className="btn-primary shadow-lg shadow-primary/20 hover:shadow-primary/40 px-6 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 active:translate-y-0">
               Get Started
@@ -184,9 +181,9 @@ const Landing = () => {
                     {tournaments.map((t, idx) => {
                       const colors = [
                         { border: 'hover:border-primary/40', shadow: 'shadow-primary/10', accent: 'bg-primary' },
-                        { border: 'hover:border-blue-500/40', shadow: 'shadow-blue-500/10', accent: 'bg-blue-500' },
+                        { border: 'hover:border-indigo-500/40', shadow: 'shadow-indigo-500/10', accent: 'bg-indigo-500' },
                         { border: 'hover:border-special-red/40', shadow: 'shadow-special-red/10', accent: 'bg-special-red' },
-                        { border: 'hover:border-green-500/40', shadow: 'shadow-green-500/10', accent: 'bg-green-500' }
+                        { border: 'hover:border-emerald-500/40', shadow: 'shadow-emerald-500/10', accent: 'bg-emerald-500' }
                       ];
                       const style = colors[idx % colors.length];
                       return (
@@ -213,7 +210,7 @@ const Landing = () => {
                                 </div>
                               </div>
                             </div>
-                            <Link to="/register" className={`w-full py-3 rounded-xl bg-base2 font-black text-text-emphasis text-sm flex items-center justify-center gap-2 group-hover:text-white transition-all ${style.accent.replace('bg-', 'hover:bg-')}`}>
+                            <Link to="/register" className="w-full py-3 rounded-xl bg-base2 font-black text-text-emphasis text-sm flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
                               Join Tournament <ArrowRight size={16} />
                             </Link>
                           </div>

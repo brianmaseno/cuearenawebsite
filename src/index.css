@@ -26,6 +26,11 @@
   --color-background: #eee8d5;
   --color-text: #586e75;
   --color-text-emphasis: #073642;
+  
+  /* Additional Vibrant Colors */
+  --color-special-red: #ef4444;
+  --color-indigo-500: #6366f1;
+  --color-emerald-500: #10b981;
 }
 
 @layer base {

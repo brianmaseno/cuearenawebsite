@@ -28,36 +28,20 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const UserStatsBadge = ({ userId }) => {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const { data } = await api.get(`/users/${userId}/stats`);
-        setStats(data);
-      } catch (err) {
-        console.error('Stats failed', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStats();
-  }, [userId]);
-
-  if (loading) return <div className="w-12 h-4 bg-base2 animate-pulse rounded" />;
+// No longer needed separately as we'll fetch stats for all users once or include in user object
+const UserStatsBadge = ({ stats, loading }) => {
+  if (loading) return <div className="w-12 h-4 bg-base2/50 animate-pulse rounded" />;
   if (!stats) return null;
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow/5 text-yellow border border-yellow/10 rounded text-[9px] font-black" title="Total Wins">
+      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow/5 text-yellow border border-yellow/10 rounded text-[9px] font-black group-hover:scale-110 transition-transform" title="Total Wins">
         <Trophy size={10} />
-        {stats.totalWins}
+        {stats.totalWins || 0}
       </div>
-      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue/5 text-blue border border-blue/10 rounded text-[9px] font-black" title="Total Games">
+      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-blue/5 text-blue border border-blue/10 rounded text-[9px] font-black group-hover:scale-110 transition-transform" title="Total Games">
         <Target size={10} />
-        {stats.totalGames}
+        {stats.totalGames || 0}
       </div>
     </div>
   );
@@ -67,7 +51,9 @@ const AdminUsers = () => {
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
   const [users, setUsers] = useState([]);
+  const [userStats, setUserStats] = useState({}); // Local cache for stats
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
@@ -106,10 +92,36 @@ const AdminUsers = () => {
       setLoading(true);
       const { data } = await api.get('/users');
       setUsers(data);
+      
+      // Batch fetch stats for all users after getting the list
+      fetchAllStats(data);
     } catch (err) {
       toast.error('Failed to fetch users');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAllStats = async (userList) => {
+    setStatsLoading(true);
+    try {
+      // Since there's no batch endpoint, we'll fetch in parallel for visible users or just fetch all
+      // For now, let's assume we fetch all to simplify caching logic in this component
+      const statsPromises = userList.slice(0, 50).map(u => 
+        api.get(`/users/${u._id}/stats`).then(res => ({ id: u._id, stats: res.data }))
+      );
+      const results = await Promise.allSettled(statsPromises);
+      const newStats = {};
+      results.forEach(res => {
+        if (res.status === 'fulfilled') {
+          newStats[res.value.id] = res.value.stats;
+        }
+      });
+      setUserStats(prev => ({ ...prev, ...newStats }));
+    } catch (err) {
+      console.error('Batch stats error', err);
+    } finally {
+      setStatsLoading(false);
     }
   };
 
@@ -236,7 +248,7 @@ const AdminUsers = () => {
   return (
     <DashboardLayout title="Member Management">
       <div 
-        className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)]"
+        className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)] glass rounded-3xl p-1"
         style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif' }}
       >
         {/* Main Pillar */}
@@ -372,7 +384,7 @@ const AdminUsers = () => {
                           </td>
                           <td className="px-4 py-2.5">
                             <div className="flex justify-center">
-                                <UserStatsBadge userId={u._id} />
+                                <UserStatsBadge stats={userStats[u._id]} loading={statsLoading && !userStats[u._id]} />
                             </div>
                           </td>
                           <td className="px-4 py-2.5 text-center">
@@ -510,24 +522,24 @@ const AdminUsers = () => {
                   </div>
                </div>
 
-               {/* Stats Overview */}
+                {/* Stats Overview */}
                <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-primary/10 p-3 rounded-xl border border-primary/20 text-center">
-                     <p className="text-[8px] uppercase font-medium text-primary mb-0.5">Prestige Points</p>
-                     <p className="text-xl font-medium text-primary leading-none">
+                  <div className="bg-primary/5 p-3 rounded-2xl border border-primary/10 text-center backdrop-blur-sm group hover:border-primary/30 transition-all">
+                     <p className="text-[8px] uppercase font-black text-primary/60 mb-1 tracking-tighter">Prestige</p>
+                     <p className="text-xl font-black text-primary leading-none">
                         {selectedUser.points || 0}
                      </p>
                   </div>
-                  <div className="bg-base2/30 p-3 rounded-xl border border-base2/50 text-center">
-                     <p className="text-[8px] uppercase font-medium text-text/40 mb-0.5">Total Battles</p>
-                     <p className="text-xl font-medium text-text-emphasis leading-none">
-                        <UserStatsValue userId={selectedUser._id} field="totalGames" />
+                  <div className="bg-base2/20 p-3 rounded-2xl border border-base2/40 text-center backdrop-blur-sm group hover:border-text/30 transition-all">
+                     <p className="text-[8px] uppercase font-black text-text/40 mb-1 tracking-tighter">Battles</p>
+                     <p className="text-xl font-black text-text-emphasis leading-none">
+                        {userStats[selectedUser._id]?.totalGames || 0}
                      </p>
                   </div>
-                  <div className="bg-yellow/5 p-3 rounded-xl border border-yellow/10 text-center">
-                     <p className="text-[8px] uppercase font-medium text-yellow/40 mb-0.5">Tournament Victories</p>
-                     <p className="text-xl font-medium text-yellow leading-none">
-                        <UserStatsValue userId={selectedUser._id} field="totalWins" />
+                  <div className="bg-yellow/5 p-3 rounded-2xl border border-yellow/20 text-center backdrop-blur-sm group hover:border-yellow transition-all">
+                     <p className="text-[8px] uppercase font-black text-yellow/60 mb-1 tracking-tighter">Victories</p>
+                     <p className="text-xl font-black text-yellow leading-none">
+                        {userStats[selectedUser._id]?.totalWins || 0}
                      </p>
                   </div>
                </div>
