@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from '../../components/StatusBadge';
+import TournamentPayoutModal from '../../components/Tournament/TournamentPayoutModal';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
@@ -44,6 +45,7 @@ const TournamentManage = () => {
    const [selectedPlayers, setSelectedPlayers] = useState([]);
    const [invitations, setInvitations] = useState([]);
    const [activeTab, setActiveTab] = useState('brackets'); // 'brackets' or 'overview'
+   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
 
    const togglePlayerSelection = (player) => {
       setSelectedPlayers(prev => {
@@ -227,6 +229,15 @@ const TournamentManage = () => {
                            ))}
                         </select>
                      </div>
+                  )}
+                  {tournament.status === 'completed' && (
+                     <button
+                        onClick={() => setIsPayoutModalOpen(true)}
+                        className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+                     >
+                        <Award size={20} />
+                        Distribute Prizes
+                     </button>
                   )}
                   {tournament.status === 'draft' && (
                      <button
@@ -547,12 +558,12 @@ const TournamentManage = () => {
                                           setSelectingWinnerForSetInModal(null);
                                        }
                                     }}
-                                    className={`min-w-[140px] h-[72px] px-6 rounded-[28px] font-black text-xs uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${isActive
-                                          ? 'bg-base3 border-primary shadow-xl shadow-primary/10'
+                                    className={`min-w-[100px] h-12 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${isActive
+                                          ? 'bg-base3 border-primary shadow-lg shadow-primary/5'
                                           : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
                                        } ${((isLocked || !isOngoing) && !isMatchFinished) ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                                  >
-                                    <span className={`text-base font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                    <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
                                        {tabLabel}
                                     </span>
                                  </button>
@@ -612,6 +623,13 @@ const TournamentManage = () => {
                </div>
             </div>
          )}
+         {/* Payout Modal */}
+         <TournamentPayoutModal 
+            isOpen={isPayoutModalOpen}
+            onClose={() => setIsPayoutModalOpen(false)}
+            tournament={tournament}
+            onSuccess={fetchTournamentData}
+         />
       </DashboardLayout>
    );
 };

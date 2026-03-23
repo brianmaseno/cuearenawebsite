@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
-import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star } from 'lucide-react';
+import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star, Wallet as WalletIcon } from 'lucide-react';
+import api from '../api/axios';
 
 const TopBar = ({ title }) => {
   const { user } = useAuth();
@@ -10,6 +11,7 @@ const TopBar = ({ title }) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [livePoints, setLivePoints] = useState(user?.points || 0);
+  const [liveBalance, setLiveBalance] = useState(0);
   const dropdownRef = useRef(null);
 
   // Fetch live points from backend
@@ -20,8 +22,12 @@ const TopBar = ({ title }) => {
       try {
         const { data } = await api.get('/auth/me');
         setLivePoints(data.points || 0);
+        
+        // Fetch wallet balance for all roles
+        const walletRes = await api.get('/wallet');
+        setLiveBalance(walletRes.data.wallet.balance || 0);
       } catch (err) {
-        console.error('Failed to fetch live points:', err);
+        console.error('Failed to fetch live data:', err);
       }
     };
 
@@ -201,17 +207,21 @@ const TopBar = ({ title }) => {
         </div>
 
         <div className="flex items-center gap-3 pl-6 border-l border-base2">
-          <div className="text-right hidden md:flex flex-col items-end gap-0.5">
             <div className="flex items-center gap-2">
-              {user?.role === 'player' && (
-                <span className="px-3 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-[10px] font-black uppercase tracking-tighter flex items-center gap-1">
-                  <Star size={10} className="fill-primary" /> {livePoints} pts
-                </span>
+              {(user?.role === 'player' || user?.role === 'moderator') && (
+                <>
+                  <Link to="/wallet" className="px-4 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5 hover:bg-emerald-500/20 transition-colors">
+                    <WalletIcon size={12} className="fill-emerald-500" /> KES {liveBalance.toLocaleString()}
+                  </Link>
+                  {user?.role === 'player' && (
+                    <span className="px-4 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5">
+                      <Star size={12} className="fill-primary" /> {livePoints} pts
+                    </span>
+                  )}
+                </>
               )}
               <p className="text-sm font-bold text-text-emphasis leading-none">{user?.fullName}</p>
             </div>
-            <p className="text-[10px] text-text/40 font-black uppercase tracking-widest leading-none">{user?.role}</p>
-          </div>
           <div className="w-10 h-10 rounded-full bg-base2 flex items-center justify-center text-primary font-bold overflow-hidden border border-base1">
             {user?.profilePhoto ? (
               <img src={user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />

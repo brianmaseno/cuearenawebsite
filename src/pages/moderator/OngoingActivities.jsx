@@ -165,22 +165,29 @@ const OngoingActivities = () => {
                            {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Tournament'}
                         </h3>
                      </div>
-                    <div className="flex items-center gap-1">
-                       {match.status === 'cancelled' && match.declinedBy ? (
-                         <span className="text-[10px] font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse">
-                            {match.declinedBy.fullName} Declined
-                         </span>
-                       ) : (
-                         <StatusBadge status={match.status} />
-                       )}
-                       <button 
-                         disabled={actionLoading}
-                         onClick={() => handleCancelMatch(match._id)}
-                         className="p-1.5 text-red hover:bg-red/10 rounded-lg transition-colors"
-                         title="Cancel Match"
-                       >
-                          <Trash2 size={14} />
-                       </button>
+                    <div className="flex items-center gap-2">
+                      {match.stakeAmount > 0 && (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                          KES {match.stakeAmount.toLocaleString()}
+                        </span>
+                      )}
+                      <div className="flex items-center gap-1">
+                        {match.status === 'cancelled' && match.declinedBy ? (
+                          <span className="text-[10px] font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse">
+                             {match.declinedBy.fullName} Declined
+                          </span>
+                        ) : (
+                          <StatusBadge status={match.status} />
+                        )}
+                        <button 
+                          disabled={actionLoading}
+                          onClick={() => handleCancelMatch(match._id)}
+                          className="p-1.5 text-red hover:bg-red/10 rounded-lg transition-colors"
+                          title="Cancel Match"
+                        >
+                           <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -328,7 +335,7 @@ const OngoingActivities = () => {
                           }
 
                           return (
-                            <div key={idx} className="flex-1 min-w-[60px] max-w-[80px]">
+                            <div key={idx} className="flex-1 min-w-[48px] max-w-[70px]">
                                  <button
                                   disabled={(isLocked || !isOngoing) && !isMatchFinished}
                                   onClick={() => {
@@ -339,11 +346,11 @@ const OngoingActivities = () => {
                                         setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; });
                                      }
                                   }}
-                                  className={`w-full px-1 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-tight transition-all border-2 flex flex-col items-center justify-center ${
+                                  className={`w-full px-1 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center ${
                                     isActive 
-                                      ? 'bg-blue text-base3 border-blue shadow-[0_12px_24px_-8px_rgba(38,139,210,0.5)] -translate-y-1.5 scale-110 z-20' 
-                                      : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 hover:opacity-100 hover:border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
-                                  } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
+                                      ? 'bg-blue text-base3 border-blue shadow-lg shadow-blue/20 -translate-y-1 z-20' 
+                                      : (sRes ? 'bg-base3/80 border-base2/50 opacity-90' : 'bg-base2/5 border-transparent text-text/10')
+                                  } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-30 cursor-not-allowed grayscale' : ''}`}
                                 >
                                    <span className={`truncate max-w-full ${isWon ? 'text-[10px]' : ''}`}>{tabLabel}</span>
                                 </button>
@@ -438,6 +445,12 @@ const OngoingActivities = () => {
                          <Users size={12} className="text-primary" />
                          {t.confirmedPlayers.length}/{t.maxPlayers}
                       </div>
+                      {t.stakePerPlayer > 0 && (
+                        <div className="flex items-center gap-1.5 font-bold text-emerald-600">
+                          <WalletIcon size={12} className="fill-emerald-600/20" />
+                          KES {t.stakePerPlayer.toLocaleString()}
+                        </div>
+                      )}
                       <div className="flex items-center gap-1.5 font-bold capitalize">
                          <Award size={12} className="text-yellow" />
                          {t.format.split('_')[0]}

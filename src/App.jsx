@@ -37,6 +37,8 @@ import History from './pages/moderator/History';
 import Profile from './pages/Profile';
 import ModeratorApplication from './pages/ModeratorApplication';
 import AdminModeratorRequests from './pages/admin/AdminModeratorRequests';
+import AdminFinance from './pages/admin/AdminFinance';
+import Wallet from './pages/Wallet';
 
 function App() {
   return (
@@ -79,6 +81,11 @@ function App() {
                   <Route path="/profile" element={
                     <ProtectedRoute>
                       <Profile />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/wallet" element={
+                    <ProtectedRoute>
+                      <Wallet />
                     </ProtectedRoute>
                   } />
 
@@ -130,6 +137,11 @@ function App() {
                   <Route path="/admin/moderator-requests" element={
                     <ProtectedRoute roles={['admin']}>
                       <AdminModeratorRequests />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/finance" element={
+                    <ProtectedRoute roles={['admin']}>
+                      <AdminFinance />
                     </ProtectedRoute>
                   } />
                   <Route path="/moderator-apply" element={<ModeratorApplication />} />

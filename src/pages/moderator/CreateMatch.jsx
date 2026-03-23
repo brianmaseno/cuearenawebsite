@@ -17,6 +17,7 @@ const CreateMatch = () => {
     venue: '',
     location: '',
     notes: '',
+    stakeAmount: 0,
   });
 
   // Handle live search
@@ -144,6 +145,23 @@ const CreateMatch = () => {
                   />
                 </div>
                 <p className="text-[10px] text-text/50 mt-1 font-bold italic">Best of {formData.setsCount || 1} sets</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text mb-2">Stake Amount (KES)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3.5 text-emerald-500 font-bold text-sm">KES</span>
+                  <input
+                    name="stakeAmount"
+                    type="number"
+                    min="0"
+                    value={formData.stakeAmount}
+                    onChange={handleChange}
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold text-emerald-600"
+                    placeholder="0"
+                  />
+                </div>
+                <p className="text-[10px] text-text/50 mt-1 font-bold italic">Each player pays this amount</p>
               </div>
 
             </div>

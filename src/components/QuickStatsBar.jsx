@@ -10,7 +10,8 @@ import {
   Shield, 
   Users, 
   ClipboardList, 
-  Clock 
+  Clock,
+  Wallet
 } from 'lucide-react';
 
 const icons = {
@@ -21,7 +22,8 @@ const icons = {
   Shield,
   Users,
   ClipboardList,
-  Clock
+  Clock,
+  Wallet
 };
 
 const QuickStatsBar = () => {

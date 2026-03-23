@@ -88,23 +88,23 @@ const PlayerDashboard = () => {
         <QuickStatsBar />
 
         {/* Tabs */}
-        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
+        <div className="flex bg-base3 p-0.5 rounded-lg border border-base2 w-fit">
           <button
             onClick={() => setActiveTab('matches')}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
-              activeTab === 'matches' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+            className={`px-3 py-1 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 ${
+              activeTab === 'matches' ? 'bg-primary text-base3 shadow-sm' : 'text-text hover:bg-base2/50'
             }`}
           >
-            <Target size={18} />
+            <Target size={14} />
             Matches ({data.matches.length + (data.tournamentMatches?.length || 0)})
           </button>
           <button
             onClick={() => setActiveTab('tournaments')}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
-              activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+            className={`px-3 py-1 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 ${
+              activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-sm' : 'text-text hover:bg-base2/50'
             }`}
           >
-            <Trophy size={18} />
+            <Trophy size={14} />
             Tournaments ({data.tournaments.length})
           </button>
         </div>
@@ -148,7 +148,14 @@ const PlayerDashboard = () => {
                            {match.type === 'tournament' ? match.tournamentId?.name : 'Exhibition'}
                         </h3>
                      </div>
-                    <StatusBadge status={match.status} />
+                    <div className="flex flex-col items-end gap-1">
+                      <StatusBadge status={match.status} />
+                      {match.stakeAmount > 0 && (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                          KES {match.stakeAmount.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="p-5">
@@ -275,7 +282,7 @@ const PlayerDashboard = () => {
                                     <button
                                        key={idx}
                                        onClick={() => setActiveSetMap(prev => ({ ...prev, [match._id]: idx }))}
-                                       className={`flex-1 min-w-[54px] py-3.5 rounded-2xl text-[9px] font-black uppercase transition-all border-2 flex flex-col items-center justify-center gap-0.5 ${
+                                       className={`flex-1 min-w-[40px] py-1 rounded-lg text-[9px] font-black uppercase transition-all border flex flex-col items-center justify-center ${
                                           isActive 
                                              ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105 z-10' 
                                              : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 hover:opacity-100 hover:border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
@@ -356,6 +363,12 @@ const PlayerDashboard = () => {
                          <Users size={12} className="text-primary" />
                          {t.confirmedPlayers?.length || 0}/{t.maxPlayers}
                       </div>
+                      {t.stakePerPlayer > 0 && (
+                        <div className="flex items-center gap-1.5 font-bold text-emerald-600">
+                          <WalletIcon size={12} className="fill-emerald-600/20" />
+                          KES {t.stakePerPlayer.toLocaleString()}
+                        </div>
+                      )}
                     </div>
                   </div>
 

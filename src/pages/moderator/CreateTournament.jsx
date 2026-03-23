@@ -22,6 +22,7 @@ const CreateTournament = () => {
     startDate: '',
     registrationDeadline: '',
     matchSetsCount: 1,
+    stakePerPlayer: 0,
   });
 
   const handleChange = (e) => {
@@ -212,6 +213,23 @@ const CreateTournament = () => {
                   className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
                 />
                 <p className="text-[10px] text-text/50 mt-1 italic font-bold uppercase transition-all">Best of {formData.matchSetsCount} (1, 3, 5...)</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text-emphasis mb-2">Stake per Player (KES)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3.5 text-emerald-500 font-bold text-sm">KES</span>
+                  <input
+                    name="stakePerPlayer"
+                    type="number"
+                    min="0"
+                    value={formData.stakePerPlayer}
+                    onChange={handleChange}
+                    placeholder="0 for free"
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none font-bold text-emerald-600"
+                  />
+                </div>
+                <p className="text-[10px] text-text/50 mt-1 font-bold italic uppercase transition-all">Player pays this to join</p>
               </div>
             </div>
           </section>

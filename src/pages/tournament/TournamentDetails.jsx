@@ -40,6 +40,11 @@ const TournamentDetails = () => {
    }, [id]);
 
    const handleJoinTournament = async () => {
+      if (tournament.stakePerPlayer > 0) {
+         if (!window.confirm(`Joining this tournament requires a stake of KES ${tournament.stakePerPlayer.toLocaleString()}. This amount will be locked from your balance until the tournament concludes or is cancelled. Proceed?`)) {
+            return;
+         }
+      }
       try {
          await api.post(`/tournaments/${id}/join`);
          toast.success("Successfully joined the tournament!");
@@ -159,6 +164,12 @@ const TournamentDetails = () => {
                                  <p className="text-[10px] font-bold uppercase text-primary tracking-widest mb-1">Entry</p>
                                  <p className="font-bold text-text-emphasis text-sm">{(tournament.entryType || '').replace('_', ' ')}</p>
                               </div>
+                              {tournament.stakePerPlayer > 0 && (
+                                <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center min-w-[120px]">
+                                   <p className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest mb-1">Stake</p>
+                                   <p className="font-bold text-emerald-700 text-sm">KES {tournament.stakePerPlayer.toLocaleString()}</p>
+                                </div>
+                              )}
                            </div>
                            <p className="text-base text-text leading-relaxed mb-8">
                               {tournament.description || 'No description provided.'}
