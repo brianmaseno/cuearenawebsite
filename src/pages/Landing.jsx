@@ -367,8 +367,8 @@ const Landing = () => {
       {/* Footer */}
       <footer className="pt-24 pb-12 bg-base3 border-t border-base2/50 mt-12">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
-            <div className="col-span-1 md:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-16 mb-20">
+            <div className="lg:col-span-1">
                <Link to="/" className="flex items-center gap-2 mb-8 group">
                 <span className="text-2xl brand-premium font-black tracking-tight">Cue-Arena</span>
               </Link>
@@ -376,7 +376,7 @@ const Landing = () => {
                 The definitive platform for pool match-making and tournament administration. Precise. Professional. Premium.
               </p>
             </div>
-            <div>
+            <div className="lg:col-span-1">
               <h4 className="text-sm font-black text-text-emphasis uppercase tracking-[0.2em] mb-8">Platform</h4>
               <ul className="space-y-4">
                 <li><Link to="/tournaments" className="text-text/60 hover:text-primary transition-colors font-bold">Tournaments</Link></li>
@@ -384,7 +384,7 @@ const Landing = () => {
                 <li><Link to="/rankings" className="text-text/60 hover:text-primary transition-colors font-bold">Player Rankings</Link></li>
               </ul>
             </div>
-            <div>
+            <div className="lg:col-span-1">
               <h4 className="text-sm font-black text-text-emphasis uppercase tracking-[0.2em] mb-8">Company</h4>
               <ul className="space-y-4">
                 <li><Link to="/about" className="text-text/60 hover:text-primary transition-colors font-bold">Our Vision</Link></li>
@@ -393,7 +393,7 @@ const Landing = () => {
                 <li><Link to="/terms" className="text-text/60 hover:text-primary transition-colors font-bold">Legal Terms</Link></li>
               </ul>
             </div>
-            <div className="bg-base2/30 p-8 rounded-3xl border border-primary/20 shadow-xl relative overflow-hidden group">
+            <div className="lg:col-span-2 bg-base2/30 p-8 rounded-3xl border border-primary/20 shadow-xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[40px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                <h4 className="text-sm font-black text-text-emphasis uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                  <Shield size={16} className="text-primary" /> Want to be a Moderator?
@@ -401,25 +401,27 @@ const Landing = () => {
                <p className="text-[10px] text-text/60 font-bold mb-6 italic leading-tight">Interested to organize tournaments and matches, apply to become a moderator</p>
                
                <form onSubmit={handleFooterSubmit} className="space-y-3 relative">
-                 <div className="relative">
-                   <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
-                   <input 
-                     type="text" 
-                     placeholder="Full Name" 
-                     value={footerForm.fullName}
-                     onChange={(e) => setFooterForm({ ...footerForm, fullName: e.target.value })}
-                     className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
-                   />
-                 </div>
-                 <div className="relative">
-                   <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
-                   <input 
-                     type="email" 
-                     placeholder="Email Address" 
-                     value={footerForm.email}
-                     onChange={(e) => setFooterForm({ ...footerForm, email: e.target.value })}
-                     className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
-                   />
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                   <div className="relative">
+                     <User size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
+                     <input 
+                       type="text" 
+                       placeholder="Full Name" 
+                       value={footerForm.fullName}
+                       onChange={(e) => setFooterForm({ ...footerForm, fullName: e.target.value })}
+                       className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
+                     />
+                   </div>
+                   <div className="relative">
+                     <Mail size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
+                     <input 
+                       type="email" 
+                       placeholder="Email Address" 
+                       value={footerForm.email}
+                       onChange={(e) => setFooterForm({ ...footerForm, email: e.target.value })}
+                       className="w-full bg-base3 border border-base2 rounded-xl px-9 py-2.5 text-xs focus:border-primary outline-none transition-all" 
+                     />
+                   </div>
                  </div>
                  <div className="relative">
                    <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/30" />
