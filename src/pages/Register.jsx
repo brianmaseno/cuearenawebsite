@@ -47,36 +47,7 @@ const Register = () => {
 
         <div className="card-premium p-8 rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-text-emphasis mb-2">Role Type</label>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, role: 'player' })}
-                  className={`py-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${
-                    formData.role === 'player'
-                      ? 'bg-primary/10 border-primary text-primary shadow-sm'
-                      : 'bg-base2/30 border-base2 text-text'
-                  }`}
-                >
-                  <User size={20} />
-                  <span className="font-bold text-sm">Player</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData({ ...formData, role: 'moderator' })}
-                  className={`py-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${
-                    formData.role === 'moderator'
-                      ? 'bg-violet/10 border-violet text-violet shadow-sm'
-                      : 'bg-base2/30 border-base2 text-text'
-                  }`}
-                >
-                  <Shield size={20} />
-                  <span className="font-bold text-sm">Moderator</span>
-                </button>
-              </div>
-            </div>
-
+            {/* Form Fields */}
             <div>
               <label className="block text-sm font-semibold text-text-emphasis mb-2">Full Name</label>
               <div className="relative">
