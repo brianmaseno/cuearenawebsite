@@ -112,23 +112,23 @@ const PlayerDashboard = () => {
         <QuickStatsBar />
 
         {/* Tabs */}
-        <div className="flex bg-base3 p-0.5 rounded-lg border border-base2 w-fit">
+        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
           <button
             onClick={() => setActiveTab('matches')}
-            className={`px-3 py-1 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 ${
-              activeTab === 'matches' ? 'bg-primary text-base3 shadow-sm' : 'text-text hover:bg-base2/50'
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+              activeTab === 'matches' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
             }`}
           >
-            <Target size={14} />
+            <Target size={18} />
             Matches ({data.matches.length + (data.tournamentMatches?.length || 0)})
           </button>
           <button
             onClick={() => setActiveTab('tournaments')}
-            className={`px-3 py-1 rounded-md font-bold text-xs transition-all flex items-center gap-1.5 ${
-              activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-sm' : 'text-text hover:bg-base2/50'
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+              activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
             }`}
           >
-            <Trophy size={14} />
+            <Trophy size={18} />
             Tournaments ({data.tournaments.length})
           </button>
         </div>
@@ -159,34 +159,35 @@ const PlayerDashboard = () => {
 
                 return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                  <div className="bg-base2/10 p-3 flex items-center gap-4 border-b border-base2 overflow-x-auto no-scrollbar">
-                    <div className="flex items-center gap-2 shrink-0">
+                  <div className="bg-base2/10 px-4 py-2.5 flex items-center justify-between border-b border-base2">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       {match.type === 'tournament' ? (
-                        <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                        <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
                           <Trophy size={12} />
                         </div>
                       ) : (
-                        <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm" />
+                        <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm shrink-0" />
                       )}
-                      <h3 className="text-[11px] font-black uppercase tracking-tighter text-text-emphasis whitespace-nowrap">
-                        {match.type === 'tournament' ? match.tournamentId?.name : 'Exhibition'}
+                      <h3 className="text-[13px] font-black uppercase tracking-tighter text-text-emphasis truncate">
+                        {match.type === 'tournament' ? match.tournamentId?.name : 'Exhibition Match'}
                       </h3>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      {match.stakeAmount > 0 && (
-                        <>
-                          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap">
-                            STAKE: KES {match.stakeAmount.toLocaleString()}
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                      {(match.stakeAmount > 0 || (match.type === 'tournament' && match.tournamentId?.stakePerPlayer > 0)) && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1">
+                             <Award size={10} className="text-emerald-500" />
+                             KES {(match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}
                           </span>
-                          <span className="text-[8px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-md border border-blue/10 flex items-center gap-1 whitespace-nowrap">
-                            <Award size={10} />
+                          <span className="text-[10px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-md border border-blue/10 flex items-center gap-1">
+                            <Target size={10} className="text-blue/70" />
                             PRIZE: KES {match.type === 'tournament'
                               ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
                               : (match.stakeAmount * 2 * 0.85).toLocaleString()
                             }
                           </span>
-                        </>
+                        </div>
                       )}
                       <StatusBadge status={match.status} />
                     </div>
@@ -214,7 +215,7 @@ const PlayerDashboard = () => {
                             <span className="text-xs font-black text-primary">
                               {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || '').toString()).length || 0} / {match.setsCount}
                             </span>
-                            <span className={`text-[10px] font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
+                            <span className={`text-xs font-black uppercase tracking-wider ${match.player1Accepted ? 'text-green' : 'text-orange'}`}>
                                {match.player1Accepted ? 'Accepted' : 'Pending'}
                             </span>
                           </div>
@@ -226,12 +227,12 @@ const PlayerDashboard = () => {
                             {match.type === 'tournament' ? `Round ${match.round}` : (match.title || 'Direct')}
                          </div>
                          <div className="text-xl font-black text-primary/10 italic">VS</div>
-                         <div className="flex flex-col items-center gap-0.5">
-                            <p className="text-[10px] font-bold text-text/60">
+                          <div className="flex flex-col items-center gap-1">
+                            <p className="text-xs font-bold text-text/60">
                                {match.type === 'tournament' ? 'Tournament Match' : `Org: ${match.organizerId?.fullName}`}
                             </p>
-                            <p className="text-[10px] font-bold text-text/60">{match.location || match.venue || 'Cue Tournament'}</p>
-                         </div>
+                            <p className="text-xs font-bold text-text/60">{match.location || match.venue || 'Cue Tournament'}</p>
+                          </div>
                       </div>
 
                       {/* Player 2 */}
@@ -254,7 +255,7 @@ const PlayerDashboard = () => {
                             <span className="text-xs font-black text-primary">
                               {match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || '').toString()).length || 0} / {match.setsCount}
                             </span>
-                            <span className={`text-[10px] font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
+                            <span className={`text-xs font-black uppercase tracking-wider ${match.player2Accepted ? 'text-green' : 'text-orange'}`}>
                                {match.player2Accepted ? 'Accepted' : 'Pending'}
                             </span>
                           </div>
@@ -268,16 +269,16 @@ const PlayerDashboard = () => {
                         <div className="flex gap-2">
                            <button
                              onClick={() => handleInvitationResponse(match.invitationId, 'declined')}
-                             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-bold border border-red/20 text-red hover:bg-red/5 transition-all"
+                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border border-red/20 text-red hover:bg-red/5 transition-all"
                            >
-                             <XCircle size={14} />
+                             <XCircle size={16} />
                              Decline
                            </button>
                            <button
                              onClick={() => handleInvitationResponse(match.invitationId, 'accepted')}
-                             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-green text-base3 text-[10px] font-bold hover:opacity-90 transition-all"
+                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-base3 text-sm font-bold hover:shadow-lg hover:shadow-primary/20 transition-all"
                            >
-                             <CheckCircle2 size={14} />
+                             <CheckCircle2 size={16} />
                              Accept Match
                            </button>
                         </div>
@@ -313,14 +314,14 @@ const PlayerDashboard = () => {
                                  }
 
                                  return (
-                                    <div
-                                       key={idx}
-                                       className={`flex-1 min-w-[40px] py-1 rounded-lg text-[9px] font-black uppercase transition-all border flex flex-col items-center justify-center ${
-                                          isActive 
-                                             ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-105 z-10' 
-                                             : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 opacity-100 border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
-                                       }`}
-                                    >
+                                     <div
+                                        key={idx}
+                                        className={`flex-1 min-w-[50px] py-1.5 rounded-lg text-xs font-black uppercase transition-all border flex flex-col items-center justify-center ${
+                                           isActive 
+                                              ? 'bg-primary text-base3 border-primary shadow-lg shadow-primary/20 scale-110 z-10' 
+                                              : (sRes ? 'bg-base3/80 border-base2/50 opacity-90 border-primary/30' : 'bg-base2/10 border-transparent text-text/20')
+                                        }`}
+                                     >
                                        <span className={winnerColor || (isActive ? 'text-base3' : 'text-text/40')}>
                                           {tabLabel}
                                        </span>
@@ -331,37 +332,37 @@ const PlayerDashboard = () => {
 
                            {/* Match Status Header */}
                            {match.status === 'completed' ? (
-                               <div className={`w-full py-2.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-1 shadow-sm border ${
-                                  (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
-                               }`}>
-                                  <span>{(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}</span>
-                                  <span className="text-[12px]">
-                                     {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? (
-                                        `+ KES ${((match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
-                                     ) : (
-                                        `- KES ${(match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}`
-                                     )}
-                                  </span>
-                               </div>
+                                <div className={`w-full py-3 rounded-xl text-sm font-black flex flex-col items-center justify-center gap-1 shadow-sm border ${
+                                   (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
+                                }`}>
+                                   <span>{(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}</span>
+                                   <span className="text-base">
+                                      {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? (
+                                         `+ KES ${((match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
+                                      ) : (
+                                         `- KES ${(match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}`
+                                      )}
+                                   </span>
+                                </div>
                            ) : (match.player1Accepted && match.player2Accepted) ? (
                               match.type === 'tournament' ? (
-                                 <Link 
-                                    to={`/dashboard/tournament/${match.tournamentId?._id || match.tournamentId}#bracket`}
-                                    className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
-                                 >
-                                    <Trophy size={14} />
-                                    ENTER ROOM
-                                 </Link>
-                              ) : (
-                                 <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
-                                    ⚡ ONGOING MATCH
-                                 </div>
-                              )
-                           ) : (
-                              <div className="w-full bg-orange/5 text-orange py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 border border-orange/20 shadow-sm">
-                                 ⏳ WAITING FOR OPPONENT
-                              </div>
-                           )}
+                                  <Link 
+                                     to={`/dashboard/tournament/${match.tournamentId?._id || match.tournamentId}#bracket`}
+                                     className="w-full bg-primary text-base3 py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
+                                  >
+                                     <Trophy size={16} />
+                                     ENTER ROOM
+                                  </Link>
+                               ) : (
+                                  <div className="w-full bg-primary/5 text-primary py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
+                                     ⚡ ONGOING MATCH
+                                  </div>
+                               )
+                            ) : (
+                               <div className="w-full bg-orange/5 text-orange py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 border border-orange/20 shadow-sm">
+                                  ⏳ WAITING FOR OPPONENT
+                               </div>
+                            )}
                         </div>
                      )}
                   </div>
@@ -382,7 +383,7 @@ const PlayerDashboard = () => {
                   {/* Status Badge Watermark */}
                   {t.myStatus === 'accepted' && (
                     <div className="absolute top-[45%] right-4 -translate-y-1/2 pointer-events-none z-10">
-                      <div className="bg-primary/20 border border-primary/40 rounded-lg px-2.5 py-1 text-primary text-[7.5px] font-black uppercase tracking-[0.15em] text-center select-none shadow-md">
+                      <div className="bg-primary/20 border border-primary/40 rounded-lg px-2.5 py-1 text-primary text-xs font-black uppercase tracking-[0.15em] text-center select-none shadow-md">
                         {t.confirmedPlayers?.length < t.maxPlayers ? (
                           <>Accepted<br/>Waiting for players</>
                         ) : "Ongoing"}
@@ -397,20 +398,20 @@ const PlayerDashboard = () => {
                   </div>
                   
                   <div className="p-5 flex-1">
-                    <h3 className="text-sm font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
-                    <div className="flex items-center gap-3 text-[10px] text-text/70 mb-4">
+                    <h3 className="text-base font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
+                    <div className="flex items-center gap-3 text-xs text-text/70 mb-4">
                       <div className="flex items-center gap-1.5 font-bold">
                          <Users size={12} className="text-primary" />
                          {t.confirmedPlayers?.length || 0}/{t.maxPlayers}
                       </div>
                        {t.stakePerPlayer > 0 && (
                         <div className="flex flex-wrap items-center gap-3">
-                          <div className="flex items-center gap-1.5 font-bold text-emerald-600 text-[9px]">
-                             <WalletIcon size={12} className="fill-emerald-600/20" />
+                          <div className="flex items-center gap-1.5 font-bold text-emerald-600 text-xs">
+                             <WalletIcon size={14} className="fill-emerald-600/20" />
                              Entry: KES {t.stakePerPlayer.toLocaleString()}
                           </div>
-                          <div className="flex items-center gap-1.5 font-bold text-blue text-[9px]">
-                             <Trophy size={12} className="text-blue" />
+                          <div className="flex items-center gap-1.5 font-bold text-blue text-xs">
+                             <Trophy size={14} className="text-blue" />
                              Prize: KES {((t.stakePerPlayer * t.maxPlayers) * 0.85).toLocaleString()}
                           </div>
                         </div>
@@ -423,16 +424,16 @@ const PlayerDashboard = () => {
                        <div className="flex gap-2">
                           <button
                             onClick={() => handleInvitationResponse(t.invitationId, 'declined')}
-                            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[10px] font-bold border border-red/20 text-red hover:bg-red/5 transition-all"
+                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border border-red/20 text-red hover:bg-red/5 transition-all"
                           >
-                            <XCircle size={14} />
+                            <XCircle size={16} />
                             Decline
                           </button>
                           <button
                             onClick={() => handleInvitationResponse(t.invitationId, 'accepted')}
-                            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-green text-base3 text-[10px] font-bold hover:opacity-90 transition-all"
+                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-base3 text-sm font-bold hover:shadow-lg hover:shadow-primary/20 transition-all"
                           >
-                            <CheckCircle2 size={14} />
+                            <CheckCircle2 size={16} />
                             Accept Tournament
                           </button>
                        </div>
@@ -445,13 +446,13 @@ const PlayerDashboard = () => {
                          View Tournament Details
                        </Link>
                      ) : (
-                       <Link 
-                         to={`/dashboard/tournament/${t._id}`}
-                         className="w-full bg-primary text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all"
-                       >
-                         Enter Room
-                         <ChevronRight size={14} />
-                       </Link>
+                        <Link 
+                          to={`/dashboard/tournament/${t._id}`}
+                          className="w-full bg-primary text-base3 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:scale-[1.02] transition-all"
+                        >
+                          Enter Room
+                          <ChevronRight size={16} />
+                        </Link>
                      )}
                   </div>
                 </div>

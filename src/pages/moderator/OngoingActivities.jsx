@@ -152,35 +152,35 @@ const OngoingActivities = () => {
 
                 return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                     <div className="flex items-center gap-3">
+                  <div className="bg-base2/10 p-3 flex justify-between items-center border-b border-base2">
+                     <div className="flex items-center gap-2">
                         {match.isTournamentMatch ? (
-                           <div className="w-7 h-7 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
-                              <Trophy size={14} />
+                           <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                              <Trophy size={12} />
                            </div>
                         ) : (
-                           <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                           <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm" />
                         )}
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
+                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis truncate max-w-[150px]">
                            {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Tournament'}
                         </h3>
                      </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                        {match.stakeAmount > 0 && !match.isTournamentMatch && (
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
                            <Award size={10} className="text-emerald-500" />
                            PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
                         </span>
                       )}
                       {match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0 && (
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
                            <Award size={10} className="text-emerald-500" />
                            PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
                         </span>
                       )}
                       <div className="flex items-center gap-1">
                         {match.status === 'cancelled' && match.declinedBy ? (
-                          <span className="text-[10px] font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse">
+                          <span className="text-xs font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse">
                              {match.declinedBy.fullName} Declined
                           </span>
                         ) : (
@@ -240,24 +240,24 @@ const OngoingActivities = () => {
                           }`}>
                              {match.player1Id?.fullName || 'TBD'}
                           </p>
-                          <p className="text-[10px] font-black uppercase text-primary/60 tracking-wider mt-0.5">
-                             Won: {match.player1Id ? (match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || match.player1Id || '').toString()).length || 0) : 0}/{match.setsCount}
-                          </p>
-                          {match.winnerId && (
-                             <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
-                                match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : 'text-red/40 line-through'
-                             }`}>
-                                {match.winnerId === (match.player1Id._id || match.player1Id) ? 'WON' : 'LOST'}
-                             </p>
-                          )}
+                           <p className="text-xs font-black uppercase text-primary/60 tracking-wider mt-1">
+                              Won: {match.player1Id ? (match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player1Id?._id || match.player1Id || '').toString()).length || 0) : 0}/{match.setsCount}
+                           </p>
+                           {match.winnerId && (
+                              <p className={`text-sm font-black uppercase tracking-widest mt-1 px-2 py-1 rounded bg-green/10 ${
+                                 match.winnerId === (match.player1Id._id || match.player1Id) ? 'text-green' : 'text-red/40 line-through'
+                              }`}>
+                                 {match.winnerId === (match.player1Id._id || match.player1Id) ? 'WON' : 'LOST'}
+                              </p>
+                           )}
                         </div>
                       </div>
 
-                      <div className="flex flex-col items-center gap-2">
-                         <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
-                            {match.title || 'Exhibition Match'}
-                         </div>
-                         <div className="text-xl font-black text-primary/10 italic">VS</div>
+                      <div className="flex flex-col items-center gap-1">
+                          <div className="text-[10px] font-black uppercase tracking-[0.1em] text-primary/60 text-center max-w-[150px] leading-tight mb-1">
+                             {match.title || 'Exhibition Match'}
+                          </div>
+                         <div className="text-lg font-black text-primary/5 italic leading-none">VS</div>
                       </div>
 
                       {/* Player 2 */}
@@ -300,26 +300,26 @@ const OngoingActivities = () => {
                           }`}>
                              {match.player2Id?.fullName || 'TBD'}
                           </p>
-                          <p className="text-[10px] font-black uppercase text-violet/60 tracking-wider mt-0.5">
-                             Won: {match.player2Id ? (match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || match.player2Id || '').toString()).length || 0) : 0}/{match.setsCount}
-                          </p>
-                          {match.winnerId && match.player2Id && (
-                             <p className={`text-[11px] font-black uppercase tracking-widest mt-0.5 px-2 py-0.5 rounded bg-green/10 ${
-                                (match.winnerId?._id || match.winnerId).toString() === (match.player2Id?._id || match.player2Id).toString() ? 'text-green' : 'text-red/40 line-through'
-                             }`}>
-                                {(match.winnerId?._id || match.winnerId).toString() === (match.player2Id?._id || match.player2Id).toString() ? 'WON' : 'LOST'}
-                             </p>
-                          )}
+                           <p className="text-xs font-black uppercase text-violet/60 tracking-wider mt-1">
+                              Won: {match.player2Id ? (match.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (match.player2Id?._id || match.player2Id || '').toString()).length || 0) : 0}/{match.setsCount}
+                           </p>
+                           {match.winnerId && match.player2Id && (
+                              <p className={`text-sm font-black uppercase tracking-widest mt-1 px-2 py-1 rounded bg-green/10 ${
+                                 (match.winnerId?._id || match.winnerId).toString() === (match.player2Id?._id || match.player2Id).toString() ? 'text-green' : 'text-red/40 line-through'
+                              }`}>
+                                 {(match.winnerId?._id || match.winnerId).toString() === (match.player2Id?._id || match.player2Id).toString() ? 'WON' : 'LOST'}
+                              </p>
+                           )}
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Redesigned Set Management */}
-                  <div className="bg-gradient-to-b from-base2/30 to-transparent p-4 border-t border-base2 mt-auto space-y-4 relative">
+                  <div className="bg-gradient-to-b from-base2/30 to-transparent p-2 border-t border-base2 mt-auto space-y-2 relative">
                      
                      {/* Set Tabs Container */}
-                     <div className="flex flex-wrap gap-2 justify-center relative">
+                     <div className="flex flex-wrap gap-1.5 justify-center relative">
                         {Array.from({ length: match.setsCount || 1 }).map((_, idx) => {
                           const sRes = match.setsResults?.find(s => s.setIndex === idx);
                           const isActive = currentActiveSet === idx;
@@ -353,13 +353,13 @@ const OngoingActivities = () => {
                                         setSelectingWinnerForSetMap(prev => { const n = {...prev}; delete n[match._id]; return n; });
                                      }
                                   }}
-                                  className={`w-full px-2 py-2 rounded-xl text-[10px] font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center min-h-[44px] ${
+                                  className={`w-full px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center min-h-[48px] ${
                                     isActive 
                                       ? 'bg-blue text-base3 border-blue shadow-lg shadow-blue/20 -translate-y-1 z-20' 
                                       : (sRes ? 'bg-base3/80 border-base2/50 opacity-90' : 'bg-base2/5 border-transparent text-text/10')
                                   } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-30 cursor-not-allowed grayscale' : ''}`}
                                 >
-                                   <span className={`truncate max-w-full ${isWon ? 'text-[11px]' : ''}`}>{tabLabel}</span>
+                                   <span className={`truncate max-w-full ${isWon ? 'text-sm' : ''}`}>{tabLabel}</span>
                                 </button>
                             </div>
                           );
@@ -395,17 +395,17 @@ const OngoingActivities = () => {
                         )}
 
                         {/* Pending Acceptance Message */}
-                        {!isOngoing && !isMatchFinished && !match.isTournamentMatch && (
-                           <div className="absolute inset-0 bg-base3/40 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-xl border border-dashed border-base2">
-                              <p className="text-xs font-black uppercase tracking-widest text-text/40 animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-sm border border-base2">
-                                 Waiting for players to accept
+                        {!isOngoing && !isMatchFinished && (
+                           <div className="absolute inset-x-0 bottom-0 top-[0px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-40 rounded-xl border border-dashed border-base2">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-text-emphasis animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-lg border border-base2 translate-y-[-2px]">
+                                 Awaiting Players
                               </p>
                            </div>
                         )}
                      </div>
 
                      {isMatchFinished ? (
-                        <div className="w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border bg-green/10 text-green border-green/20">
+                        <div className="w-full py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-sm border bg-green/10 text-green border-green/20">
                            🏆 MATCH COMPLETED: {match.scorePlayer1} - {match.scorePlayer2}
                         </div>
                      ) : (match.isTournamentMatch || (match.player1Status === 'accepted' && match.player2Status === 'accepted')) ? (
@@ -446,20 +446,20 @@ const OngoingActivities = () => {
                   </div>
                   
                   <div className="p-5">
-                    <h3 className="text-sm font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
-                    <div className="flex items-center gap-3 text-[10px] text-text/70 mb-4">
+                    <h3 className="text-base font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
+                    <div className="flex items-center gap-3 text-xs text-text/70 mb-4">
                       <div className="flex items-center gap-1.5 font-bold">
-                         <Users size={12} className="text-primary" />
+                         <Users size={14} className="text-primary" />
                          {t.confirmedPlayers.length}/{t.maxPlayers}
                       </div>
                        {t.stakePerPlayer > 0 && (
                         <div className="flex items-center gap-1.5 font-bold text-emerald-600">
-                          <Trophy size={12} className="text-emerald-600" />
-                          PRIZE: KES {((t.stakePerPlayer * (t.confirmedPlayers?.length || t.maxPlayers)) * 0.85).toLocaleString()}
+                           <Trophy size={14} className="text-emerald-600" />
+                           PRIZE: KES {((t.stakePerPlayer * (t.confirmedPlayers?.length || t.maxPlayers)) * 0.85).toLocaleString()}
                         </div>
                       )}
                       <div className="flex items-center gap-1.5 font-bold capitalize">
-                         <Award size={12} className="text-yellow" />
+                         <Award size={14} className="text-yellow" />
                          {t.format.split('_')[0]}
                       </div>
                     </div>
@@ -467,10 +467,10 @@ const OngoingActivities = () => {
                     <div className="pt-3 border-t border-base2/50">
                       <Link 
                         to={`/moderator/manage-tournament/${t._id}`}
-                        className="w-full bg-primary text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all"
+                        className="w-full bg-primary text-base3 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:scale-[1.02] transition-all"
                       >
                         Enter Room
-                        <ChevronRight size={14} />
+                        <ChevronRight size={16} />
                       </Link>
                     </div>
                   </div>

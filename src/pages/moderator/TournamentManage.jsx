@@ -205,8 +205,8 @@ const TournamentManage = () => {
                <div>
                   <div className="flex items-center gap-3 mb-2">
                      <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
-                     <div className="flex items-center gap-2 text-text/40 text-xs font-bold uppercase tracking-widest">
-                        <Calendar size={14} />
+                     <div className="flex items-center gap-2 text-text/40 text-sm font-bold uppercase tracking-widest">
+                        <Calendar size={16} />
                         Created {tournament?.createdAt ? new Date(tournament.createdAt).toLocaleDateString() : 'N/A'}
                      </div>
                   </div>
@@ -222,7 +222,7 @@ const TournamentManage = () => {
                <div className="flex items-center gap-3">
                   {(tournament?.status === 'draft' || tournament?.status === 'open_for_players' || tournament?.status === 'full') && (
                      <div className="flex items-center gap-2 bg-base2/20 px-4 py-2 rounded-2xl border border-base2">
-                        <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Sets/Match</span>
+                        <span className="text-xs font-black uppercase text-text/40 tracking-widest">Sets/Match</span>
                         <select
                            value={tournament?.matchSetsCount || 1}
                            disabled={actionLoading}
@@ -261,7 +261,7 @@ const TournamentManage = () => {
             <div className="flex items-center gap-2 bg-base2/10 p-1.5 rounded-2xl w-fit">
                <button
                   onClick={() => setActiveTab('overview')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all ${
                      activeTab === 'overview' 
                         ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
                         : 'text-text/40 hover:text-text hover:bg-base2/20'
@@ -272,7 +272,7 @@ const TournamentManage = () => {
                </button>
                <button
                   onClick={() => setActiveTab('brackets')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all ${
                      activeTab === 'brackets' 
                         ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
                         : 'text-text/40 hover:text-text hover:bg-base2/20'
@@ -294,7 +294,7 @@ const TournamentManage = () => {
                               <Users size={24} className="text-primary" />
                               Joined Players
                            </div>
-                           <span className="text-xs font-black uppercase text-text/30 bg-base2/10 px-3 py-1 rounded-lg">
+                           <span className="text-sm font-black uppercase text-text/30 bg-base2/10 px-3 py-1 rounded-lg">
                               {tournament?.confirmedPlayers?.length || 0} / {tournament?.maxPlayers || 0} Spots
                            </span>
                         </h3>
@@ -307,7 +307,7 @@ const TournamentManage = () => {
                               
                               return (
                                  <div key={p._id} className="group relative flex items-center gap-3 p-3 bg-base3/50 backdrop-blur-sm border border-base2/50 rounded-2xl hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5">
-                                    <div className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-wider shadow-sm transition-colors ${
+                                    <div className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-sm transition-colors ${
                                        isInvited 
                                           ? 'bg-violet/10 text-violet border border-violet/20 group-hover:bg-violet/20' 
                                           : 'bg-blue/10 text-blue border border-blue/20 group-hover:bg-blue/20'
@@ -320,10 +320,10 @@ const TournamentManage = () => {
                                     </div>
                                     <div className="flex flex-col min-w-0 pr-14">
                                        <div className="flex items-center gap-2">
-                                          <p className="font-bold text-text-emphasis truncate text-sm tracking-tight group-hover:text-primary transition-colors">{p.fullName}</p>
+                                          <p className="font-bold text-text-emphasis truncate text-base tracking-tight group-hover:text-primary transition-colors">{p.fullName}</p>
                                           {tournament?.winner?._id === p._id && <Trophy size={12} className="text-yellow" />}
                                        </div>
-                                       <p className="text-[10px] text-text/50 truncate font-medium mt-0.5">{maskEmail(p.email)}</p>
+                                       <p className="text-xs text-text/50 truncate font-medium mt-0.5">{maskEmail(p.email)}</p>
                                     </div>
                                  </div>
                               );
@@ -368,12 +368,12 @@ const TournamentManage = () => {
                                           .map(p => (
                                           <div key={p._id} className="flex items-center justify-between p-3 bg-base2/10 rounded-xl hover:bg-base2/20 transition-colors group">
                                              <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-violet/10 text-violet flex items-center justify-center text-xs font-bold shadow-sm">
+                                                <div className="w-10 h-10 rounded-full bg-violet/10 text-violet flex items-center justify-center text-sm font-bold shadow-sm">
                                                    {p.fullName?.[0]}
                                                 </div>
                                                 <div>
-                                                   <p className="text-sm font-bold text-text-emphasis leading-tight group-hover:text-primary transition-colors">{p.fullName}</p>
-                                                   <p className="text-[10px] text-text/40 font-medium">{p.email}</p>
+                                                   <p className="text-base font-bold text-text-emphasis leading-tight group-hover:text-primary transition-colors">{p.fullName}</p>
+                                                   <p className="text-xs text-text/40 font-medium">{p.email}</p>
                                                 </div>
                                              </div>
                                              {tournament?.invitedPlayers?.some(ip => (ip._id || ip).toString() === p._id.toString()) ? (
@@ -396,7 +396,7 @@ const TournamentManage = () => {
                                     </>
                                  ) : (
                                     <div className="text-center py-6">
-                                       <p className="text-xs text-text/40 font-black italic uppercase tracking-widest leading-relaxed">
+                                       <p className="text-sm text-text/40 font-black italic uppercase tracking-widest leading-relaxed">
                                          Enter 2+ chars to search
                                        </p>
                                     </div>
@@ -406,8 +406,8 @@ const TournamentManage = () => {
                               {selectedPlayers.length > 0 && (
                                  <div className="mt-4 pt-4 border-t border-base2/50 space-y-4 animate-in fade-in slide-in-from-top-2">
                                     <div className="flex items-center justify-between">
-                                       <span className="text-[10px] font-black uppercase text-violet tracking-widest">Selected ({selectedPlayers.length})</span>
-                                       <button onClick={() => setSelectedPlayers([])} className="text-[10px] font-black uppercase text-red hover:underline">Clear</button>
+                                       <span className="text-xs font-black uppercase text-violet tracking-widest">Selected ({selectedPlayers.length})</span>
+                                       <button onClick={() => setSelectedPlayers([])} className="text-xs font-black uppercase text-red hover:underline">Clear</button>
                                     </div>
                                     <button
                                        onClick={handleBulkInvite}
@@ -425,8 +425,8 @@ const TournamentManage = () => {
                               <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
                                  <Trophy size={24} />
                               </div>
-                              <p className="text-xs font-black uppercase tracking-widest text-text-emphasis">Ongoing Tournament</p>
-                              <p className="text-[10px] font-bold text-text/40 mt-1">Player roster is finalized</p>
+                              <p className="text-sm font-black uppercase tracking-widest text-text-emphasis">Ongoing Tournament</p>
+                              <p className="text-xs font-bold text-text/40 mt-1">Player roster is finalized</p>
                            </div>
                         )}
 
@@ -439,10 +439,10 @@ const TournamentManage = () => {
                                     .map((inv) => (
                                     <div key={inv._id} className="flex items-center justify-between p-2.5 bg-base2/10 rounded-xl border border-base2/30">
                                        <div className="min-w-0 pr-2">
-                                          <p className="text-[11px] font-black text-text-emphasis truncate">{inv.playerId?.fullName}</p>
-                                          <p className="text-[9px] text-text/40 font-medium">{inv.status}</p>
+                                          <p className="text-sm font-black text-text-emphasis truncate">{inv.playerId?.fullName}</p>
+                                          <p className="text-xs text-text/40 font-medium">{inv.status}</p>
                                        </div>
-                                       <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded shrink-0 ${
+                                       <span className={`text-xs font-black uppercase tracking-widest px-1.5 py-0.5 rounded shrink-0 ${
                                           inv.status === 'pending' ? 'bg-orange/10 text-orange border border-orange/20' : 
                                           inv.status === 'declined' ? 'bg-red/10 text-red border border-red/20' : 'bg-base2 text-text/40'
                                        }`}>
@@ -476,7 +476,7 @@ const TournamentManage = () => {
                         <img src="/favicon.png" alt="7 Ball" className="w-10 h-10 drop-shadow-md" />
                         <div>
                            <h3 className="text-3xl font-black text-text-emphasis tracking-tight">Cue Tournament</h3>
-                           <p className="text-xs font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
+                           <p className="text-sm font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
                         </div>
                      </div>
                      <button
@@ -492,10 +492,10 @@ const TournamentManage = () => {
                         <div className="text-center flex-1">
                              <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
                              <div className="flex flex-col items-center gap-1 mt-1">
-                                <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
+                                <p className="text-xs font-black uppercase text-primary tracking-widest leading-none">
                                    Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer1 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
                                 </p>
-                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                    {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
                                 </span>
                              </div>
@@ -516,10 +516,10 @@ const TournamentManage = () => {
                           <div className="text-center flex-1">
                              <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
                              <div className="flex flex-col items-center gap-1 mt-1">
-                                <p className="text-[10px] font-black uppercase text-violet tracking-widest leading-none">
+                                <p className="text-xs font-black uppercase text-violet tracking-widest leading-none">
                                    Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer2 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
                                 </p>
-                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
+                                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                    {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
                                 </span>
                              </div>
@@ -571,12 +571,12 @@ const TournamentManage = () => {
                                            setSelectingWinnerForSetInModal(null);
                                         }
                                      }}
-                                     className={`min-w-[100px] h-12 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${isActive
-                                           ? 'bg-base3 border-primary shadow-lg shadow-primary/5'
+                                     className={`min-w-[120px] h-14 px-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${isActive
+                                           ? 'bg-base3 border-primary shadow-lg shadow-primary/5 scale-105'
                                            : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
                                         } ${((isLocked || !isOngoing) && !isMatchFinished) ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
                                   >
-                                     <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                     <span className={`text-base font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
                                         {tabLabel}
                                      </span>
                                   </button>
@@ -586,8 +586,8 @@ const TournamentManage = () => {
 
                          {selectedMatchForSets.status === 'pending_invites' && (
                             <div className="absolute inset-x-0 inset-y-[-8px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-[28px] border border-dashed border-base2">
-                               <p className="text-xs font-black uppercase tracking-widest text-orange animate-pulse bg-base3 px-6 py-2 rounded-full shadow-lg shadow-orange/10 border border-orange/20 flex items-center gap-2">
-                                  <Loader2 className="animate-spin" size={16} /> Waiting for players
+                               <p className="text-sm font-black uppercase tracking-widest text-orange animate-pulse bg-base3 px-6 py-2 rounded-full shadow-lg shadow-orange/10 border border-orange/20 flex items-center gap-2">
+                                  <Loader2 className="animate-spin" size={18} /> Waiting for players
                                </p>
                             </div>
                          )}
@@ -596,7 +596,7 @@ const TournamentManage = () => {
                             <div className="absolute inset-x-0 inset-y-[-8px] flex justify-center z-50">
                                <div className="w-[420px] bg-base3 border-2 border-primary rounded-[32px] shadow-2xl flex items-center p-2 gap-3 animate-in zoom-in-95 duration-200">
                                   <div className="px-4 py-2 bg-primary/10 rounded-2xl flex flex-col items-center justify-center min-w-[80px]">
-                                     <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Set {selectingWinnerForSetInModal + 1}</span>
+                                     <span className="text-xs font-black text-primary uppercase tracking-tighter">Set {selectingWinnerForSetInModal + 1}</span>
                                   </div>
                                   <div className="flex-1 flex gap-2">
                                      <button
