@@ -27,6 +27,7 @@ import {
   FileText
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { maskEmail } from '../../utils/emailHelper';
 
 // No longer needed separately as we'll fetch stats for all users once or include in user object
 const UserStatsBadge = ({ stats, loading }) => {
@@ -377,7 +378,7 @@ const AdminUsers = () => {
                                 </p>
                                 <div className="flex items-center gap-1.5 text-[9px] text-text/60 truncate uppercase font-bold tracking-tight">
                                   <Mail size={10} className="shrink-0" />
-                                  {u.email}
+                                  {maskEmail(u.email)}
                                 </div>
                               </div>
                             </div>
@@ -550,7 +551,7 @@ const AdminUsers = () => {
                      <p className="text-[9px] uppercase font-medium text-text/40">Registered Email</p>
                      <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50 opacity-60">
                         <Mail size={14} className="text-primary/60" />
-                        <span className="text-xs font-medium truncate">{selectedUser.email}</span>
+                        <span className="text-xs font-medium truncate">{maskEmail(selectedUser.email)}</span>
                      </div>
                   </div>
                   <div className="space-y-1">

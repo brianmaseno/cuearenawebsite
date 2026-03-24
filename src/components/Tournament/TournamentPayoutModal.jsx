@@ -1,20 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trophy, X, DollarSign, Award, Users, AlertCircle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
 
 const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
-  const [payouts, setPayouts] = useState([
-    { rank: '1st Place', playerId: tournament?.winner?._id || '', amount: '' },
-    { rank: '2nd Place', playerId: '', amount: '' },
-    { rank: '3rd Place', playerId: '', amount: '' },
-  ]);
+  const getInitialPayouts = () => {
+    if (tournament?.prizesDistributed && tournament?.payouts?.length > 0) {
+      return tournament.payouts;
+    }
+
+    const positions = tournament?.rewardPositions || 3;
+    const matches = tournament?.matches || [];
+    const maxRound = Math.max(...matches.map(m => m.round), 0);
+    
+    const finalMatch = matches.find(m => m.round === maxRound && m.matchType === 'bracket');
+    const thirdPlaceMatch = matches.find(m => m.matchType === 'third_place_playoff');
+
+    const initial = [];
+    for (let i = 0; i < positions; i++) {
+        let playerId = '';
+        let rankLabel = `${i + 1}${i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th'} Place`;
+
+        if (i === 0) {
+            playerId = tournament?.winner?._id || tournament?.winner || '';
+        } else if (i === 1 && finalMatch && finalMatch.status === 'completed') {
+            playerId = (finalMatch.winnerId?._id || finalMatch.winnerId || '').toString() === (finalMatch.player1Id?._id || finalMatch.player1Id || '').toString()
+                ? finalMatch.player2Id?._id || finalMatch.player2Id
+                : finalMatch.player1Id?._id || finalMatch.player1Id;
+        } else if (i === 2 && thirdPlaceMatch && thirdPlaceMatch.status === 'completed') {
+            playerId = thirdPlaceMatch.winnerId?._id || thirdPlaceMatch.winnerId || '';
+        } else if (i === 3 && thirdPlaceMatch && thirdPlaceMatch.status === 'completed') {
+            playerId = (thirdPlaceMatch.winnerId?._id || thirdPlaceMatch.winnerId || '').toString() === (thirdPlaceMatch.player1Id?._id || thirdPlaceMatch.player1Id || '').toString()
+                ? thirdPlaceMatch.player2Id?._id || thirdPlaceMatch.player2Id
+                : thirdPlaceMatch.player1Id?._id || thirdPlaceMatch.player1Id;
+        }
+
+        initial.push({
+            rank: rankLabel,
+            playerId: playerId || '',
+            amount: ''
+        });
+    }
+    return initial;
+  };
+
+  const [payouts, setPayouts] = useState(getInitialPayouts());
   const [loading, setLoading] = useState(false);
+
+  // Re-initialize if tournament changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setPayouts(getInitialPayouts());
+    }
+  }, [isOpen, tournament]);
 
   if (!isOpen || !tournament) return null;
 
-  const totalPot = tournament.confirmedPlayers.length * (tournament.stakePerPlayer || 0);
+  const isDistributed = tournament.prizesDistributed;
+
+  const totalPot = tournament.confirmedPlayers?.length * (tournament.stakePerPlayer || 0) || 0;
   const platformFee = totalPot * 0.05;
   const moderationFee = totalPot * 0.10;
   const availablePrizePool = totalPot - platformFee - moderationFee;
@@ -23,12 +68,14 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
   const remainingPool = availablePrizePool - currentTotalPayout;
 
   const handlePayoutChange = (index, field, value) => {
+    if (isDistributed) return;
     const newPayouts = [...payouts];
     newPayouts[index][field] = value;
     setPayouts(newPayouts);
   };
 
   const addPayoutRow = () => {
+    if (isDistributed) return;
     setPayouts([...payouts, { rank: `Rank ${payouts.length + 1}`, playerId: '', amount: '' }]);
   };
 
@@ -135,6 +182,7 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
                       onChange={(e) => handlePayoutChange(index, 'rank', e.target.value)}
                       placeholder="e.g. 1st Place"
                       className="w-full bg-slate-50 border-slate-100 rounded-2xl p-3 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 transition-all"
+                      disabled={isDistributed}
                     />
                   </div>
                   <div className="flex-1">
@@ -142,9 +190,10 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
                       value={payout.playerId}
                       onChange={(e) => handlePayoutChange(index, 'playerId', e.target.value)}
                       className="w-full bg-slate-50 border-slate-100 rounded-2xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 transition-all appearance-none"
+                      disabled={isDistributed}
                     >
                       <option value="">Select Player</option>
-                      {tournament.confirmedPlayers.map(player => (
+                      {tournament?.confirmedPlayers?.map(player => (
                         <option key={player._id} value={player._id}>{player.fullName}</option>
                       ))}
                     </select>
@@ -157,40 +206,51 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
                       placeholder="Amount"
                       className="w-full bg-slate-50 border-slate-100 rounded-2xl p-3 pr-8 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-indigo-500 transition-all"
                       required
+                      disabled={isDistributed}
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 font-bold text-[10px]">KES</div>
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => removePayoutRow(index)}
-                    className="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <X size={16} />
-                  </button>
+                  {!isDistributed && (
+                    <button 
+                      type="button"
+                      onClick={() => removePayoutRow(index)}
+                      className="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
 
-            <button 
-              type="button"
-              onClick={addPayoutRow}
-              className="w-full border-2 border-dashed border-slate-100 rounded-[1.5rem] py-3 text-slate-400 text-xs font-black uppercase tracking-widest hover:border-indigo-200 hover:text-indigo-500 hover:bg-indigo-50/30 transition-all"
-            >
-              + Add Payout Tier
-            </button>
+            {!isDistributed && (
+              <button 
+                type="button"
+                onClick={addPayoutRow}
+                className="w-full border-2 border-dashed border-slate-100 rounded-[1.5rem] py-3 text-slate-400 text-xs font-black uppercase tracking-widest hover:border-indigo-200 hover:text-indigo-500 hover:bg-indigo-50/30 transition-all"
+              >
+                + Add Payout Tier
+              </button>
+            )}
 
             <div className="pt-6">
               <button
-                type="submit"
-                disabled={loading || remainingPool < 0}
+                type={isDistributed ? "button" : "submit"}
+                onClick={isDistributed ? onClose : undefined}
+                disabled={loading || (!isDistributed && remainingPool < 0)}
                 className={`w-full py-4 rounded-[2rem] text-sm font-black uppercase tracking-[0.2em] transition-all shadow-xl flex items-center justify-center gap-3
-                  ${loading || remainingPool < 0 
+                  ${loading || (!isDistributed && remainingPool < 0)
                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'}
+                    : isDistributed ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'}
                 `}
               >
                 {loading ? (
                   <Loader2 size={20} className="animate-spin" />
+                ) : isDistributed ? (
+                  <>
+                    <CheckCircle2 size={20} />
+                    Prizes Distributed
+                  </>
                 ) : (
                   <>
                     <Award size={20} />

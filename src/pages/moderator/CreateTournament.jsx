@@ -23,6 +23,7 @@ const CreateTournament = () => {
     registrationDeadline: '',
     matchSetsCount: 1,
     stakePerPlayer: 0,
+    rewardPositions: 3,
   });
 
   const handleChange = (e) => {
@@ -230,6 +231,24 @@ const CreateTournament = () => {
                   />
                 </div>
                 <p className="text-[10px] text-text/50 mt-1 font-bold italic uppercase transition-all">Player pays this to join</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text-emphasis mb-2">Reward Positions (Rankings)</label>
+                <select
+                  name="rewardPositions"
+                  value={formData.rewardPositions}
+                  onChange={handleChange}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="1">Winner Only (1st)</option>
+                  <option value="2">Finalists (1st, 2nd)</option>
+                  <option value="3">Top 3 (1st, 2nd, 3rd)</option>
+                  <option value="4">Top 4 (1st, 2nd, 3rd, 4th)</option>
+                  <option value="5">Top 5 (+ 1 playoff for 5th)</option>
+                  <option value="8">Top 8 (Quarterfinalists)</option>
+                </select>
+                <p className="text-[10px] text-text/50 mt-1 font-bold italic uppercase transition-all">Matches will be generated to fill these ranks</p>
               </div>
             </div>
           </section>

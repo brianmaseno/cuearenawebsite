@@ -40,7 +40,7 @@ const TournamentDetails = () => {
    }, [id]);
 
    const handleJoinTournament = async () => {
-      if (tournament.stakePerPlayer > 0) {
+      if (tournament?.stakePerPlayer > 0) {
          if (!window.confirm(`Joining this tournament requires a stake of KES ${tournament.stakePerPlayer.toLocaleString()}. This amount will be locked from your balance until the tournament concludes or is cancelled. Proceed?`)) {
             return;
          }
@@ -142,7 +142,7 @@ const TournamentDetails = () => {
                      </div>
                      <button
                         onClick={handleJoinTournament}
-                        disabled={tournament.status === 'full' || new Date(tournament.registrationDeadline) < new Date()}
+                        disabled={tournament.status === 'full' || (tournament.registrationDeadline && new Date(tournament.registrationDeadline) < new Date())}
                         className="px-6 py-2.5 rounded-xl bg-green text-base3 font-black shadow-lg shadow-green/20 hover:bg-green/90 transition-all active:scale-95 disabled:opacity-50 text-xs uppercase tracking-widest"
                      >
                         Join Tournament
@@ -185,7 +185,7 @@ const TournamentDetails = () => {
                         <section className="card-premium p-8 rounded-3xl bg-base3">
                            <div className="flex justify-between items-start mb-6">
                               <div>
-                                 <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} startDate={tournament.startDate} />
+                                 <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
                                  <h3 className="text-3xl font-black text-text-emphasis mt-3 tracking-tight">{tournament.name}</h3>
                               </div>
                               <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 text-center min-w-[120px]">
@@ -203,7 +203,7 @@ const TournamentDetails = () => {
                               {tournament.description || 'No description provided.'}
                            </p>
                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 border-t border-base2">
-                              {[{ icon: Calendar, label: 'Date', val: new Date(tournament.startDate).toLocaleDateString(), color: 'blue' },
+                              {[{ icon: Calendar, label: 'Date', val: tournament.startDate ? new Date(tournament.startDate).toLocaleDateString() : 'N/A', color: 'blue' },
                                 { icon: MapPin, label: 'Venue', val: tournament.venue, color: 'green' },
                                 { icon: Users, label: 'Organizer', val: tournament.organizerId?.fullName, color: 'yellow' }].map((item, idx) => (
                                  <div key={idx} className="flex items-center gap-3">
@@ -225,7 +225,7 @@ const TournamentDetails = () => {
                               Format & Rules
                            </h4>
                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                              {[{ l: 'Format', v: tournament.format }, { l: 'Max Players', v: tournament.maxPlayers }, { l: 'Confirmed', v: tournament.confirmedPlayers.length }].map((stat, i) => (
+                              {[{ l: 'Format', v: tournament.format }, { l: 'Max Players', v: tournament.maxPlayers }, { l: 'Confirmed', v: tournament.confirmedPlayers?.length || 0 }].map((stat, i) => (
                                  <div key={i} className="p-4 bg-base2/30 rounded-2xl text-center">
                                     <p className="text-[10px] font-bold text-text uppercase mb-1">{stat.l}</p>
                                     <p className="font-bold text-text-emphasis capitalize text-sm">{(stat.v || '').toString().replace('_', ' ')}</p>
@@ -245,11 +245,11 @@ const TournamentDetails = () => {
                               Confirmed Players
                            </h4>
                            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 thin-scrollbar">
-                              {tournament.confirmedPlayers.map((player) => (
+                              {tournament.confirmedPlayers?.map((player) => (
                                  <div key={player._id} className="flex items-center justify-between p-3 bg-base3 rounded-xl border border-base2/50 group transition-all hover:border-primary/30">
                                     <div className="flex items-center gap-3">
                                        <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-xs">
-                                          {player.fullName[0]}
+                                          {player.fullName?.[0] || 'P'}
                                        </div>
                                        <p className="text-sm font-bold text-text-emphasis truncate max-w-[120px]">{player.fullName}</p>
                                     </div>
@@ -262,7 +262,7 @@ const TournamentDetails = () => {
                            <div className="card-premium p-6 rounded-3xl bg-yellow/5 border-yellow/20 text-center animate-in zoom-in-95">
                               <Trophy size={40} className="text-yellow mx-auto mb-3" />
                               <p className="text-[10px] font-black uppercase tracking-widest text-yellow mb-1">Champion</p>
-                              <p className="text-xl font-black text-text-emphasis">{tournament.winner.fullName}</p>
+                              <p className="text-xl font-black text-text-emphasis">{tournament.winner?.fullName || 'N/A'}</p>
                            </div>
                         )}
                      </div>

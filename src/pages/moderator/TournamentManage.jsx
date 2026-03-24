@@ -27,6 +27,7 @@ import TournamentPayoutModal from '../../components/Tournament/TournamentPayoutM
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
+import { maskEmail } from '../../utils/emailHelper';
 
 
 const TournamentManage = () => {
@@ -110,14 +111,18 @@ const TournamentManage = () => {
 
    useEffect(() => {
       if (socket) {
-         socket.on('TOURNAMENT_UPDATE', (data) => {
-            if (data && data._id) {
-               setTournament(data);
-            } else {
-               fetchTournamentData();
-            }
-            toast.info('Tournament updated!', { id: 'tourney-update' });
-         });
+          socket.on('TOURNAMENT_UPDATE', (data) => {
+             if (data && data._id) {
+                // Check if it's a special event
+                if (data.type === 'final_winner_declared') {
+                   setIsPayoutModalOpen(true);
+                   toast.success('Tournament Completed! Winner declared.', { duration: 5000 });
+                }
+                if (!data.type) setTournament(data);
+             }
+             fetchTournamentData();
+             toast.info('Tournament updated!', { id: 'tourney-update' });
+          });
 
          return () => {
             socket.off('TOURNAMENT_UPDATE');
@@ -199,14 +204,14 @@ const TournamentManage = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-4 border-b border-base2">
                <div>
                   <div className="flex items-center gap-3 mb-2">
-                     <StatusBadge status={tournament.status} entryType={tournament.entryType} registrationDeadline={tournament.registrationDeadline} startDate={tournament.startDate} />
+                     <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
                      <div className="flex items-center gap-2 text-text/40 text-xs font-bold uppercase tracking-widest">
                         <Calendar size={14} />
-                        Created {new Date(tournament.createdAt).toLocaleDateString()}
+                        Created {tournament?.createdAt ? new Date(tournament.createdAt).toLocaleDateString() : 'N/A'}
                      </div>
                   </div>
-                  <h2 className="text-2xl font-black text-text-emphasis tracking-tight">{tournament.name}</h2>
-                  {tournament.status === 'full' && (
+                  <h2 className="text-2xl font-black text-text-emphasis tracking-tight">{tournament?.name}</h2>
+                  {tournament?.status === 'full' && (
                      <div className="mt-2 flex items-center gap-2 text-primary font-bold bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 w-fit animate-pulse">
                         <Zap size={16} fill="currentColor" />
                         <span>Tournament full, set to start on {new Date(tournament.startDate).toLocaleDateString()} at {new Date(tournament.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -215,11 +220,11 @@ const TournamentManage = () => {
                </div>
 
                <div className="flex items-center gap-3">
-                  {(tournament.status === 'draft' || tournament.status === 'open_for_players' || tournament.status === 'full') && (
+                  {(tournament?.status === 'draft' || tournament?.status === 'open_for_players' || tournament?.status === 'full') && (
                      <div className="flex items-center gap-2 bg-base2/20 px-4 py-2 rounded-2xl border border-base2">
                         <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Sets/Match</span>
                         <select
-                           value={tournament.matchSetsCount || 1}
+                           value={tournament?.matchSetsCount || 1}
                            disabled={actionLoading}
                            onChange={(e) => handleUpdateSettings('matchSetsCount', parseInt(e.target.value))}
                            className="bg-transparent text-sm font-black text-primary outline-none cursor-pointer"
@@ -230,7 +235,7 @@ const TournamentManage = () => {
                         </select>
                      </div>
                   )}
-                  {tournament.status === 'completed' && (
+                  {tournament?.status === 'completed' && (
                      <button
                         onClick={() => setIsPayoutModalOpen(true)}
                         className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
@@ -239,14 +244,14 @@ const TournamentManage = () => {
                         Distribute Prizes
                      </button>
                   )}
-                  {tournament.status === 'draft' && (
+                  {tournament?.status === 'draft' && (
                      <button
                         onClick={handlePublish}
                         disabled={actionLoading}
                         className="bg-green hover:bg-green-dark text-base3 px-8 py-3 rounded-2xl font-black shadow-lg shadow-green/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                      >
                         <Trophy size={20} />
-                        {tournament.entryType === 'invite_only' ? 'Set to Private' : 'Open for Registration'}
+                        {tournament?.entryType === 'invite_only' ? 'Set to Private' : 'Open for Registration'}
                      </button>
                   )}
                </div>
@@ -290,11 +295,11 @@ const TournamentManage = () => {
                               Joined Players
                            </div>
                            <span className="text-xs font-black uppercase text-text/30 bg-base2/10 px-3 py-1 rounded-lg">
-                              {tournament.confirmedPlayers.length} / {tournament.maxPlayers} Spots
+                              {tournament?.confirmedPlayers?.length || 0} / {tournament?.maxPlayers || 0} Spots
                            </span>
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                           {tournament.confirmedPlayers.map(p => {
+                           {tournament?.confirmedPlayers?.map(p => {
                               const isInvited = invitations.some(inv => 
                                  (inv.playerId?._id || inv.playerId)?.toString() === p._id.toString() && 
                                  inv.status === 'accepted'
@@ -309,18 +314,21 @@ const TournamentManage = () => {
                                     }`}>
                                        {isInvited ? 'Invited' : 'Joined'}
                                     </div>
-
+                                    
                                     <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center font-black text-sm shrink-0 shadow-inner border border-primary/10">
-                                       {p.fullName[0]}
+                                       {p.fullName?.[0] || 'P'}
                                     </div>
-                                    <div className="min-w-0 pr-14">
-                                       <p className="font-bold text-text-emphasis truncate text-sm tracking-tight">{p.fullName}</p>
-                                       <p className="text-[10px] text-text/50 truncate font-medium mt-0.5">{p.email}</p>
+                                    <div className="flex flex-col min-w-0 pr-14">
+                                       <div className="flex items-center gap-2">
+                                          <p className="font-bold text-text-emphasis truncate text-sm tracking-tight group-hover:text-primary transition-colors">{p.fullName}</p>
+                                          {tournament?.winner?._id === p._id && <Trophy size={12} className="text-yellow" />}
+                                       </div>
+                                       <p className="text-[10px] text-text/50 truncate font-medium mt-0.5">{maskEmail(p.email)}</p>
                                     </div>
                                  </div>
                               );
                            })}
-                           {tournament.confirmedPlayers.length === 0 && (
+                           {(!tournament?.confirmedPlayers || tournament.confirmedPlayers.length === 0) && (
                               <p className="col-span-full text-center text-text italic py-8 bg-base3/10 rounded-2xl border border-dashed border-base2">
                                  Waiting for players to join...
                               </p>
@@ -330,7 +338,7 @@ const TournamentManage = () => {
 
                      {/* Invite / Status Section */}
                      <div className="card-premium p-6 rounded-2xl shadow-sm flex flex-col h-fit bg-base3/30 backdrop-blur-md">
-                        {tournament.status !== 'ongoing' && tournament.status !== 'completed' ? (
+                        {tournament?.status !== 'ongoing' && tournament?.status !== 'completed' ? (
                            <>
                               <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
                                  <UserPlus size={20} className="text-violet" />
@@ -352,9 +360,9 @@ const TournamentManage = () => {
                                  {playerSearchQuery.trim().length >= 2 ? (
                                     <>
                                        {availablePlayers
-                                          .filter(p => !tournament.confirmedPlayers.some(cp => cp._id === p._id))
+                                          .filter(p => !tournament?.confirmedPlayers?.some(cp => cp._id === p._id))
                                           .filter(p => 
-                                             p.fullName.toLowerCase().includes(playerSearchQuery.toLowerCase()) || 
+                                             p.fullName?.toLowerCase().includes(playerSearchQuery.toLowerCase()) || 
                                              (p.email || '').toLowerCase().includes(playerSearchQuery.toLowerCase())
                                           )
                                           .map(p => (
@@ -368,7 +376,7 @@ const TournamentManage = () => {
                                                    <p className="text-[10px] text-text/40 font-medium">{p.email}</p>
                                                 </div>
                                              </div>
-                                             {tournament.invitedPlayers?.some(ip => (ip._id || ip).toString() === p._id.toString()) ? (
+                                             {tournament?.invitedPlayers?.some(ip => (ip._id || ip).toString() === p._id.toString()) ? (
                                                 <span className="text-[10px] font-black uppercase text-green tracking-widest bg-green/10 px-2 py-1 rounded-lg border border-green/20">Invited</span>
                                              ) : (
                                                 <button
@@ -480,164 +488,163 @@ const TournamentManage = () => {
                   </div>
 
                   <div className="p-8 space-y-8">
-                     {/* Match Summary */}
-                     <div className="flex items-center justify-between bg-base2/20 p-6 rounded-3xl border border-base2">
-                         <div className="text-center flex-1">
-                            <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
-                            <div className="flex flex-col items-center gap-1 mt-1">
-                               <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
-                                  Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer1 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
+                     <div className="flex items-center justify-between gap-6 p-6 bg-base2/10 rounded-[32px] border border-base2/50">
+                        <div className="text-center flex-1">
+                             <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
+                             <div className="flex flex-col items-center gap-1 mt-1">
+                                <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
+                                   Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer1 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
+                                </p>
+                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
+                                   {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
+                                </span>
+                             </div>
+                             <p className="text-4xl font-black text-primary mt-4">{selectedMatchForSets.scorePlayer1}</p>
+                          </div>
+                          <div className="px-6 flex flex-col items-center gap-2">
+                             <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
+                                {tournament?.name} • Match
+                                {tournament?.stakePerPlayer > 0 && (
+                                   <div className="mt-2 text-[10px] text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 inline-flex items-center gap-1 normal-case tracking-normal">
+                                      <Award size={12} className="text-emerald-500" />
+                                      PRIZE: KES {((tournament.stakePerPlayer * (tournament.confirmedPlayers?.length || tournament.maxPlayers)) * 0.85).toLocaleString()}
+                                   </div>
+                                )}
+                             </div>
+                             <div className="text-base font-black italic text-text/20">VS</div>
+                          </div>
+                          <div className="text-center flex-1">
+                             <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
+                             <div className="flex flex-col items-center gap-1 mt-1">
+                                <p className="text-[10px] font-black uppercase text-violet tracking-widest leading-none">
+                                   Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer2 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
+                                </p>
+                                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
+                                   {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
+                                </span>
+                             </div>
+                             <p className="text-4xl font-black text-violet mt-4">{selectedMatchForSets.scorePlayer2}</p>
+                          </div>
+                      </div>
+
+                      {/* Set Tabs Container */}
+                      <div className="flex flex-wrap gap-4 justify-center relative min-h-[72px]">
+                         {(() => {
+                            let firstUnplayed = (selectedMatchForSets.setsCount || 1) - 1;
+                            for (let i = 0; i < (selectedMatchForSets.setsCount || 1); i++) {
+                               if (!selectedMatchForSets.setsResults?.find(s => s.setIndex === i)) {
+                                  firstUnplayed = i;
+                                  break;
+                               }
+                            }
+                            const currentActiveDefault = firstUnplayed;
+                            const currentActive = activeSetInModal !== null ? activeSetInModal : currentActiveDefault;
+
+                            return Array.from({ length: selectedMatchForSets.setsCount || 1 }).map((_, idx) => {
+                               const sRes = selectedMatchForSets.setsResults?.find(s => s.setIndex === idx);
+                               const isOngoing = selectedMatchForSets.status === 'ongoing';
+                               const isMatchFinished = selectedMatchForSets.status === 'completed';
+
+                               const isActive = currentActive === idx;
+                               const isLocked = (!isOngoing && !isMatchFinished) ? true : (idx > firstUnplayed);
+                            
+                            let tabLabel = `SET ${idx + 1}`;
+                            let winnerColor = '';
+                            if (sRes) {
+                               if ((sRes.winnerId?._id || sRes.winnerId) === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id)) {
+                                  tabLabel = selectedMatchForSets.player1Id?.fullName?.split(' ')[0] || 'Player 1';
+                                  winnerColor = 'text-primary';
+                               } else {
+                                  tabLabel = selectedMatchForSets.player2Id?.fullName?.split(' ')[0] || 'Player 2';
+                                  winnerColor = 'text-violet';
+                               }
+                            }
+                            return (
+                               <div key={idx} className="relative z-0">
+                                  <button
+                                     disabled={((isLocked || !isOngoing) && !isMatchFinished) || sRes}
+                                     onClick={() => {
+                                        if (!isLocked && isOngoing && !sRes && !isMatchFinished) {
+                                           setSelectingWinnerForSetInModal(idx);
+                                        } else {
+                                           setActiveSetInModal(idx);
+                                           setSelectingWinnerForSetInModal(null);
+                                        }
+                                     }}
+                                     className={`min-w-[100px] h-12 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${isActive
+                                           ? 'bg-base3 border-primary shadow-lg shadow-primary/5'
+                                           : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
+                                        } ${((isLocked || !isOngoing) && !isMatchFinished) ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
+                                  >
+                                     <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
+                                        {tabLabel}
+                                     </span>
+                                  </button>
+                               </div>
+                            );
+                         })})()}
+
+                         {selectedMatchForSets.status === 'pending_invites' && (
+                            <div className="absolute inset-x-0 inset-y-[-8px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-[28px] border border-dashed border-base2">
+                               <p className="text-xs font-black uppercase tracking-widest text-orange animate-pulse bg-base3 px-6 py-2 rounded-full shadow-lg shadow-orange/10 border border-orange/20 flex items-center gap-2">
+                                  <Loader2 className="animate-spin" size={16} /> Waiting for players
                                </p>
-                               <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
-                                  {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
-                               </span>
                             </div>
-                            <p className="text-4xl font-black text-primary mt-4">{selectedMatchForSets.scorePlayer1}</p>
-                         </div>
-                         <div className="px-6 flex flex-col items-center gap-2">
-                            <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
-                               {tournament.name} • Match
-                               {tournament.stakePerPlayer > 0 && (
-                                  <div className="mt-2 text-[10px] text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 inline-flex items-center gap-1 normal-case tracking-normal">
-                                     <Award size={12} className="text-emerald-500" />
-                                     PRIZE: KES {((tournament.stakePerPlayer * (tournament.confirmedPlayers?.length || tournament.maxPlayers)) * 0.85).toLocaleString()}
+                         )}
+                         
+                         {selectingWinnerForSetInModal !== null && (
+                            <div className="absolute inset-x-0 inset-y-[-8px] flex justify-center z-50">
+                               <div className="w-[420px] bg-base3 border-2 border-primary rounded-[32px] shadow-2xl flex items-center p-2 gap-3 animate-in zoom-in-95 duration-200">
+                                  <div className="px-4 py-2 bg-primary/10 rounded-2xl flex flex-col items-center justify-center min-w-[80px]">
+                                     <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Set {selectingWinnerForSetInModal + 1}</span>
                                   </div>
-                               )}
+                                  <div className="flex-1 flex gap-2">
+                                     <button
+                                        disabled={!selectedMatchForSets.player1Id}
+                                        onClick={() => selectedMatchForSets.player1Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id))}
+                                        className={`flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10 ${!selectedMatchForSets.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                     >
+                                        {selectedMatchForSets.player1Id?.fullName || 'P1'}
+                                     </button>
+                                     <button
+                                        disabled={!selectedMatchForSets.player2Id}
+                                        onClick={() => selectedMatchForSets.player2Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id))}
+                                        className={`flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10 ${!selectedMatchForSets.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                     >
+                                        {selectedMatchForSets.player2Id?.fullName || 'P2'}
+                                     </button>
+                                  </div>
+                                  <button
+                                     onClick={() => setSelectingWinnerForSetInModal(null)}
+                                     className="w-12 h-12 flex items-center justify-center text-text/20 hover:text-red transition-all rounded-full hover:bg-red/5"
+                                  >
+                                     <X size={20} />
+                                  </button>
+                               </div>
                             </div>
-                            <div className="text-base font-black italic text-text/20">VS</div>
+                         )}
+                      </div>
+
+                      {selectedMatchForSets.status === 'completed' && (
+                         <div className="bg-green/10 border border-green/20 p-8 rounded-[32px] text-center">
+                            <Trophy className="mx-auto text-green mb-4" size={48} />
+                            <h4 className="text-3xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
+                            <p className="text-base font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
                          </div>
-                         <div className="text-center flex-1">
-                            <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
-                            <div className="flex flex-col items-center gap-1 mt-1">
-                               <p className="text-[10px] font-black uppercase text-violet tracking-widest leading-none">
-                                  Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer2 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
-                               </p>
-                               <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
-                                  {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
-                               </span>
-                            </div>
-                            <p className="text-4xl font-black text-violet mt-4">{selectedMatchForSets.scorePlayer2}</p>
-                         </div>
-                     </div>
-
-                     {/* Set Tabs Container */}
-                     <div className="flex flex-wrap gap-4 justify-center relative min-h-[72px]">
-                        {(() => {
-                           let firstUnplayed = (selectedMatchForSets.setsCount || 1) - 1;
-                           for (let i = 0; i < (selectedMatchForSets.setsCount || 1); i++) {
-                              if (!selectedMatchForSets.setsResults?.find(s => s.setIndex === i)) {
-                                 firstUnplayed = i;
-                                 break;
-                              }
-                           }
-                           const currentActiveDefault = firstUnplayed;
-                           const currentActive = activeSetInModal !== null ? activeSetInModal : currentActiveDefault;
-
-                           return Array.from({ length: selectedMatchForSets.setsCount || 1 }).map((_, idx) => {
-                              const sRes = selectedMatchForSets.setsResults?.find(s => s.setIndex === idx);
-                              const isOngoing = selectedMatchForSets.status === 'ongoing';
-                              const isMatchFinished = selectedMatchForSets.status === 'completed';
-
-                              const isActive = currentActive === idx;
-                              const isLocked = (!isOngoing && !isMatchFinished) ? true : (idx > firstUnplayed);
-                           
-                           let tabLabel = `SET ${idx + 1}`;
-                           let winnerColor = '';
-                           if (sRes) {
-                              if (sRes.winnerId === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id)) {
-                                 tabLabel = selectedMatchForSets.player1Id?.fullName?.split(' ')[0] || 'Player 1';
-                                 winnerColor = 'text-primary';
-                              } else {
-                                 tabLabel = selectedMatchForSets.player2Id?.fullName?.split(' ')[0] || 'Player 2';
-                                 winnerColor = 'text-violet';
-                              }
-                           }
-                           return (
-                              <div key={idx} className="relative z-0">
-                                 <button
-                                    disabled={((isLocked || !isOngoing) && !isMatchFinished) || sRes}
-                                    onClick={() => {
-                                       if (!isLocked && isOngoing && !sRes && !isMatchFinished) {
-                                          setSelectingWinnerForSetInModal(idx);
-                                       } else {
-                                          setActiveSetInModal(idx);
-                                          setSelectingWinnerForSetInModal(null);
-                                       }
-                                    }}
-                                    className={`min-w-[100px] h-12 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex flex-col items-center justify-center gap-1 border-2 ${isActive
-                                          ? 'bg-base3 border-primary shadow-lg shadow-primary/5'
-                                          : (sRes ? 'bg-base2/20 border-base2/30 opacity-60 hover:opacity-100' : 'bg-base2/10 border-transparent')
-                                       } ${((isLocked || !isOngoing) && !isMatchFinished) ? 'opacity-40 cursor-not-allowed grayscale' : ''}`}
-                                 >
-                                    <span className={`text-sm font-black ${winnerColor || (isActive ? 'text-primary' : 'text-text/30')}`}>
-                                       {tabLabel}
-                                    </span>
-                                 </button>
-                              </div>
-                           );
-                        })})()}
-
-                        {selectedMatchForSets.status === 'pending_invites' && (
-                           <div className="absolute inset-x-0 inset-y-[-8px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-[28px] border border-dashed border-base2">
-                              <p className="text-xs font-black uppercase tracking-widest text-orange animate-pulse bg-base3 px-6 py-2 rounded-full shadow-lg shadow-orange/10 border border-orange/20 flex items-center gap-2">
-                                 <Loader2 className="animate-spin" size={16} /> Waiting for players
-                              </p>
-                           </div>
-                        )}
-                        
-                        {selectingWinnerForSetInModal !== null && (
-                           <div className="absolute inset-x-0 inset-y-[-8px] flex justify-center z-50">
-                              <div className="w-[420px] bg-base3 border-2 border-primary rounded-[32px] shadow-2xl flex items-center p-2 gap-3 animate-in zoom-in-95 duration-200">
-                                 <div className="px-4 py-2 bg-primary/10 rounded-2xl flex flex-col items-center justify-center min-w-[80px]">
-                                    <span className="text-[10px] font-black text-primary uppercase tracking-tighter">Set {selectingWinnerForSetInModal + 1}</span>
-                                 </div>
-                                 <div className="flex-1 flex gap-2">
-                                    <button
-                                       disabled={!selectedMatchForSets.player1Id}
-                                       onClick={() => selectedMatchForSets.player1Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id))}
-                                       className={`flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10 ${!selectedMatchForSets.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
-                                    >
-                                       {selectedMatchForSets.player1Id?.fullName || 'P1'}
-                                    </button>
-                                    <button
-                                       disabled={!selectedMatchForSets.player2Id}
-                                       onClick={() => selectedMatchForSets.player2Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id))}
-                                       className={`flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10 ${!selectedMatchForSets.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
-                                    >
-                                       {selectedMatchForSets.player2Id?.fullName || 'P2'}
-                                    </button>
-                                 </div>
-                                 <button
-                                    onClick={() => setSelectingWinnerForSetInModal(null)}
-                                    className="w-12 h-12 flex items-center justify-center text-text/20 hover:text-red transition-all rounded-full hover:bg-red/5"
-                                 >
-                                    <X size={20} />
-                                 </button>
-                              </div>
-                           </div>
-                        )}
-                     </div>
-
-                     {selectedMatchForSets.status === 'completed' && (
-                        <div className="bg-green/10 border border-green/20 p-8 rounded-[32px] text-center">
-                           <Trophy className="mx-auto text-green mb-4" size={48} />
-                           <h4 className="text-3xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
-                           <p className="text-base font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
-                        </div>
-                     )}
-                  </div>
-               </div>
-            </div>
-         )}
-         {/* Payout Modal */}
-         <TournamentPayoutModal 
-            isOpen={isPayoutModalOpen}
-            onClose={() => setIsPayoutModalOpen(false)}
-            tournament={tournament}
-            onSuccess={fetchTournamentData}
-         />
-      </DashboardLayout>
-   );
-};
-
-export default TournamentManage;
+                      )}
+                   </div>
+                </div>
+             </div>
+          )}
+          {/* Payout Modal */}
+          <TournamentPayoutModal 
+             isOpen={isPayoutModalOpen}
+             onClose={() => setIsPayoutModalOpen(false)}
+             tournament={tournament}
+             onSuccess={fetchTournamentData}
+          />
+       </DashboardLayout>
+    );
+ };
+ 
+ export default TournamentManage;

@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { maskEmail } from '../../utils/emailHelper';
 
 const AdminModeratorRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -200,7 +201,7 @@ const AdminModeratorRequests = () => {
                         <div>
                           <h3 className="font-bold text-text-emphasis leading-tight group-hover:text-primary transition-colors text-sm">{request.fullName}</h3>
                           <div className="flex items-center gap-1 text-[9px] font-bold text-text/40 uppercase tracking-tighter">
-                            <Mail size={9} /> {request.email}
+                            <Mail size={9} /> {maskEmail(request.email)}
                           </div>
                         </div>
                       </div>
@@ -275,7 +276,7 @@ const AdminModeratorRequests = () => {
                       {selectedRequest.status}
                     </span>
                     <h2 className="text-4xl font-black text-text-emphasis tracking-tight">{selectedRequest.fullName}</h2>
-                    <p className="text-text/60 font-medium text-lg">{selectedRequest.email}</p>
+                    <p className="text-text/60 font-medium text-lg">{maskEmail(selectedRequest.email)}</p>
                     {selectedRequest.phone && (
                       <div className="flex items-center gap-2 text-text/40 font-bold text-sm mt-1">
                         <Phone size={14} /> {selectedRequest.phone}

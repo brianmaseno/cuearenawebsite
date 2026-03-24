@@ -395,7 +395,7 @@ const OngoingActivities = () => {
                         )}
 
                         {/* Pending Acceptance Message */}
-                        {!isOngoing && !isMatchFinished && (
+                        {!isOngoing && !isMatchFinished && !match.isTournamentMatch && (
                            <div className="absolute inset-0 bg-base3/40 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-xl border border-dashed border-base2">
                               <p className="text-xs font-black uppercase tracking-widest text-text/40 animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-sm border border-base2">
                                  Waiting for players to accept
@@ -408,7 +408,7 @@ const OngoingActivities = () => {
                         <div className="w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border bg-green/10 text-green border-green/20">
                            🏆 MATCH COMPLETED: {match.scorePlayer1} - {match.scorePlayer2}
                         </div>
-                     ) : (match.player1Status === 'accepted' && match.player2Status === 'accepted') ? (
+                     ) : (match.isTournamentMatch || (match.player1Status === 'accepted' && match.player2Status === 'accepted')) ? (
                         match.isTournamentMatch ? (
                            <Link 
                               to={`/moderator/manage-tournament/${match.tournamentId?._id || match.tournamentId}`}

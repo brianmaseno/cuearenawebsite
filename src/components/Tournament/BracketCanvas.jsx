@@ -44,6 +44,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
             className={`group relative p-2.5 rounded-2xl bg-base3/95 backdrop-blur-xl border-2 transition-all duration-500 shadow-sm min-w-[190px] cursor-pointer
                ${isOngoing ? 'border-primary/60 shadow-[0_0_20px_rgba(var(--color-primary-rgb),0.15)] animate-pulse-glow z-30' : 
                  isFinal ? 'border-yellow/40 bg-yellow/5 hover:border-yellow/60' : 
+                 match.matchType === 'third_place_playoff' ? 'border-violet/40 bg-violet/5 hover:border-violet/60' :
                  'border-base2/40 hover:border-primary/40 hover:shadow-lg'}
             `}
          >
@@ -55,6 +56,14 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-base3"></span>
                   </span>
                   LIVE
+               </div>
+            )}
+
+            {match.rankLabel && (
+               <div className={`absolute -top-3 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1.5 z-40 whitespace-nowrap
+                  ${match.matchType === 'third_place_playoff' ? 'bg-violet text-white shadow-violet/30' : 'bg-base2 text-text shadow-base1/30'}
+               `}>
+                  {match.rankLabel}
                </div>
             )}
 
@@ -214,7 +223,9 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                   <div key={`round-${roundNum}`} className="round-column">
                      <div className="round-header">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70 font-sans">
-                           {roundNum === maxRound ? 'Final' : `Stage ${roundNum}`}
+                           {roundNum === maxRound 
+                               ? (tournament.matches.filter(m => m.round === maxRound).length > 1 ? 'Finals & Playoff' : 'Final') 
+                               : `Stage ${roundNum}`}
                         </span>
                      </div>
                      <div className="flex-1 flex flex-col justify-around py-2">
@@ -245,7 +256,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                      <div className="text-center p-6 bg-gradient-to-br from-yellow/10 to-transparent rounded-[32px] border-2 border-yellow/30 shadow-2xl shadow-yellow/5">
                         <Trophy size={32} className="text-yellow mx-auto mb-3 drop-shadow-lg" />
                         <p className="text-[8px] font-black uppercase tracking-[0.3em] text-yellow mb-2 font-sans text-center">Victor</p>
-                        <h3 className="text-base font-black text-text-emphasis truncate max-w-[150px] uppercase tracking-tighter font-sans">{tournament.winner.fullName}</h3>
+                        <h3 className="text-base font-black text-text-emphasis truncate max-w-[150px] uppercase tracking-tighter font-sans">{tournament.winner?.fullName}</h3>
                      </div>
                   </div>
                )}
