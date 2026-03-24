@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
-import { Trophy, Users, Calendar, MapPin, Zap, Info, Loader2, ArrowLeft, Trophy as TrophyIcon, CheckCircle2, Target } from "lucide-react";
+import { Trophy, Users, Calendar, MapPin, Zap, Info, Loader2, ArrowLeft, Trophy as TrophyIcon, CheckCircle2, Target, ArrowRight } from "lucide-react";
 import DashboardLayout from "../../components/DashboardLayout";
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from "../../components/StatusBadge";
@@ -51,7 +51,35 @@ const TournamentDetails = () => {
          const { data } = await api.get(`/tournaments/${id}`);
          setTournament(data);
       } catch (err) {
-         toast.error(err.response?.data?.message || "Failed to join tournament");
+         console.error("Error joining tournament:", err);
+         const message = err.response?.data?.message || "";
+         
+         if (message.toLowerCase().includes('insufficient funds')) {
+            toast.error(
+               (t) => (
+                  <div className="flex flex-col gap-2">
+                     <span className="font-bold">Insufficient Funds</span>
+                     <span className="text-xs opacity-90">You need more funds in your wallet to cover the tournament stake.</span>
+                     <button 
+                        onClick={() => {
+                           toast.dismiss(t.id);
+                           navigate('/wallet');
+                        }}
+                        className="mt-1 bg-white text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
+                     >
+                        Go to Wallet <ArrowRight size={12} />
+                     </button>
+                  </div>
+               ),
+               { 
+                  duration: 6000, 
+                  position: 'top-center', 
+                  style: { border: '1px solid #fee2e2', background: '#fef2f2', color: '#991b1b' } 
+               }
+            );
+         } else {
+            toast.error(message || "Failed to join tournament");
+         }
       }
    };
 

@@ -1,10 +1,17 @@
 import React from 'react';
 
 const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => {
+  const now = new Date();
+  const deadlineEOD = registrationDeadline ? new Date(registrationDeadline) : null;
+  if (deadlineEOD) deadlineEOD.setHours(23, 59, 59, 999);
+  
+  const startEOD = startDate ? new Date(startDate) : null;
+  if (startEOD) startEOD.setHours(23, 59, 59, 999);
+
   const isExpired = status === 'expired' || 
-    (['open_for_players', 'full'].includes(status) && (
-      (registrationDeadline && new Date(registrationDeadline) < new Date()) || 
-      (startDate && new Date(startDate) < new Date())
+    (['draft', 'open_for_players', 'full'].includes(status) && (
+      (deadlineEOD && deadlineEOD < now) || 
+      (startEOD && startEOD < now)
     ));
   
   const getStyles = () => {

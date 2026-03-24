@@ -40,7 +40,7 @@ const CreateTournament = () => {
     
     // Date validation
     if (new Date(formData.startDate) < new Date(formData.registrationDeadline)) {
-      return toast.error('Start date cannot be before the registration deadline');
+      return toast.error('Start date cannot be before the registration deadline. They can be the same day.');
     }
 
     setLoading(true);

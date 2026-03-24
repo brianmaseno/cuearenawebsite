@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2, Award, Wallet as WalletIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
 
 const PlayerDashboard = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState({ tournaments: [], matches: [], invitations: [], notifications: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
@@ -69,7 +70,7 @@ const PlayerDashboard = () => {
               <button 
                 onClick={() => {
                   toast.dismiss(t.id);
-                  window.location.href = '/wallet';
+                  navigate('/wallet');
                 }}
                 className="mt-1 bg-white text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
               >
