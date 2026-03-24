@@ -137,7 +137,22 @@ const History = () => {
                         <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
                       </div>
-                      <div>
+                      <div className="flex items-center gap-2">
+                        {match.isTournamentMatch ? (
+                          match.tournamentId?.stakePerPlayer > 0 && (
+                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                              <AwardIcon size={10} className="text-emerald-500" />
+                              PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
+                            </span>
+                          )
+                        ) : (
+                          match.stakeAmount > 0 && (
+                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                              <AwardIcon size={10} className="text-emerald-500" />
+                              PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
+                            </span>
+                          )
+                        )}
                         {isCancelled ? (
                           <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
                         ) : (

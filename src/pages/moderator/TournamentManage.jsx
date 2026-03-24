@@ -497,6 +497,12 @@ const TournamentManage = () => {
                          <div className="px-6 flex flex-col items-center gap-2">
                             <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
                                {tournament.name} • Match
+                               {tournament.stakePerPlayer > 0 && (
+                                  <div className="mt-2 text-[10px] text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 inline-flex items-center gap-1 normal-case tracking-normal">
+                                     <Award size={12} className="text-emerald-500" />
+                                     PRIZE: KES {((tournament.stakePerPlayer * (tournament.confirmedPlayers?.length || tournament.maxPlayers)) * 0.85).toLocaleString()}
+                                  </div>
+                               )}
                             </div>
                             <div className="text-base font-black italic text-text/20">VS</div>
                          </div>

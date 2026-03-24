@@ -158,35 +158,36 @@ const PlayerDashboard = () => {
 
                 return (
                 <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                     <div className="flex items-center gap-3">
-                        {match.type === 'tournament' ? (
-                           <div className="w-7 h-7 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
-                              <Trophy size={14} />
-                           </div>
-                        ) : (
-                           <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        )}
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
-                           {match.type === 'tournament' ? match.tournamentId?.name : 'Exhibition'}
-                        </h3>
-                     </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <StatusBadge status={match.status} />
-                       {match.stakeAmount > 0 && (
-                        <div className="flex flex-wrap items-center justify-end gap-2 mt-1">
-                          <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                             STAKE: KES {match.stakeAmount.toLocaleString()}
-                          </span>
-                          <span className="text-[9px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-full border border-blue/10 flex items-center gap-1">
-                             <Award size={10} />
-                             PRIZE: KES {match.type === 'tournament' 
-                               ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
-                               : (match.stakeAmount * 2 * 0.85).toLocaleString()
-                             }
-                          </span>
+                  <div className="bg-base2/10 p-3 flex items-center gap-4 border-b border-base2 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-2 shrink-0">
+                      {match.type === 'tournament' ? (
+                        <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                          <Trophy size={12} />
                         </div>
+                      ) : (
+                        <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm" />
                       )}
+                      <h3 className="text-[11px] font-black uppercase tracking-tighter text-text-emphasis whitespace-nowrap">
+                        {match.type === 'tournament' ? match.tournamentId?.name : 'Exhibition'}
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {match.stakeAmount > 0 && (
+                        <>
+                          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap">
+                            STAKE: KES {match.stakeAmount.toLocaleString()}
+                          </span>
+                          <span className="text-[8px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-md border border-blue/10 flex items-center gap-1 whitespace-nowrap">
+                            <Award size={10} />
+                            PRIZE: KES {match.type === 'tournament'
+                              ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
+                              : (match.stakeAmount * 2 * 0.85).toLocaleString()
+                            }
+                          </span>
+                        </>
+                      )}
+                      <StatusBadge status={match.status} />
                     </div>
                   </div>
 
@@ -329,11 +330,18 @@ const PlayerDashboard = () => {
 
                            {/* Match Status Header */}
                            {match.status === 'completed' ? (
-                              <div className={`w-full py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 shadow-sm border ${
-                                 (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
-                              }`}>
-                                 {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}
-                              </div>
+                               <div className={`w-full py-2.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-1 shadow-sm border ${
+                                  (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
+                               }`}>
+                                  <span>{(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}</span>
+                                  <span className="text-[12px]">
+                                     {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? (
+                                        `+ KES ${((match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
+                                     ) : (
+                                        `- KES ${(match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}`
+                                     )}
+                                  </span>
+                               </div>
                            ) : (match.player1Accepted && match.player2Accepted) ? (
                               match.type === 'tournament' ? (
                                  <Link 

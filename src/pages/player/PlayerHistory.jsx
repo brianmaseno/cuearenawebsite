@@ -143,24 +143,39 @@ const PlayerHistory = () => {
 
                 return (
                   <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                      <div className="flex items-center gap-3">
+                    <div className="bg-base2/10 p-3 flex items-center gap-4 border-b border-base2 overflow-x-auto no-scrollbar">
+                      <div className="flex items-center gap-2 shrink-0">
                         {match.isTournamentMatch ? (
-                           <div className="w-7 h-7 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
-                              <TrophyIcon size={14} />
+                           <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
+                              <TrophyIcon size={12} />
                            </div>
                         ) : (
-                           <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
+                           <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm shrink-0" />
                         )}
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">
+                        <h3 className="text-[11px] font-black uppercase tracking-tighter text-text-emphasis whitespace-nowrap">
                            {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
                         </h3>
                       </div>
-                      <div>
+                      
+                      <div className="flex items-center gap-2 shrink-0">
+                        {(match.stakeAmount > 0 || (match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0)) && (
+                          <>
+                            <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap">
+                              STAKE: KES {(match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}
+                            </span>
+                            <span className="text-[8px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-md border border-blue/10 flex items-center gap-1 whitespace-nowrap">
+                              <AwardIcon size={10} />
+                              PRIZE: KES {match.isTournamentMatch 
+                                ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
+                                : (match.stakeAmount * 2 * 0.85).toLocaleString()
+                              }
+                            </span>
+                          </>
+                        )}
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest whitespace-nowrap">Completed</span>
                         )}
                       </div>
                     </div>
@@ -240,6 +255,16 @@ const PlayerHistory = () => {
                             match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
                           ) : (winnerIdObj ? winLossText : 'No Winner Announced')}
                         </div>
+                        
+                        {!isCancelled && winnerIdObj && (
+                          <div className={`text-[13px] font-black mt-1 ${myWon ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {myWon ? (
+                              `+ KES ${((match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
+                            ) : (
+                              `- KES ${(match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}`
+                            )}
+                          </div>
+                        )}
                         <div className="flex items-center gap-4 text-text/40 font-bold text-[10px]">
                           <div className="flex items-center gap-1.5 leading-none">
                             <CalendarIcon size={12} />
