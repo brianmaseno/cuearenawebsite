@@ -29,6 +29,7 @@ const PublicTournaments = () => {
 
   const filtered = tournaments.filter(t => 
     t.name.toLowerCase().includes(search.toLowerCase()) || 
+    t.location?.toLowerCase().includes(search.toLowerCase()) ||
     t.venue?.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -52,7 +53,7 @@ const PublicTournaments = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-base3 border border-base2 rounded-xl pl-10 pr-4 py-3 text-text-emphasis focus:ring-2 focus:ring-primary shadow-sm outline-none"
-            placeholder="Search by name or venue..."
+            placeholder="Search by name or region..."
           />
         </div>
       </div>
