@@ -18,11 +18,9 @@ export const SocketProvider = ({ children }) => {
 
       // Join user-specific room for private notifications
       newSocket.emit('join_room', `user_${user._id}`);
-      console.log(`Socket connected and joined user_${user._id}`);
 
       return () => {
         newSocket.close();
-        console.log('Socket disconnected');
       };
     } else {
       if (socket) {

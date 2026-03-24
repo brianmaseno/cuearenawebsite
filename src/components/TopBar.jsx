@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
-import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star, Wallet as WalletIcon, DollarSign, ShieldCheck, ArrowDownLeft } from 'lucide-react';
+import { Bell, Search, User, Clock, CheckCircle, Info, Trophy, Target, BellOff, Star, Wallet as WalletIcon, DollarSign, ShieldCheck, ArrowDownLeft, Users, XCircle } from 'lucide-react';
 import api from '../api/axios';
 
 const TopBar = ({ title }) => {
@@ -55,6 +55,8 @@ const TopBar = ({ title }) => {
       case 'result_recorded': return <Info className="text-blue" size={14} />;
       case 'tournament_started': return <Trophy className="text-primary" size={14} />;
       case 'tournament_completed': return <CheckCircle className="text-green" size={14} />;
+      case 'tournament_cancelled': return <XCircle className="text-rose-500" size={14} />;
+      case 'tournament_full': return <Users className="text-amber-500" size={14} />;
       case 'wallet_deposit': return <WalletIcon className="text-emerald-500" size={14} />;
       case 'wallet_withdrawal': return <WalletIcon className="text-rose-500" size={14} />;
       case 'stake_locked': return <Clock className="text-amber-500" size={14} />;
