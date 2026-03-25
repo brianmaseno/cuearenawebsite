@@ -12,13 +12,12 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
          
          const containerWidth = containerRef.current.offsetWidth;
          const innerWidth = innerRef.current.scrollWidth;
-         
-         if (innerWidth > containerWidth) {
-            const newScale = containerWidth / (innerWidth + 40); // 40px buffer
-            setScale(Math.max(0.4, newScale)); 
-         } else {
-            setScale(1);
-         }
+                  if (innerWidth > containerWidth) {
+             const newScale = containerWidth / (innerWidth + 20); 
+             setScale(Math.max(0.7, newScale)); // Don't scale below 70% on mobile
+          } else {
+             setScale(1);
+          }
       };
 
       calculateScale();
@@ -203,17 +202,20 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                   opacity: 0.15;
                }
 
-               .bracket-canvas-fixed {
-                  background-image: radial-gradient(var(--color-base2) 0.5px, transparent 0.5px);
-                  background-size: 16px 16px;
-                  border-radius: 1.5rem;
-                  border: 1px border-base2/20;
-                  min-height: 400px;
-                  display: flex;
-                  justify-content: center;
-                  overflow: hidden;
-                  background-color: rgba(var(--color-base3-rgb), 0.2);
-               }
+                .bracket-canvas-fixed {
+                   background-image: radial-gradient(var(--color-base2) 0.5px, transparent 0.5px);
+                   background-size: 16px 16px;
+                   border-radius: 1.5rem;
+                   border: 1px border-base2/20;
+                   min-height: 400px;
+                   display: flex;
+                   justify-content: flex-start; /* Start from left on scroll */
+                   overflow-x: auto;
+                   -webkit-overflow-scrolling: touch;
+                   background-color: rgba(var(--color-base3-rgb), 0.2);
+                }
+                .bracket-canvas-fixed::-webkit-scrollbar { display: none; }
+                .bracket-canvas-fixed { -ms-overflow-style: none; scrollbar-width: none; }
             `}
          </style>
 

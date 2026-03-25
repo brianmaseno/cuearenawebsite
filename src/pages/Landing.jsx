@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, User, Mail, Phone } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, User, Mail, Phone, Menu, X, LogIn } from 'lucide-react';
 import { animate } from 'framer-motion';
 import api from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
@@ -36,6 +36,7 @@ const Landing = () => {
   const [loading, setLoading] = useState(true);
   const [footerForm, setFooterForm] = useState({ fullName: '', email: '', phone: '' });
   const [footerSubmitting, setFooterSubmitting] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleFooterSubmit = async (e) => {
     e.preventDefault();
@@ -98,16 +99,63 @@ const Landing = () => {
       <nav className="border-b border-base2/50 bg-base3/70 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group relative">
-            <span className="text-2xl brand-premium font-black tracking-tight">Cue-Arena</span>
+            <span className="text-xl md:text-2xl brand-premium font-black tracking-tight">Cue-Arena</span>
           </Link>
+          
+          {/* Mobile Menu Toggle */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 text-text/60 hover:text-primary transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+
           <div className="hidden md:flex items-center gap-10">
             <Link to="/login" className="text-text hover:text-primary font-bold transition-all">Login</Link>
             <Link to="/register" className="btn-primary shadow-lg shadow-primary/20 hover:shadow-primary/40 px-6 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 active:translate-y-0">
               Get Started
             </Link>
           </div>
+
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay - Final Polished Style */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-background/5 backdrop-blur-[1px] z-[100] md:hidden"
+            />
+            <motion.div 
+              initial={{ x: 20, y: -20, opacity: 0 }}
+              animate={{ x: 0, y: 0, opacity: 1 }}
+              exit={{ x: 20, y: -20, opacity: 0 }}
+              className="fixed top-0 right-0 w-[200px] bg-transparent backdrop-blur-md border-l border-b border-white/10 z-[110] md:hidden p-5 rounded-bl-[32px] flex flex-col items-center pt-8"
+            >
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="absolute top-4 right-4 p-2 text-text/40 hover:text-text transition-colors"
+              >
+                <X size={16} />
+              </button>
+
+              <div className="w-full space-y-2 mt-2">
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-[#FFF9EA] text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-[#FFF2D1] transition-all active:scale-95 shadow-md">
+                  Login <LogIn size={16} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-[#FFF9EA] text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-[#FFF2D1] transition-all active:scale-95 shadow-md">
+                  Get Started <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <header className="relative min-h-[90vh] flex items-center pt-20 pb-16 overflow-hidden">
         <div className="absolute top-1/2 left-0 -translate-y-1/2 translate-x-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
@@ -120,8 +168,8 @@ const Landing = () => {
               <span className="uppercase tracking-widest text-[10px]">Elite Pool Tournament Management</span>
             </motion.div>
             
-            <motion.h1 variants={itemVariants} className="text-6xl lg:text-8xl font-black text-text-emphasis mb-8 tracking-tighter leading-[0.9]">
-              The Tournament for <br />
+            <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl lg:text-8xl font-black text-text-emphasis mb-6 sm:mb-8 tracking-tighter leading-[1] sm:leading-[0.9]">
+              The Tournament for <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-primary to-special-red animate-gradient">True Champions.</span>
             </motion.h1>
 
@@ -135,25 +183,25 @@ const Landing = () => {
               </Link>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="mt-24 grid grid-cols-2 md:grid-cols-3 gap-8 py-10 px-8 rounded-3xl bg-base3/30 border border-base2/40 backdrop-blur-2xl shadow-2xl relative overflow-hidden group/stats">
+            <motion.div variants={itemVariants} className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 px-6 sm:px-8 rounded-3xl bg-base3/30 border border-base2/40 backdrop-blur-2xl shadow-2xl relative overflow-hidden group/stats">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover/stats:opacity-100 transition-opacity duration-1000"></div>
               <div className="relative text-center">
-                <div className="text-4xl font-black text-primary mb-1">
+                <div className="text-3xl sm:text-4xl font-black text-primary mb-1">
                   <AnimatedCounter value={stats.totalTournaments || 12} />
                 </div>
-                <div className="text-xs font-bold text-text/50 uppercase tracking-widest">Active Tournaments</div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Active Tournaments</div>
               </div>
-              <div className="relative text-center border-x border-base2/40 md:px-4">
-                <div className="text-4xl font-black text-text-emphasis mb-1">
+              <div className="relative text-center sm:border-x border-base2/40 sm:px-4">
+                <div className="text-3xl sm:text-4xl font-black text-text-emphasis mb-1">
                   <AnimatedCounter value={stats.totalMatches || 450} />
                 </div>
-                <div className="text-xs font-bold text-text/50 uppercase tracking-widest">Matches Played</div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Matches Played</div>
               </div>
-              <div className="relative text-center col-span-2 md:col-span-1">
-                <div className="text-4xl font-black text-special-red mb-1">
+              <div className="relative text-center sm:col-span-2 lg:col-span-1 border-t sm:border-t-0 pt-6 sm:pt-0 border-base2/40">
+                <div className="text-3xl sm:text-4xl font-black text-special-red mb-1">
                   <AnimatedCounter value={stats.totalPlayers || '1.2k'} />
                 </div>
-                <div className="text-xs font-bold text-text/50 uppercase tracking-widest">Players Joined</div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Players Joined</div>
               </div>
             </motion.div>
           </motion.div>

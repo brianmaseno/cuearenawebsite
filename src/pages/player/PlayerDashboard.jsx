@@ -120,7 +120,7 @@ const PlayerDashboard = () => {
         <QuickStatsBar />
 
         {/* Tabs */}
-        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
+        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-full sm:w-fit overflow-x-auto hide-scrollbar">
           <button
             onClick={() => setActiveTab('matches')}
             className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
@@ -151,7 +151,7 @@ const PlayerDashboard = () => {
         </div>
 
         {activeTab === 'matches' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid-dashboard">
             {data.matches.length === 0 && data.tournamentMatches.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic rounded-2xl border-dashed">
                 No active matches found.
@@ -431,7 +431,7 @@ const PlayerDashboard = () => {
             )}
           </div>
         ) : activeTab === 'battles' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid-dashboard">
             {data.battles.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic rounded-2xl border-dashed">
                 No active multiplayer battles found.
@@ -555,7 +555,7 @@ const PlayerDashboard = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid-dashboard">
             {data.tournaments.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic rounded-2xl border-dashed">
                 No active tournaments found.

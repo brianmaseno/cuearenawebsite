@@ -167,11 +167,11 @@ const WalletPage = () => {
         {/* Main Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
           {/* Physical Card Style */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-4">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative aspect-[1.586/1] w-full max-w-[360px] rounded-[2rem] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#312e81] p-6 text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)] overflow-hidden hover:shadow-indigo-500/10 transition-all border border-white/5 group"
+              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2rem] bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#312e81] p-6 text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)] overflow-hidden hover:shadow-indigo-500/10 transition-all border border-white/5 group"
             >
               {/* Glossy Overlay */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-30 group-hover:opacity-50 transition-opacity"></div>
@@ -179,31 +179,36 @@ const WalletPage = () => {
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
                   <div className="space-y-4">
-                    <div className="w-12 h-8 bg-gradient-to-br from-[#fde68a] via-[#fbbf24] to-[#b45309] rounded shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center relative overflow-hidden">
+                    <div className="w-10 h-7 md:w-12 md:h-8 bg-gradient-to-br from-[#fde68a] via-[#fbbf24] to-[#b45309] rounded shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_25%,rgba(0,0,0,0.1)_25%,rgba(0,0,0,0.1)_50%,transparent_50%,transparent_75%,rgba(0,0,0,0.1)_75%)] opacity-30"></div>
-                      <div className="w-8 h-5 border border-black/5 rounded-sm flex flex-col justify-between p-0.5">
-                        <div className="h-px bg-black/10 w-full"></div>
-                        <div className="h-px bg-black/10 w-full"></div>
-                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
+                    <p className="text-[10px] font-black text-white/50 tracking-[0.2em] uppercase leading-none">CUE WALLET</p>
                   </div>
                 </div>
 
                 <div className="space-y-0.5">
+                  <p className="text-[10px] md:text-xs font-black text-white/40 uppercase tracking-widest leading-none mb-1">Current Balance</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-6xl font-black tracking-tight tabular-nums drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80 pr-1">
+                    <span className="text-4xl md:text-6xl font-black tracking-tight tabular-nums drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80 pr-1">
                       {wallet?.balance?.toLocaleString()}
                     </span>
+                    <span className="text-sm md:text-xl font-bold text-white/40 uppercase">KES</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-end pt-2">
-                  <div className="flex items-center gap-2">
-                    <p className="text-[9px] font-black uppercase text-white/40 tracking-widest">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-[8px] md:text-[9px] font-black uppercase text-white/40 tracking-widest leading-none">Card Holder</p>
+                    <p className="text-xs md:text-sm font-bold text-white tracking-widest uppercase">
                       {JSON.parse(localStorage.getItem('userInfo'))?.fullName || 'PREMIUM PLAYER'}
                     </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center backdrop-blur-sm">
+                      <ShieldCheck size={16} className="text-white/60" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -211,6 +216,86 @@ const WalletPage = () => {
               <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/5 rounded-full blur-[60px]"></div>
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] pointer-events-none"></div>
             </motion.div>
+
+            {/* Action Panel - Moved here to open below balance card */}
+            <AnimatePresence mode="wait">
+              {showDeposit ? (
+                <motion.div 
+                  key="deposit"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold">Deposit Funds</h3>
+                    <button onClick={() => setShowDeposit(false)} className="p-2 hover:bg-white/10 rounded-full">
+                      <AlertCircle size={18} className="rotate-45" />
+                    </button>
+                  </div>
+                  <form onSubmit={handleDeposit} className="space-y-4">
+                    <div>
+                      <label className="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-2">Amount (KES)</label>
+                      <input 
+                        type="number" 
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="Enter amount"
+                        className="w-full bg-slate-800 border-none rounded-2xl p-4 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500"
+                        required
+                      />
+                    </div>
+                    <div className="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-indigo-200 text-xs">
+                      <p className="flex items-center gap-2 mb-1"><CheckCircle2 size={12} /> Instant processing</p>
+                      <p className="flex items-center gap-2"><CheckCircle2 size={12} /> Zero transaction fees</p>
+                    </div>
+                    <button 
+                      disabled={submitting}
+                      className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2"
+                    >
+                      {submitting ? 'Processing...' : <>Confirm Deposit <ArrowRight size={18} /></>}
+                    </button>
+                  </form>
+                </motion.div>
+              ) : showWithdraw ? (
+                <motion.div 
+                  key="withdraw"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-bold text-slate-900">Withdraw Funds</h3>
+                    <button onClick={() => setShowWithdraw(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400">
+                      <AlertCircle size={18} className="rotate-45" />
+                    </button>
+                  </div>
+                  <form onSubmit={handleWithdraw} className="space-y-4">
+                    <div>
+                      <label className="text-xs text-slate-500 font-medium uppercase tracking-wider block mb-2">Amount (KES)</label>
+                      <input 
+                        type="number" 
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        placeholder="Min. KES 100"
+                        className="w-full bg-slate-50 border-none rounded-2xl p-4 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500"
+                        required
+                      />
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-2xl text-slate-500 text-xs font-medium">
+                      Available: KES {wallet?.balance?.toLocaleString()}
+                    </div>
+                    <button 
+                      disabled={submitting || Number(amount) > wallet?.balance}
+                      className="w-full py-4 bg-slate-900 hover:bg-black disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-2"
+                    >
+                      {submitting ? 'Processing...' : <>Confirm Withdrawal <ArrowRight size={18} /></>}
+                    </button>
+                  </form>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </div>
 
           {/* Individual Stats Blocks */}
@@ -267,15 +352,16 @@ const WalletPage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Transaction History */}
-          <div className={`${showDeposit || showWithdraw ? 'lg:col-span-2' : 'lg:col-span-3'} space-y-4`}>
+        <div className="grid grid-cols-1 gap-8">
+          {/* Transaction History - Simplified grid spanning full width */}
+          <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
               <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
                 <History size={20} className="text-indigo-600" /> Recent Transactions
               </h2>
               <button className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View All</button>
             </div>
+            {/* ... Rest of transaction history ... */}
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="divide-y divide-slate-50">
@@ -289,45 +375,46 @@ const WalletPage = () => {
                 )}
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <div key={tx._id} className="p-4 md:px-6 hover:bg-slate-50 transition-colors flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 md:items-center">
-                      <div className="col-span-5 flex items-center gap-4">
-                        <div className={`p-2.5 rounded-xl shrink-0 ${
+                    <div key={tx._id} className="p-4 md:px-6 hover:bg-slate-50 transition-colors flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 md:items-center relative">
+                      <div className="md:col-span-5 flex items-center gap-3 overflow-hidden">
+                        <div className={`p-2 rounded-xl shrink-0 ${
                           tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee' ? 'bg-emerald-50' : 
                           tx.type === 'withdrawal' ? 'bg-rose-50' : 'bg-slate-50'
                         }`}>
                           {getTransactionIcon(tx.type)}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-bold text-slate-800 capitalize truncate leading-tight">{tx.type.replace('_', ' ')}</p>
+                          <p className="font-bold text-slate-800 capitalize truncate leading-none text-sm md:text-base mb-1">{tx.type.replace('_', ' ')}</p>
                           <p className="text-[10px] text-slate-400 font-medium truncate">
                             {new Date(tx.createdAt).toLocaleDateString()} • {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            {tx.description && <span className="hidden lg:inline"> • {tx.description}</span>}
                           </p>
                         </div>
                       </div>
 
-                      <div className="col-span-2 md:text-center">
-                        <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200">
+                      <div className="md:col-span-2 flex md:justify-center items-center gap-2">
+                        <span className="md:hidden text-[9px] font-black text-slate-400 uppercase tracking-widest">Ref:</span>
+                        <span className="text-[10px] md:text-[11px] font-mono font-bold bg-slate-50 text-slate-600 px-2 py-0.5 rounded border border-slate-100 italic">
                           {tx.txRef || 'LEGACY'}
                         </span>
                       </div>
 
-                      <div className="col-span-2 md:text-right">
-                        <p className={`font-black tracking-tight ${
+                      <div className="md:col-span-2 flex md:justify-end items-center gap-2">
+                        <span className="md:hidden text-[9px] font-black text-slate-400 uppercase tracking-widest">Amount</span>
+                        <p className={`font-black tracking-tight text-sm md:text-base ${
                           ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
                         }`}>
                           {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
                         </p>
                       </div>
 
-                      <div className="col-span-3 text-right flex md:block items-center justify-between">
-                        <span className="md:hidden text-[10px] font-bold text-slate-400 uppercase tracking-wider">Balance</span>
-                        <div className="flex flex-col items-end">
-                          <p className="font-black text-slate-600 tabular-nums tracking-tight">Ksh {tx.postBalance?.toLocaleString() || '-'}</p>
-                          <span className={`text-[9px] px-2 py-0.5 rounded-full border ${getStatusColor(tx.status)} font-black uppercase mt-0.5`}>
-                            {tx.status}
-                          </span>
+                      <div className="md:col-span-3 flex md:flex-col items-center md:items-end justify-between gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="md:hidden text-[9px] font-black text-slate-400 uppercase tracking-widest">Bal</span>
+                          <p className="text-xs md:text-sm font-black text-slate-600 tabular-nums tracking-tight">Ksh {tx.postBalance?.toLocaleString() || '-'}</p>
                         </div>
+                        <span className={`text-[8px] md:text-[9px] px-2 py-0.5 rounded-full border ${getStatusColor(tx.status)} font-black uppercase`}>
+                          {tx.status}
+                        </span>
                       </div>
                     </div>
                   ))
@@ -340,95 +427,11 @@ const WalletPage = () => {
                     <p className="text-slate-400 text-sm">Your activity will appear here.</p>
                   </div>
                 )}
-              </div>
             </div>
           </div>
-
-          {/* Action Panel */}
-          {(showDeposit || showWithdraw) && (
-            <div className="lg:col-span-1 space-y-6">
-              <AnimatePresence mode="wait">
-              {showDeposit ? (
-                <motion.div 
-                  key="deposit"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="bg-slate-900 p-6 rounded-[2rem] text-white shadow-xl"
-                >
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold">Deposit Funds</h3>
-                    <button onClick={() => setShowDeposit(false)} className="p-2 hover:bg-white/10 rounded-full">
-                      <AlertCircle size={18} className="rotate-45" />
-                    </button>
-                  </div>
-                  <form onSubmit={handleDeposit} className="space-y-4">
-                    <div>
-                      <label className="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-2">Amount (KES)</label>
-                      <input 
-                        type="number" 
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="Enter amount"
-                        className="w-full bg-slate-800 border-none rounded-2xl p-4 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-indigo-500"
-                        required
-                      />
-                    </div>
-                    <div className="p-4 bg-indigo-500/10 rounded-2xl border border-indigo-500/20 text-indigo-200 text-xs">
-                      <p className="flex items-center gap-2 mb-1"><CheckCircle2 size={12} /> Instant processing</p>
-                      <p className="flex items-center gap-2"><CheckCircle2 size={12} /> Zero transaction fees</p>
-                    </div>
-                    <button 
-                      disabled={submitting}
-                      className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2"
-                    >
-                      {submitting ? 'Processing...' : <>Confirm Deposit <ArrowRight size={18} /></>}
-                    </button>
-                  </form>
-                </motion.div>
-              ) : showWithdraw ? (
-                <motion.div 
-                  key="withdraw"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-xl"
-                >
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-bold text-slate-900">Withdraw Funds</h3>
-                    <button onClick={() => setShowWithdraw(false)} className="p-2 hover:bg-slate-100 rounded-full text-slate-400">
-                      <AlertCircle size={18} className="rotate-45" />
-                    </button>
-                  </div>
-                  <form onSubmit={handleWithdraw} className="space-y-4">
-                    <div>
-                      <label className="text-xs text-slate-500 font-medium uppercase tracking-wider block mb-2">Amount (KES)</label>
-                      <input 
-                        type="number" 
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="Min. KES 100"
-                        className="w-full bg-slate-50 border-none rounded-2xl p-4 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500"
-                        required
-                      />
-                    </div>
-                    <div className="p-4 bg-slate-50 rounded-2xl text-slate-500 text-xs font-medium">
-                      Available: KES {wallet?.balance?.toLocaleString()}
-                    </div>
-                    <button 
-                      disabled={submitting || Number(amount) > wallet?.balance}
-                      className="w-full py-4 bg-slate-900 hover:bg-black disabled:opacity-50 text-white font-bold rounded-2xl transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-2"
-                    >
-                      {submitting ? 'Processing...' : <>Confirm Withdrawal <ArrowRight size={18} /></>}
-                    </button>
-                  </form>
-                </motion.div>
-              ) : null}
-              </AnimatePresence>
-            </div>
-          )}
         </div>
       </div>
+    </div>
     </DashboardLayout>
   );
 };

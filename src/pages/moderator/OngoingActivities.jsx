@@ -20,6 +20,21 @@ const OngoingActivities = () => {
   const [selectedActivity, setSelectedActivity] = useState(null); // { id, type }
   const [selectedTableId, setSelectedTableId] = useState('');
 
+  const fetchOngoing = async () => {
+    try {
+      const { data } = await api.get('/moderator/ongoing');
+      setData({
+        tournaments: data.tournaments || [],
+        matches: data.matches || [],
+        battles: data.battles || []
+      });
+    } catch (err) {
+      toast.error('Failed to load ongoing activities');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchTables = async () => {
     try {
       const { data } = await api.get('/users/me/tables');
@@ -197,10 +212,10 @@ const OngoingActivities = () => {
 
   return (
     <DashboardLayout title="Active Activities">
-      <div className="space-y-6 pb-20">
+      <div className="space-y-4 md:space-y-6 pb-20">
         <QuickStatsBar />
         {/* Tabs */}
-        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
+        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-full sm:w-fit overflow-x-auto hide-scrollbar">
           <button
             onClick={() => setActiveTab('matches')}
             className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
@@ -231,7 +246,7 @@ const OngoingActivities = () => {
         </div>
 
         {activeTab === 'matches' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid-dashboard">
             {data.matches.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
                 No active matches found.
@@ -533,7 +548,7 @@ const OngoingActivities = () => {
             )}
           </div>
         ) : activeTab === 'tournaments' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid-dashboard">
             {data.tournaments.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
                 No active tournaments found.
@@ -582,7 +597,7 @@ const OngoingActivities = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid-dashboard">
             {data.battles.length === 0 ? (
                 <div className="col-span-full card-premium p-12 text-center text-text italic">
                   No active multiplayer battles found.

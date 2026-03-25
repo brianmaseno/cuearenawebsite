@@ -84,23 +84,86 @@ const Sidebar = () => {
   const links = getLinks();
 
   return (
-    <aside className={`bg-base3 border-r border-base2 flex flex-col h-screen sticky top-0 transition-all duration-300 ${
-      isCollapsed ? 'w-20' : 'w-64'
-    }`}>
-      <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
-        <Link to={dashboardPath} className="flex items-center gap-3">
-          {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter">Cue-Arena</span>}
-        </Link>
-        <button 
-          onClick={toggleSidebar}
-          className={`hover:text-primary transition-all p-2 rounded-xl bg-base2 text-text/40 hover:bg-primary/5 ${isCollapsed ? 'w-10 h-10 flex items-center justify-center' : ''}`}
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        </button>
-      </div>
+    <>
+      {/* Desktop Sidebar */}
+      <aside className={`hidden md:flex bg-base3 border-r border-base2 flex-col h-screen sticky top-0 transition-all duration-300 ${
+        isCollapsed ? 'w-20' : 'w-64'
+      }`}>
+        <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
+          <Link to={dashboardPath} className="flex items-center gap-3" onClick={() => navigate(dashboardPath)}>
+            {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter">Cue-Arena</span>}
+          </Link>
+          <button 
+            onClick={toggleSidebar}
+            className={`hover:text-primary transition-all p-2 rounded-xl bg-base2 text-text/40 hover:bg-primary/5 ${isCollapsed ? 'w-10 h-10 flex items-center justify-center' : ''}`}
+            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          >
+            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+        </div>
 
-      <nav className="flex-1 px-4 space-y-2 mt-4 overflow-y-auto thin-scrollbar">
+        <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto thin-scrollbar">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all group relative ${
+                  isActive 
+                    ? 'bg-primary/10 text-primary shadow-sm' 
+                    : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
+                } ${isCollapsed ? 'justify-center px-0' : ''}`}
+                title={isCollapsed ? link.label : ''}
+              >
+                <Icon size={20} className="shrink-0" />
+                {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
+                {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
+                  <span className="bg-red text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
+                    {modRequestCount}
+                  </span>
+                )}
+                {isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-red rounded-full border border-base3 animate-pulse" />
+                )}
+                {isCollapsed && (
+                  <div className="absolute left-full ml-2 px-3 py-2 bg-base3 border border-base2 rounded-lg text-xs font-bold text-text-emphasis opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
+                    {link.label}
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-base2 space-y-1">
+          <Link
+            to="/profile"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${
+              isCollapsed ? 'justify-center px-0' : ''
+            }`}
+            title={isCollapsed ? 'Profile Settings' : ''}
+          >
+            <Settings size={20} className="shrink-0" />
+            {!isCollapsed && <span className="truncate">Settings</span>}
+          </Link>
+          
+          <button
+            onClick={handleLogout}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red hover:bg-red/5 transition-all group ${
+              isCollapsed ? 'justify-center px-0' : ''
+            }`}
+            title={isCollapsed ? 'Sign Out' : ''}
+          >
+            <LogOut size={20} className="shrink-0" />
+            {!isCollapsed && <span className="truncate">Sign Out</span>}
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-base3/90 backdrop-blur-xl border border-base2/50 rounded-2xl shadow-2xl z-[100] flex justify-around items-center px-2 safe-bottom">
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;
@@ -108,67 +171,49 @@ const Sidebar = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all group relative ${
-                isActive 
-                  ? 'bg-primary/10 text-primary shadow-sm' 
-                  : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
-              } ${isCollapsed ? 'justify-center px-0' : ''}`}
-              title={isCollapsed ? link.label : ''}
+              className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${
+                isActive ? 'text-primary' : 'text-text/40'
+              }`}
             >
-              <Icon size={20} className="shrink-0" />
-              {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
-              {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
-                <span className="bg-red text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
-                  {modRequestCount}
-                </span>
-              )}
-              {isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
-                <div className="absolute top-2 right-2 w-2 h-2 bg-red rounded-full border border-base3 animate-pulse" />
-              )}
-              {isCollapsed && (
-                <div className="absolute left-full ml-2 px-3 py-2 bg-base3 border border-base2 rounded-lg text-xs font-bold text-text-emphasis opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
-                  {link.label}
-                </div>
-              )}
+              <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-primary/10' : 'group-hover:bg-base2'}`}>
+                <Icon size={20} />
+              </div>
+              <span className={`text-[9px] font-black uppercase tracking-tighter ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                {link.label.split(' ')[0]}
+              </span>
+              {isActive && <div className="absolute -top-1 w-1 h-1 bg-primary rounded-full" />}
             </Link>
           );
         })}
-      </nav>
-
-      <div className="p-4 border-t border-base2 space-y-2">
+        {/* Mobile Profile Link */}
         <Link
           to="/profile"
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-text hover:bg-base2/50 transition-all group ${
-            isCollapsed ? 'justify-center px-0' : ''
+          className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${
+            location.pathname === '/profile' ? 'text-primary' : 'text-text/40'
           }`}
-          title={isCollapsed ? 'Profile Settings' : ''}
         >
-          <Settings size={20} className="shrink-0" />
-          {!isCollapsed && <span className="truncate">Settings</span>}
-          {isCollapsed && (
-            <div className="absolute left-full ml-2 px-3 py-2 bg-base3 border border-base2 rounded-lg text-xs font-bold text-text-emphasis opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
-              Settings
-            </div>
-          )}
+          <div className={`p-2 rounded-xl transition-all ${location.pathname === '/profile' ? 'bg-primary/10' : 'group-hover:bg-base2'}`}>
+            <User size={20} />
+          </div>
+          <span className={`text-[9px] font-black uppercase tracking-tighter ${location.pathname === '/profile' ? 'opacity-100' : 'opacity-0'}`}>
+            Me
+          </span>
         </Link>
-        
+
+        {/* Mobile Logout Action */}
         <button
           onClick={handleLogout}
-          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red hover:bg-red/5 transition-all group ${
-            isCollapsed ? 'justify-center px-0' : ''
-          }`}
-          title={isCollapsed ? 'Sign Out' : ''}
+          className="flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all text-red/60 hover:text-red"
         >
-          <LogOut size={20} className="shrink-0" />
-          {!isCollapsed && <span className="truncate">Sign Out</span>}
-          {isCollapsed && (
-            <div className="absolute left-full ml-2 px-3 py-2 bg-red text-white rounded-lg text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
-              Sign Out
-            </div>
-          )}
+          <div className="p-2 rounded-xl transition-all group-hover:bg-red/5">
+            <LogOut size={20} />
+          </div>
+          <span className="text-[9px] font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+            Exit
+          </span>
         </button>
-      </div>
-    </aside>
+      </nav>
+    </>
   );
 };
 

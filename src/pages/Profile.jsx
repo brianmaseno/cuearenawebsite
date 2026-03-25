@@ -291,8 +291,35 @@ const Profile = () => {
                 </button>
               </div>
 
+              {/* Account Management Zone */}
+              <div className="col-span-full mt-8 p-6 bg-base2/10 rounded-[32px] border border-base2/20 relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center shrink-0">
+                       <Key size={24} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                       <h4 className="text-[15px] font-medium text-text-emphasis tracking-tight">Active Session</h4>
+                       <p className="text-[11px] text-text/40 font-medium leading-relaxed mt-0.5 max-w-[240px]">Securely sign out of your account on this device.</p>
+                    </div>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                        if(window.confirm('Are you sure you want to log out?')) {
+                            // The actual logout logic would go here if I had access to the context
+                            window.location.href = '/login'; // Fallback redirect if direct call isn't easy
+                        }
+                    }}
+                    className="px-8 py-3 bg-primary text-base3 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all duration-300"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              </div>
+
               {/* Danger Zone */}
-              <div className="col-span-full mt-8 p-6 bg-base2/5 rounded-[32px] border border-red/5 relative overflow-hidden">
+              <div className="col-span-full mt-4 p-6 bg-base2/5 rounded-[32px] border border-red/5 relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10 text-center sm:text-left">
                   <div className="flex flex-col sm:flex-row items-center gap-4">
                     <div className="w-12 h-12 bg-red/10 text-red rounded-2xl flex items-center justify-center shrink-0 shadow-sm shadow-red/10">

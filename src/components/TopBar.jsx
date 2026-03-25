@@ -78,33 +78,55 @@ const TopBar = ({ title }) => {
   };
 
   return (
-    <header className="h-20 bg-base3/80 backdrop-blur-md border-b border-base2 px-8 flex items-center justify-between sticky top-0 z-40">
-      <div>
-        <h2 className="text-2xl font-bold text-text-emphasis">{title}</h2>
+    <header className="h-16 md:h-20 bg-base3/80 backdrop-blur-md border-b border-base2 px-4 md:px-8 flex items-center justify-between sticky top-0 z-40 safe-top">
+      <div className="flex-1 min-w-0 pr-4">
+        <h2 className="text-lg md:text-2xl font-black text-text-emphasis tracking-tight truncate">
+          {title}
+        </h2>
       </div>
 
-      <div className="flex items-center gap-6">
-        <div className="relative hidden md:block">
+      <div className="flex items-center gap-2 md:gap-4 shrink-0">
+        <div className="relative hidden lg:block">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base1">
             <Search size={18} />
           </div>
           <input
             type="text"
-            className="bg-base2/40 border border-base2 rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none w-64"
-            placeholder="Search tournaments..."
+            className="bg-base2/40 border border-base2 rounded-full pl-10 pr-4 py-1.5 text-sm focus:ring-2 focus:ring-primary outline-none w-48 xl:w-64"
+            placeholder="Search..."
           />
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          {(user?.role === 'player' || user?.role === 'moderator' || user?.role === 'admin') && (
+            <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/15 rounded-full px-2 py-1 transition-all">
+              <WalletIcon size={12} className="fill-emerald-500" />
+              <span className="text-[10px] md:text-xs font-black tabular-nums">
+                {liveBalance.toLocaleString()}
+              </span>
+            </div>
+          )}
+          
+          {user?.role === 'player' && (
+            <div className="hidden sm:flex items-center gap-1 bg-primary/10 text-primary border border-primary/15 rounded-full px-2 py-1">
+              <Star size={12} className="fill-primary" />
+              <span className="text-[10px] md:text-xs font-black tabular-nums">
+                {livePoints}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="relative" ref={dropdownRef}>
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`relative p-2 transition-all hover:scale-110 active:scale-95 rounded-full ${
-              isDropdownOpen ? 'bg-primary/10 text-primary' : 'text-text hover:text-primary'
+            className={`relative p-2 transition-all rounded-xl ${
+              isDropdownOpen ? 'bg-primary/10 text-primary' : 'text-text hover:text-primary hover:bg-base2/40'
             }`}
           >
-            <Bell size={22} />
+            <Bell size={20} />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] bg-red text-white text-[10px] font-black rounded-full border-2 border-base3 flex items-center justify-center px-1">
+              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] bg-red text-white text-[9px] font-black rounded-full border-2 border-base3 flex items-center justify-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -210,34 +232,16 @@ const TopBar = ({ title }) => {
                   </div>
                 )}
               </div>
-
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-3 pl-6 border-l border-base2">
-            <div className="flex items-center gap-2">
-              {(user?.role === 'player' || user?.role === 'moderator' || user?.role === 'admin') && (
-                <>
-                  <Link to="/wallet" className="px-4 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5 hover:bg-emerald-500/20 transition-colors">
-                    <WalletIcon size={12} className="fill-emerald-500" /> {user?.role === 'admin' ? 'Wallet Bal: ' : ''} KES {liveBalance.toLocaleString()}
-                  </Link>
-                  {user?.role === 'player' && (
-                    <span className="px-4 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5">
-                      <Star size={12} className="fill-primary" /> {livePoints} pts
-                    </span>
-                  )}
-                </>
-              )}
-              <p className="text-sm font-bold text-text-emphasis leading-none">{user?.fullName}</p>
-            </div>
-          <div className="w-10 h-10 rounded-full bg-base2 flex items-center justify-center text-primary font-bold overflow-hidden border border-base1">
-            {user?.profilePhoto ? (
-              <img src={user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <User size={20} />
-            )}
-          </div>
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-base2 flex items-center justify-center text-primary font-bold overflow-hidden border border-base1 shrink-0">
+          {user?.profilePhoto ? (
+            <img src={user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+          ) : (
+            <User size={18} />
+          )}
         </div>
       </div>
     </header>

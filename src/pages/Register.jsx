@@ -106,10 +106,22 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-primary py-3 mt-4 rounded-xl flex items-center justify-center gap-2 text-lg font-bold shadow-md disabled:opacity-70"
+              className="w-full relative group h-14 mt-4 bg-primary hover:bg-primary-dark disabled:opacity-70 text-white font-black text-lg rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
             >
-              {isLoading ? <Loader2 className="animate-spin" size={20} /> : <UserPlus size={20} />}
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+              <div className="flex items-center justify-center gap-3">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={22} />
+                    <span>Initializing Profile...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Create Account</span>
+                    <UserPlus size={20} className="group-hover:scale-110 transition-all" />
+                  </>
+                )}
+              </div>
             </button>
           </form>
 

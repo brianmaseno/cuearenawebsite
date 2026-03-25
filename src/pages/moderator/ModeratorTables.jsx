@@ -137,16 +137,16 @@ const ModeratorTables = () => {
                              </div>
                           </div>
                        </div>
-                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                       <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
                           <button 
-                             className="p-2 text-text/40 hover:text-primary transition-colors"
+                             className="p-2 text-text/40 hover:text-primary transition-colors active:scale-95"
                              title="View QR Code/Config"
                           >
                              <QrCode size={18} />
                           </button>
                           <button 
                              onClick={() => handleDeleteTable(table._id)}
-                             className="p-2 text-text/40 hover:text-red transition-colors"
+                             className="p-2 text-text/40 hover:text-red transition-colors active:scale-95"
                              title="Remove Table"
                           >
                              <Trash2 size={18} />
