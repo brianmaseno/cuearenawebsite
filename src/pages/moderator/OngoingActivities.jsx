@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award, X } from 'lucide-react';
+import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award, X, Shield, Play, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
 
 const OngoingActivities = () => {
-  const [data, setData] = useState({ tournaments: [], matches: [] });
+  const [data, setData] = useState({ tournaments: [], matches: [], battles: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [actionLoading, setActionLoading] = useState(false);
   const [activeSetMap, setActiveSetMap] = useState({});
   const [selectingWinnerForSetMap, setSelectingWinnerForSetMap] = useState({});
+  const [expandedBattles, setExpandedBattles] = useState({});
 
   const fetchOngoing = async () => {
     try {
       const { data } = await api.get('/moderator/ongoing');
-      setData(data);
+      setData({
+        tournaments: data.tournaments || [],
+        matches: data.matches || [],
+        battles: data.battles || []
+      });
     } catch (err) {
       toast.error('Failed to load ongoing activities');
     } finally {
@@ -91,6 +96,48 @@ const OngoingActivities = () => {
     }
   };
 
+  const handleStartBattle = async (battleId) => {
+    if (!window.confirm('Start this battle? This will cancel all remaining pending invitations.')) return;
+    setActionLoading(true);
+    try {
+      await api.put(`/battles/${battleId}/start`);
+      toast.success('Battle started!');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to start battle');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRecordBattleWinner = async (battleId, winnerId, winnerName) => {
+    if (!window.confirm(`Confirm ${winnerName} as the winner of this battle?`)) return;
+    setActionLoading(true);
+    try {
+      await api.put(`/battles/${battleId}/result`, { winnerId });
+      toast.success('Battle result recorded!');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to record winner');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelBattle = async (battleId) => {
+    if (!window.confirm('Cancel this battle? All accepted stakes will be refunded.')) return;
+    setActionLoading(true);
+    try {
+      await api.put(`/battles/${battleId}`);
+      toast.success('Battle cancelled.');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to cancel battle');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout title="Active Activities">
@@ -124,6 +171,15 @@ const OngoingActivities = () => {
           >
             <Trophy size={18} />
             Tournaments ({data.tournaments.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('battles')}
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+              activeTab === 'battles' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+            }`}
+          >
+            <Shield size={18} />
+            Battles ({data.battles.length})
           </button>
         </div>
 
@@ -429,7 +485,7 @@ const OngoingActivities = () => {
               })
             )}
           </div>
-        ) : (
+        ) : activeTab === 'tournaments' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.tournaments.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
@@ -477,6 +533,150 @@ const OngoingActivities = () => {
                 </div>
               ))
             )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.battles.length === 0 ? (
+                <div className="col-span-full card-premium p-12 text-center text-text italic">
+                  No active multiplayer battles found.
+                </div>
+              ) : (
+                data.battles.map((battle) => (
+                  <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                      <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
+                         <Shield size={16} />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                           <Award size={10} className="text-emerald-500" />
+                           PRIZE: KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}
+                        </span>
+                        <StatusBadge status={battle.status} />
+                        <button 
+                          disabled={actionLoading}
+                          onClick={() => handleCancelBattle(battle._id)}
+                          className="p-1 text-red hover:bg-red/10 rounded-lg transition-colors"
+                          title="Cancel Battle"
+                        >
+                           <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="text-base font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
+                      <p className="text-[10px] text-text/60 mb-3 flex items-center gap-1">
+                        <MapPin size={10} /> {battle.venue}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                         <div className="bg-emerald-50 border border-emerald-100 p-2 rounded-xl text-center">
+                            <p className="text-[9px] font-black uppercase text-emerald-600/60 leading-none mb-1">STAKE</p>
+                            <p className="text-xs font-black text-emerald-600 leading-none">KES {battle.stakeAmount.toLocaleString()}</p>
+                         </div>
+                         <div className="bg-primary/5 border border-primary/10 p-2 rounded-xl text-center">
+                            <p className="text-[9px] font-black uppercase text-primary/60 leading-none mb-1">TOTAL POT</p>
+                            <p className="text-xs font-black text-primary leading-none">KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length).toLocaleString()}</p>
+                         </div>
+                      </div>
+
+                      <div className="space-y-2 mb-4 max-h-[220px] overflow-y-auto pr-2 thin-scrollbar flex-1">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-text/40 mb-1">
+                           {battle.status === 'ongoing' ? 'SELECT WINNER' : 'Participants'}
+                        </p>
+                        {battle.participants
+                          .filter(p => {
+                            if (battle.status === 'ongoing') return p.status === 'accepted';
+                            if (battle.status === 'completed' && !expandedBattles[battle._id]) {
+                               return (battle.winnerId?._id || battle.winnerId) === (p.userId?._id || p.userId);
+                            }
+                            return true;
+                          })
+                          .map((p) => {
+                            const isWinner = (battle.winnerId?._id || battle.winnerId || '').toString() === (p.userId?._id || p.userId || '').toString();
+                            return (
+                              <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
+                                isWinner ? 'bg-green/10 border-green/30' : 'bg-base2/20 border-base2'
+                              }`}>
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                  <img 
+                                    src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`} 
+                                    className="w-6 h-6 rounded-lg object-cover ring-1 ring-base2 shadow-sm"
+                                    alt=""
+                                  />
+                                  <span className={`text-[11px] font-bold truncate ${isWinner ? 'text-green' : 'text-text-emphasis'}`}>
+                                    {p.userId?.fullName}
+                                  </span>
+                                  {isWinner && <Trophy size={10} className="text-green shrink-0 animate-bounce" />}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {battle.status === 'ongoing' && !battle.winnerId && (
+                                    <button
+                                      disabled={actionLoading}
+                                      onClick={() => handleRecordBattleWinner(battle._id, p.userId?._id, p.userId?.fullName)}
+                                      className="px-2 py-0.5 bg-green text-base3 rounded text-[9px] font-black uppercase hover:scale-105 transition-all shadow-sm"
+                                    >
+                                      WINNER
+                                    </button>
+                                  )}
+                                  {battle.status !== 'ongoing' && (
+                                    <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                                      p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                                      p.status === 'declined' ? 'bg-red/5 text-red/60 border-red/10' : 'bg-yellow/5 text-yellow border-yellow/10'
+                                    }`}>
+                                      {p.status}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        
+                        {battle.status === 'completed' && battle.participants.length > 1 && (
+                          <button
+                            onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
+                            className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mt-1 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
+                          >
+                             {expandedBattles[battle._id] ? (
+                               <>HIDE OTHERS <ChevronRight size={10} className="rotate-90" /></>
+                             ) : (
+                               <>VIEW ALL PARTICIPANTS ({battle.participants.length}) <ChevronRight size={10} /></>
+                             )}
+                          </button>
+                        )}
+                      </div>
+
+                      {battle.status === 'pending' && (
+                        <button 
+                          disabled={actionLoading || battle.participants.filter(p => p.status === 'accepted').length < 2}
+                          onClick={() => handleStartBattle(battle._id)}
+                          className={`w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all ${
+                            battle.participants.filter(p => p.status === 'accepted').length < 2
+                              ? 'bg-base2 text-text/40 cursor-not-allowed grayscale'
+                              : 'bg-primary text-base3 shadow-primary/20 hover:scale-[1.02]'
+                          }`}
+                        >
+                          <Play size={14} fill="currentColor" />
+                          START BATTLE
+                        </button>
+                      )}
+
+                      {battle.status === 'ongoing' && !battle.winnerId && (
+                        <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
+                          ⚡ BATTLE IN PROGRESS
+                        </div>
+                      )}
+
+                      {battle.status === 'completed' && (
+                        <div className="w-full bg-green/10 text-green py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 border border-green/20">
+                          🏆 BATTLE COMPLETED
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
           </div>
         )}
       </div>

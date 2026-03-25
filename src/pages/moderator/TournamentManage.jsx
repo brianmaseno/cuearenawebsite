@@ -187,6 +187,20 @@ const TournamentManage = () => {
       }
    };
 
+   const handleCancelTournament = async () => {
+      if (!window.confirm('Are you sure you want to cancel this tournament? This will refund all participating players and mark it as cancelled.')) return;
+      setActionLoading(true);
+      try {
+         await api.put(`/tournaments/${id}/cancel`);
+         toast.success('Tournament cancelled successfully');
+         navigate('/moderator/ongoing');
+      } catch (err) {
+         toast.error(err.response?.data?.message || 'Failed to cancel tournament');
+      } finally {
+         setActionLoading(false);
+      }
+   };
+
    if (loading) {
       return (
          <DashboardLayout title="Tournament Management">
@@ -252,6 +266,17 @@ const TournamentManage = () => {
                      >
                         <Trophy size={20} />
                         {tournament?.entryType === 'invite_only' ? 'Set to Private' : 'Open for Registration'}
+                     </button>
+                  )}
+                  {tournament?.status !== 'completed' && tournament?.status !== 'cancelled' && (
+                     <button
+                        onClick={handleCancelTournament}
+                        disabled={actionLoading}
+                        className="bg-red/10 hover:bg-red text-red hover:text-white px-4 py-3 rounded-2xl font-black border border-red/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                        title="Cancel Tournament"
+                     >
+                        <Trash2 size={20} />
+                        <span className="hidden sm:inline">Cancel</span>
                      </button>
                   )}
                </div>

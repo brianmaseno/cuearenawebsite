@@ -11,7 +11,9 @@ import {
   XCircle as CancelIcon,
   ChevronRight as ArrowIcon,
   Loader2,
-  Users
+  Users,
+  Shield,
+  MapPin
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
@@ -21,10 +23,11 @@ import toast from 'react-hot-toast';
 const PlayerHistory = () => {
   const { user } = useAuth();
   const userId = user?._id;
-  const [data, setData] = useState({ tournaments: [], matches: [] });
+  const [data, setData] = useState({ tournaments: [], matches: [], tournamentMatches: [], battles: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [subFilter, setSubFilter] = useState('all');
+  const [expandedBattles, setExpandedBattles] = useState({});
 
   const fetchHistory = async () => {
     try {
@@ -37,6 +40,7 @@ const PlayerHistory = () => {
     }
   };
 
+
   useEffect(() => {
     fetchHistory();
   }, []);
@@ -45,6 +49,8 @@ const PlayerHistory = () => {
     let list = [];
     if (activeTab === 'matches') {
       list = [...(data.matches || []), ...(data.tournamentMatches || [])];
+    } else if (activeTab === 'battles') {
+      list = data.battles || [];
     } else {
       list = data.tournaments || [];
     }
@@ -85,8 +91,16 @@ const PlayerHistory = () => {
             >
               <TrophyIcon size={18} />
               Tournaments ({data.tournaments.length})
-            </button>
-          </div>
+          </button>
+          <button
+            onClick={() => { setActiveTab('battles'); setSubFilter('all'); }}
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'battles' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+              }`}
+          >
+            <Shield size={18} />
+            Battles ({data.battles.length})
+          </button>
+        </div>
 
           {/* Sub-Filters */}
           <div className="flex items-center gap-2 bg-base2/20 p-1.5 rounded-2xl w-fit border border-base2/50">
@@ -95,8 +109,8 @@ const PlayerHistory = () => {
               { id: 'completed', label: 'Completed', icon: CheckIcon },
               { id: 'cancelled', label: 'Cancelled', icon: CancelIcon }
             ].map(f => {
-              const count = (activeTab === 'matches' ? data.matches : data.tournaments)
-                .filter(item => f.id === 'all' ? true : item.status === f.id).length;
+              const currentList = activeTab === 'matches' ? [...(data.matches || []), ...(data.tournamentMatches || [])] : activeTab === 'tournaments' ? (data.tournaments || []) : (data.battles || []);
+              const count = currentList.filter(item => f.id === 'all' ? true : item.status === f.id).length;
 
               return (
                 <button
@@ -256,12 +270,45 @@ const PlayerHistory = () => {
                           ) : (winnerIdObj ? winLossText : 'No Winner Announced')}
                         </div>
                         
-                        {!isCancelled && winnerIdObj && (
-                          <div className={`text-[13px] font-black mt-1 ${myWon ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            {myWon ? (
-                              `+ KES ${((match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
-                            ) : (
-                              `- KES ${(match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}`
+                        {!isCancelled && (
+                          <div className="mt-1">
+                            {match.isTournamentMatch ? (
+                              (() => {
+                                const myWonMatch = winnerIdObj?.toString() === userId?.toString();
+                                const isEliminated = myWonMatch ? !match.nextMatchId : !match.loserNextMatchId;
+                                
+                                if (!isEliminated) {
+                                  return (
+                                    <div className="text-[11px] font-black text-primary/60 uppercase tracking-tighter italic">
+                                      Games Ongoing...
+                                    </div>
+                                  );
+                                } else {
+                                  return (
+                                    <div className={`text-[13px] font-black ${myWonMatch ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                      {myWonMatch ? (
+                                        (() => {
+                                          if (match.tournamentId?.status === 'completed' && match.tournamentId?.payouts) {
+                                            const myPayout = match.tournamentId.payouts.find(p => (p.userId?._id || p.userId || '').toString() === userId?.toString());
+                                            if (myPayout) return `+ KES ${myPayout.amount.toLocaleString()}`;
+                                          }
+                                          return `+ KES ${((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()}`;
+                                        })()
+                                      ) : (
+                                        `- KES ${(match.tournamentId?.stakePerPlayer || 0).toLocaleString()}`
+                                      )}
+                                    </div>
+                                  );
+                                }
+                              })()
+                            ) : winnerIdObj && (
+                              <div className={`text-[13px] font-black ${myWon ? 'text-emerald-500' : 'text-rose-500'}`}>
+                                {myWon ? (
+                                  `+ KES ${(match.stakeAmount * 2 * 0.85).toLocaleString()}`
+                                ) : (
+                                  `- KES ${match.stakeAmount.toLocaleString()}`
+                                )}
+                              </div>
                             )}
                           </div>
                         )}
@@ -276,11 +323,135 @@ const PlayerHistory = () => {
                             {new Date(match.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
+
                       </div>
                     </div>
                   </div>
                 );
               })
+            )}
+          </div>
+        ) : activeTab === 'battles' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.length === 0 ? (
+              <div className="col-span-full card-premium p-12 text-center text-text italic">
+                No {subFilter !== 'all' ? subFilter : ''} battle history found.
+              </div>
+            ) : (
+                filteredData.map((battle) => {
+                  const isCancelled = battle.status === 'cancelled';
+                  const myWon = battle.winnerId?._id === userId;
+                  return (
+                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
+                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                        <div className="flex items-center gap-2">
+                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
+                              <Shield size={16} />
+                           </div>
+                           <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Battle Room</span>
+                        </div>
+                        {isCancelled ? (
+                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                        ) : (
+                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                        )}
+                      </div>
+                      
+                      <div className="p-5 flex-1 flex flex-col">
+                        <h3 className="text-base font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
+                        <p className="text-[10px] text-text/60 mb-3 flex items-center gap-1">
+                          <MapPin size={10} /> {battle.venue}
+                        </p>
+
+                        {!isCancelled && (
+                          <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-4 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${myWon ? 'bg-green text-base3' : 'bg-base2 text-text/40'}`}>
+                                 {myWon ? <TrophyIcon size={16} /> : <TargetIcon size={16} />}
+                              </div>
+                              <div>
+                                <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Winner Result</p>
+                                <p className={`text-xs font-bold ${myWon ? 'text-green' : 'text-text-emphasis'}`}>
+                                   {myWon ? 'You Won!' : battle.winnerId?.fullName || 'No Winner'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Prize Won</p>
+                              <p className={`text-xs font-black ${myWon ? 'text-green' : 'text-text/40'}`}>
+                                 {myWon ? `+ KES ${(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}` : 'None'}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {isCancelled && (
+                          <div className="p-3 bg-red/5 border border-red/10 rounded-xl mb-4 text-center">
+                             <p className="text-xs font-bold text-red">Match Cancelled</p>
+                             <p className="text-[10px] text-red/60 italic">Rejected, Expired or Refunded</p>
+                          </div>
+                        )}
+
+                        {expandedBattles[battle._id] && (
+                          <div className="space-y-2 mb-4 max-h-[140px] overflow-y-auto pr-2 thin-scrollbar flex-1 opacity-60 grayscale-[0.5] animate-in slide-in-from-top-2 duration-300">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-text/40 mb-1">Final Lineup</p>
+                            {battle.participants.map((p) => {
+                              const isMe = p.userId?._id === userId;
+                              const isWinner = battle.winnerId?._id === p.userId?._id;
+                              return (
+                                <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
+                                  isWinner ? 'bg-green/10 border-green/30' : (isMe ? 'bg-primary/5 border-primary/20' : 'bg-base2/20 border-base2')
+                                }`}>
+                                  <div className="flex items-center gap-2 overflow-hidden">
+                                    <img 
+                                      src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`} 
+                                      className="w-5 h-5 rounded object-cover"
+                                      alt=""
+                                    />
+                                    <span className={`text-[10px] font-bold truncate ${isMe ? 'text-primary' : (isWinner ? 'text-green' : 'text-text-emphasis')}`}>
+                                      {p.userId?.fullName}
+                                    </span>
+                                  </div>
+                                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                                    p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red/5 text-red/60 border-red/10'
+                                  }`}>
+                                    {p.status}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
+                          className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mb-4 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
+                        >
+                           {expandedBattles[battle._id] ? (
+                             <>Hide Participants <ArrowIcon size={10} className="rotate-90" /></>
+                           ) : (
+                             <>View Participants ({battle.participants.length}) <ArrowIcon size={10} /></>
+                           )}
+                        </button>
+                      </div>
+
+                      <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
+                        <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1.5 leading-none">
+                              <CalendarIcon size={12} />
+                              {new Date(battle.updatedAt).toLocaleDateString()}
+                            </div>
+                            <div className="flex items-center gap-1.5 leading-none">
+                              <ClockIcon size={12} />
+                              {new Date(battle.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
             )}
           </div>
         ) : (

@@ -12,8 +12,8 @@ const InactivityTimer = () => {
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
 
-  const TIMEOUT = 60 * 1000; // 1 minute in ms
-  const WARNING_TIME = 30 * 1000; // 30 seconds in ms
+  const TIMEOUT = 3 * 60 * 1000; // 3 minutes in ms
+  const WARNING_TIME = (3 * 60 - 30) * 1000; // 2.5 minutes in ms (30s before timeout)
 
   const handleLogout = useCallback(() => {
     logout();

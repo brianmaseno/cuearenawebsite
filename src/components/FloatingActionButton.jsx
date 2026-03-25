@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trophy, Target, X } from 'lucide-react';
+import { Plus, Trophy, Target, X, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const FloatingActionButton = () => {
@@ -16,12 +16,20 @@ const FloatingActionButton = () => {
     {
       label: 'New Tournament',
       path: '/moderator/create-tournament',
-      color: 'bg-primary',
+      color: 'bg-violet-600',
+      icon: Trophy
     },
     {
       label: 'New Match',
       path: '/moderator/create-match',
-      color: 'bg-blue',
+      color: 'bg-blue-600',
+      icon: Target
+    },
+    {
+      label: 'New Battle',
+      path: '/moderator/create-battle',
+      color: 'bg-amber-600',
+      icon: Shield
     },
   ];
 
@@ -45,8 +53,11 @@ const FloatingActionButton = () => {
                   navigate(action.path);
                   setIsOpen(false);
                 }}
-                className={`${action.color} text-base3 px-6 py-2.5 rounded-xl shadow-lg hover:scale-105 transition-all active:scale-95 font-bold text-sm whitespace-nowrap`}
+                className={`${action.color} text-base3 px-5 py-3 rounded-2xl shadow-xl hover:scale-105 transition-all active:scale-95 font-bold text-sm whitespace-nowrap flex items-center gap-3 border border-white/10`}
               >
+                <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center">
+                   <action.icon size={14} />
+                </div>
                 {action.label}
               </motion.button>
             ))}

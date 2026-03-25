@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verifyUser = async () => {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
       if (userInfo && userInfo.token) {
         try {
           // Set authorization header for the verification call
@@ -17,11 +17,11 @@ export const AuthProvider = ({ children }) => {
           const { data } = await api.get('/auth/me');
           // Update user info including latest status from server
           const updatedUser = { ...userInfo, ...data };
-          localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+          sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
           setUser(updatedUser);
         } catch (err) {
           console.error('Token verification failed:', err);
-          localStorage.removeItem('userInfo');
+          sessionStorage.removeItem('userInfo');
           delete api.defaults.headers.common['Authorization'];
           setUser(null);
         }
@@ -33,14 +33,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('userInfo', JSON.stringify(data));
+    sessionStorage.setItem('userInfo', JSON.stringify(data));
     setUser(data);
     return data;
   };
 
   const register = async (userData) => {
     const { data } = await api.post('/auth/register', userData);
-    localStorage.setItem('userInfo', JSON.stringify(data));
+    sessionStorage.setItem('userInfo', JSON.stringify(data));
     setUser(data);
     return data;
   };
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Logout log failed:', err);
     }
-    localStorage.removeItem('userInfo');
+    sessionStorage.removeItem('userInfo');
     delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (profileData) => {
     const { data } = await api.put('/auth/profile', profileData);
     const updatedUser = { ...user, ...data };
-    localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+    sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
     setUser(updatedUser);
     return updatedUser;
   };

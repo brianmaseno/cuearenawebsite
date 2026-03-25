@@ -27,6 +27,7 @@ import PlayerDashboard from './pages/player/PlayerDashboard';
 import CreateTournament from './pages/moderator/CreateTournament';
 import TournamentManage from './pages/moderator/TournamentManage';
 import CreateMatch from './pages/moderator/CreateMatch';
+import CreateBattle from './pages/moderator/CreateBattle';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLogs from './pages/admin/AdminLogs';
 import AdminUsers from './pages/admin/AdminUsers';
@@ -104,6 +105,11 @@ function App() {
                   <Route path="/moderator/create-match" element={
                     <ProtectedRoute roles={['moderator']}>
                       <CreateMatch />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/create-battle" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <CreateBattle />
                     </ProtectedRoute>
                   } />
                   {/* Match details are now handled inline in the moderator dashboard */}

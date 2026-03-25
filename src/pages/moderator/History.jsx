@@ -11,27 +11,47 @@ import {
   Award as AwardIcon,
   CheckCircle2 as CheckIcon,
   XCircle as CancelIcon,
-  AlertCircle as AlertIcon,
-  ChevronRight as ArrowIcon,
-  Loader2
+  Loader2,
+  Shield,
+  MapPin,
+  RefreshCw,
+  ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
 
 const History = () => {
-  const [data, setData] = useState({ tournaments: [], matches: [] });
+  const [data, setData] = useState({ tournaments: [], matches: [], battles: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [subFilter, setSubFilter] = useState('all');
+  const [expandedBattles, setExpandedBattles] = useState({});
 
   const fetchHistory = async () => {
     try {
       const { data } = await api.get('/moderator/history');
-      setData(data);
+      setData({
+        tournaments: data.tournaments || [],
+        matches: data.matches || [],
+        battles: data.battles || []
+      });
     } catch (err) {
       toast.error('Failed to load history');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRebook = async (type, id) => {
+    try {
+      setLoading(true);
+      const endpoint = type === 'battle' ? `/battles/${id}/rebook` : `/direct-matches/${id}/rebook`;
+      await api.post(endpoint);
+      toast.success('Rematch created! Invitations sent.');
+      window.location.href = '/moderator';
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to rebook');
       setLoading(false);
     }
   };
@@ -41,7 +61,11 @@ const History = () => {
   }, []);
 
   const getFilteredData = () => {
-    const list = activeTab === 'matches' ? data.matches : data.tournaments;
+    let list = [];
+    if (activeTab === 'matches') list = data.matches;
+    else if (activeTab === 'battles') list = data.battles;
+    else list = data.tournaments;
+    
     if (subFilter === 'all') return list;
     return list.filter(item => item.status === (subFilter === 'completed' ? 'completed' : 'cancelled'));
   };
@@ -79,17 +103,25 @@ const History = () => {
               <TrophyIcon size={18} />
               Tournaments ({data.tournaments.length})
             </button>
+            <button
+              onClick={() => { setActiveTab('battles'); setSubFilter('all'); }}
+              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'battles' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+                }`}
+            >
+              <Shield size={18} />
+              Battles ({data.battles.length})
+            </button>
           </div>
 
           {/* Sub-Filters */}
           <div className="flex items-center gap-2 bg-base2/20 p-1.5 rounded-2xl w-fit border border-base2/50">
             {[
-              { id: 'all', label: 'All', icon: ArrowIcon },
+              { id: 'all', label: 'All', icon: TargetIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },
               { id: 'cancelled', label: 'Cancelled', icon: CancelIcon }
             ].map(f => {
-              const count = (activeTab === 'matches' ? data.matches : data.tournaments)
-                .filter(item => f.id === 'all' ? true : item.status === f.id).length;
+              const currentList = activeTab === 'matches' ? data.matches : (activeTab === 'tournaments' ? data.tournaments : data.battles);
+              const count = currentList.filter(item => f.id === 'all' ? true : item.status === f.id).length;
 
               return (
                 <button
@@ -251,11 +283,133 @@ const History = () => {
                             {new Date(match.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
+
+                        {!match.isTournamentMatch && (
+                          <button
+                            onClick={() => handleRebook('match', match._id)}
+                            className="mt-4 w-full py-2.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all border border-primary/20"
+                          >
+                            <RefreshCw size={12} />
+                            Rebook Rematch
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
                 );
               })
+            )}
+          </div>
+        ) : activeTab === 'battles' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredData.length === 0 ? (
+              <div className="col-span-full card-premium p-12 text-center text-text italic">
+                No {subFilter !== 'all' ? subFilter : ''} battle history found.
+              </div>
+            ) : (
+                filteredData.map((battle) => {
+                  const isCancelled = battle.status === 'cancelled';
+                  return (
+                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col border-none shadow-sm transition-all hover:shadow-md">
+                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                        <div className="flex items-center gap-2">
+                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
+                              <Shield size={16} />
+                           </div>
+                           <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Battle Room</span>
+                        </div>
+                        {isCancelled ? (
+                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                        ) : (
+                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                        )}
+                      </div>
+                      
+                      <div className="p-5 flex-1 flex flex-col">
+                        <h3 className="text-sm font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
+                        <p className="text-[10px] text-text/60 mb-3 flex items-center gap-1">
+                          <MapPin size={10} /> {battle.venue}
+                        </p>
+
+                        {!isCancelled && (
+                          <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-4 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-green text-base3 flex items-center justify-center shadow-sm">
+                               <TrophyIcon size={20} />
+                            </div>
+                            <div>
+                               <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Winner</p>
+                               <p className="text-sm font-bold text-text-emphasis">
+                                  {battle.winnerId?.fullName || 'No Winner'}
+                               </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {expandedBattles[battle._id] && (
+                          <div className="space-y-2 mb-4 max-h-[140px] overflow-y-auto pr-2 thin-scrollbar flex-1 opacity-60 animate-in slide-in-from-top-2 duration-300">
+                            {battle.participants.map((p) => {
+                              const isWinner = battle.winnerId?._id === p.userId?._id;
+                              return (
+                                <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
+                                  isWinner ? 'bg-green/10 border-green/30' : 'bg-base2/20 border-base2'
+                                }`}>
+                                  <div className="flex items-center gap-2 overflow-hidden">
+                                    <img 
+                                      src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`} 
+                                      className="w-5 h-5 rounded object-cover"
+                                      alt=""
+                                    />
+                                    <span className={`text-[10px] font-bold truncate ${isWinner ? 'text-green' : 'text-text-emphasis'}`}>
+                                      {p.userId?.fullName}
+                                    </span>
+                                  </div>
+                                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                                    p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red/5 text-red/60 border-red/10'
+                                  }`}>
+                                    {p.status}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
+                          className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mb-4 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
+                        >
+                           {expandedBattles[battle._id] ? (
+                             <>Hide Participants <ChevronRight size={10} className="rotate-90" /></>
+                           ) : (
+                             <>View Participants ({battle.participants.length}) <ChevronRight size={10} /></>
+                           )}
+                        </button>
+                      </div>
+
+                      <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
+                        <div className="flex items-center justify-between text-[10px] font-bold text-text/40 mb-3">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1.5">
+                              <CalendarIcon size={12} />
+                              {new Date(battle.updatedAt).toLocaleDateString()}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <ClockIcon size={12} />
+                              {new Date(battle.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleRebook('battle', battle._id)}
+                          className="w-full py-2 bg-primary text-base3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md active:scale-95"
+                        >
+                          <RefreshCw size={12} />
+                          Rebook Battle
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
             )}
           </div>
         ) : (

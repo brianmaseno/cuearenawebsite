@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2, Award, Wallet as WalletIcon } from 'lucide-react';
+import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2, Award, Wallet as WalletIcon, Shield, MapPin } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
@@ -31,12 +31,14 @@ const PlayerDashboard = () => {
       setData({
         matches: ongoingRes.data.matches || [],
         tournamentMatches: ongoingRes.data.tournamentMatches || [],
+        battles: ongoingRes.data.battles || [],
         tournaments: ongoingRes.data.tournaments || [],
         notifications: notifRes.data || [],
         // Calculate invitations from all sources
         invitations: [
           ...(ongoingRes.data.matches || []).filter(m => m.myStatus === 'pending'),
           ...(ongoingRes.data.tournamentMatches || []).filter(m => m.myStatus === 'pending'),
+          ...(ongoingRes.data.battles || []).filter(b => b.myStatus === 'pending'),
           ...(ongoingRes.data.tournaments || []).filter(t => t.myStatus === 'pending')
         ]
       });
@@ -48,13 +50,19 @@ const PlayerDashboard = () => {
     }
   };
 
-  const handleInvitationResponse = async (invitationId, status) => {
+  const handleInvitationResponse = async (invitationId, status, type = null, targetId = null) => {
     try {
-      if (!invitationId) {
-        toast.error('Invitation ID not found');
+      if (!invitationId && (!type || !targetId)) {
+        toast.error('Invitation ID or target info not found');
         return;
       }
-      await api.post(`/invitations/${invitationId}/respond`, { status });
+      
+      if (invitationId) {
+        await api.post(`/invitations/${invitationId}/respond`, { status });
+      } else {
+        await api.post(`/invitations/respond-by-target/${type}/${targetId}`, { status });
+      }
+
       toast.success(`Invitation ${status}`);
       fetchData();
     } catch (err) {
@@ -121,6 +129,15 @@ const PlayerDashboard = () => {
           >
             <Target size={18} />
             Matches ({data.matches.length + (data.tournamentMatches?.length || 0)})
+          </button>
+          <button
+            onClick={() => setActiveTab('battles')}
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+              activeTab === 'battles' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+            }`}
+          >
+            <Shield size={18} />
+            Battles ({data.battles.length})
           </button>
           <button
             onClick={() => setActiveTab('tournaments')}
@@ -268,14 +285,14 @@ const PlayerDashboard = () => {
                      {match.myStatus === 'pending' ? (
                         <div className="flex gap-2">
                            <button
-                             onClick={() => handleInvitationResponse(match.invitationId, 'declined')}
+                             onClick={() => handleInvitationResponse(match.invitationId, 'declined', match.type === 'tournament' ? 'tournament_match' : 'direct_match', match._id)}
                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border border-red/20 text-red hover:bg-red/5 transition-all"
                            >
                              <XCircle size={16} />
                              Decline
                            </button>
                            <button
-                             onClick={() => handleInvitationResponse(match.invitationId, 'accepted')}
+                             onClick={() => handleInvitationResponse(match.invitationId, 'accepted', match.type === 'tournament' ? 'tournament_match' : 'direct_match', match._id)}
                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-base3 text-sm font-bold hover:shadow-lg hover:shadow-primary/20 transition-all"
                            >
                              <CheckCircle2 size={16} />
@@ -332,18 +349,60 @@ const PlayerDashboard = () => {
 
                            {/* Match Status Header */}
                            {match.status === 'completed' ? (
-                                <div className={`w-full py-3 rounded-xl text-sm font-black flex flex-col items-center justify-center gap-1 shadow-sm border ${
-                                   (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
-                                }`}>
-                                   <span>{(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? 'You Won!' : 'You Lost!'}</span>
-                                   <span className="text-base">
-                                      {(match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString() ? (
-                                         `+ KES ${((match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
-                                      ) : (
-                                         `- KES ${(match.type === 'tournament' ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}`
+                                (() => {
+                                  const myWonMatch = (match.winnerId?._id || match.winnerId || '').toString() === (userId || '').toString();
+                                  
+                                  if (match.type === 'tournament') {
+                                    const isEliminated = myWonMatch ? !match.nextMatchId : !match.loserNextMatchId;
+                                    
+                                    if (!isEliminated) {
+                                      if (myWonMatch) {
+                                        return (
+                                          <div className="w-full py-3 rounded-xl text-sm font-black flex flex-col items-center justify-center gap-1 shadow-sm border bg-emerald-50 text-emerald-600 border-emerald-100">
+                                            <div className="flex items-center gap-1.5 uppercase tracking-tighter italic">
+                                              <CheckCircle2 size={14} /> YOU WON!
+                                            </div>
+                                            <span className="text-[10px] opacity-75 uppercase tracking-widest font-bold">Games Ongoing...</span>
+                                            <span className="text-xs font-black">
+                                              + KES {((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()}
+                                            </span>
+                                          </div>
+                                        );
+                                      } else {
+                                        const nextMatchDate = match.loserNextMatchId?.scheduledAt;
+                                        return (
+                                          <div className="w-full py-3 rounded-xl text-sm font-black flex flex-col items-center justify-center gap-1 shadow-sm border bg-orange/5 text-orange border-orange/20">
+                                            <div className="flex items-center gap-1.5 uppercase tracking-tighter italic">
+                                              <XCircle size={14} /> YOU LOST!
+                                            </div>
+                                            <span className="text-[10px] opacity-75 uppercase tracking-widest font-bold">
+                                              Your next match is {nextMatchDate ? `on ${new Date(nextMatchDate).toLocaleDateString()}` : 'on the way'}
+                                            </span>
+                                          </div>
+                                        );
+                                      }
+                                    }
+                                  }
+
+                                  // Standard completed display (Final or Direct Match)
+                                  const isTournament = match.type === 'tournament';
+                                  return (
+                                    <div className={`w-full py-3 rounded-xl text-sm font-black flex flex-col items-center justify-center gap-1 shadow-sm border ${
+                                      myWonMatch ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
+                                    }`}>
+                                      <span>{myWonMatch ? 'You Won!' : 'You Lost!'}</span>
+                                      {(!isTournament || myWonMatch) && (
+                                        <span className="text-base">
+                                          {myWonMatch ? (
+                                            `+ KES ${((isTournament ? match.tournamentId?.stakePerPlayer : match.stakeAmount) * 2 * 0.85).toLocaleString()}`
+                                          ) : (
+                                            `- KES ${match.stakeAmount.toLocaleString()}`
+                                          )}
+                                        </span>
                                       )}
-                                   </span>
-                                </div>
+                                    </div>
+                                  );
+                                })()
                            ) : (match.player1Accepted && match.player2Accepted) ? (
                               match.type === 'tournament' ? (
                                   <Link 
@@ -371,6 +430,130 @@ const PlayerDashboard = () => {
               })
             )}
           </div>
+        ) : activeTab === 'battles' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.battles.length === 0 ? (
+              <div className="col-span-full card-premium p-12 text-center text-text italic rounded-2xl border-dashed">
+                No active multiplayer battles found.
+              </div>
+            ) : (
+                data.battles.map((battle) => (
+                  <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
+                           <Shield size={16} />
+                        </div>
+                        <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Multiplayer Battle</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                           <Award size={10} className="text-emerald-500" />
+                           PRIZE: KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}
+                        </span>
+                        <StatusBadge status={battle.status} />
+                      </div>
+                    </div>
+                    
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="text-base font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
+                      <p className="text-[10px] text-text/60 mb-3 flex items-center gap-1">
+                        <MapPin size={10} /> {battle.venue}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                         <div className="bg-emerald-50 border border-emerald-100 p-2 rounded-xl text-center">
+                            <p className="text-[9px] font-black uppercase text-emerald-600/60 leading-none mb-1">STAKE</p>
+                            <p className="text-xs font-black text-emerald-600 leading-none">KES {battle.stakeAmount.toLocaleString()}</p>
+                         </div>
+                         <div className="bg-primary/5 border border-primary/10 p-2 rounded-xl text-center">
+                            <p className="text-[9px] font-black uppercase text-primary/60 leading-none mb-1">TOTAL POT</p>
+                            <p className="text-xs font-black text-primary leading-none">KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length).toLocaleString()}</p>
+                         </div>
+                      </div>
+
+                      <div className="space-y-2 mb-4 max-h-[160px] overflow-y-auto pr-2 thin-scrollbar flex-1">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-text/40 mb-1">Participants</p>
+                        {battle.participants.map((p) => {
+                          const isMe = p.userId?._id === userId;
+                          const isWinner = battle.winnerId?._id === p.userId?._id;
+                          return (
+                            <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
+                              isWinner ? 'bg-green/10 border-green/30' : (isMe ? 'bg-primary/5 border-primary/20' : 'bg-base2/20 border-base2')
+                            }`}>
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <img 
+                                  src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`} 
+                                  className="w-6 h-6 rounded-lg object-cover ring-1 ring-base2 shadow-sm"
+                                  alt=""
+                                />
+                                <span className={`text-[11px] font-bold truncate ${isMe ? 'text-primary' : (isWinner ? 'text-green' : 'text-text-emphasis')}`}>
+                                  {p.userId?.fullName} {isMe && "(You)"}
+                                </span>
+                                {isWinner && <TrophyIcon size={10} className="text-green shrink-0 animate-bounce" />}
+                              </div>
+                              <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${
+                                p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
+                                p.status === 'declined' ? 'bg-red/5 text-red/60 border-red/10' : 'bg-yellow/5 text-yellow border-yellow/10'
+                              }`}>
+                                {p.status}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {battle.myStatus === 'pending' ? (
+                        <div className="flex gap-2">
+                           <button
+                             onClick={() => handleInvitationResponse(battle.invitationId, 'declined', 'battle', battle._id)}
+                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black border border-red/20 text-red hover:bg-red/5 transition-all uppercase"
+                           >
+                             <XCircle size={14} />
+                             Decline
+                           </button>
+                           <button
+                             onClick={() => handleInvitationResponse(battle.invitationId, 'accepted', 'battle', battle._id)}
+                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-base3 text-xs font-black hover:shadow-lg hover:shadow-primary/20 transition-all uppercase"
+                           >
+                             <CheckCircle2 size={14} />
+                             Accept
+                           </button>
+                        </div>
+                      ) : (
+                        <div className="w-full">
+                           {battle.status === 'ongoing' && !battle.winnerId && (
+                            <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
+                              ⚡ BATTLE IN PROGRESS
+                            </div>
+                          )}
+
+                          {battle.status === 'completed' && (
+                            <div className={`w-full py-2.5 rounded-xl text-[10px] font-black flex flex-col items-center justify-center gap-1 border ${
+                                battle.winnerId?._id === userId ? 'bg-green/10 text-green border-green/20' : 'bg-red/10 text-red border-red/20'
+                            }`}>
+                              <span className="flex items-center gap-2">
+                                 {battle.winnerId?._id === userId ? <TrophyIcon size={12} /> : <XCircle size={12} />}
+                                 {battle.winnerId?._id === userId ? 'YOU WON THE BATTLE!' : 'BATTLE COMPLETED'}
+                              </span>
+                              {battle.winnerId?._id === userId && (
+                                <span className="text-xs font-black">+ KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}</span>
+                              )}
+                            </div>
+                          )}
+
+                          {battle.status === 'pending' && battle.myStatus === 'accepted' && (
+                            <div className="w-full bg-emerald-50 text-emerald-600 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 border border-emerald-100">
+                               <Clock size={12} /> WAITING TO START
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            )}
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.tournaments.length === 0 ? (
@@ -383,7 +566,7 @@ const PlayerDashboard = () => {
                   {/* Status Badge Watermark */}
                   {t.myStatus === 'accepted' && (
                     <div className="absolute top-[45%] right-4 -translate-y-1/2 pointer-events-none z-10">
-                      <div className="bg-primary/20 border border-primary/40 rounded-lg px-2.5 py-1 text-primary text-xs font-black uppercase tracking-[0.15em] text-center select-none shadow-md">
+                      <div className="bg-primary/20 border border-primary/40 rounded-lg px-1.5 py-0.5 text-primary text-[8px] font-black uppercase tracking-[0.1em] text-center select-none shadow-md">
                         {t.confirmedPlayers?.length < t.maxPlayers ? (
                           <>Accepted<br/>Waiting for players</>
                         ) : "Ongoing"}
@@ -392,7 +575,7 @@ const PlayerDashboard = () => {
                   )}
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
-                       <Trophy size={16} />
+                       <TrophyIcon size={16} />
                     </div>
                      <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} />
                   </div>
@@ -411,7 +594,7 @@ const PlayerDashboard = () => {
                              Entry: KES {t.stakePerPlayer.toLocaleString()}
                           </div>
                           <div className="flex items-center gap-1.5 font-bold text-blue text-xs">
-                             <Trophy size={14} className="text-blue" />
+                             <TrophyIcon size={14} className="text-blue" />
                              Prize: KES {((t.stakePerPlayer * t.maxPlayers) * 0.85).toLocaleString()}
                           </div>
                         </div>
@@ -423,14 +606,14 @@ const PlayerDashboard = () => {
                     {t.myStatus === 'pending' ? (
                        <div className="flex gap-2">
                           <button
-                            onClick={() => handleInvitationResponse(t.invitationId, 'declined')}
+                            onClick={() => handleInvitationResponse(t.invitationId, 'declined', 'tournament', t._id)}
                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border border-red/20 text-red hover:bg-red/5 transition-all"
                           >
                             <XCircle size={16} />
                             Decline
                           </button>
                           <button
-                            onClick={() => handleInvitationResponse(t.invitationId, 'accepted')}
+                            onClick={() => handleInvitationResponse(t.invitationId, 'accepted', 'tournament', t._id)}
                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-base3 text-sm font-bold hover:shadow-lg hover:shadow-primary/20 transition-all"
                           >
                             <CheckCircle2 size={16} />
@@ -442,7 +625,7 @@ const PlayerDashboard = () => {
                          to={`/dashboard/tournament/${t._id}`}
                          className="w-full bg-blue text-base3 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-sm hover:scale-[1.02] transition-all hover:bg-blue/90"
                        >
-                         <Trophy size={14} />
+                         <TrophyIcon size={14} />
                          View Tournament Details
                        </Link>
                      ) : (
