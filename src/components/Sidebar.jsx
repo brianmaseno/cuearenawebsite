@@ -62,7 +62,7 @@ const Sidebar = () => {
         { label: 'Mod Requests', path: '/admin/moderator-requests', icon: Shield },
         { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
         { label: 'Finance', path: '/admin/finance', icon: TrendingUp },
-        { label: 'My Wallet', path: '/wallet', icon: Wallet },
+        { label: 'Wallet', path: '/wallet', icon: Wallet },
       ];
     }
     if (user.role === 'moderator') {
@@ -70,14 +70,14 @@ const Sidebar = () => {
         { label: 'Active', path: '/moderator/ongoing', icon: Calendar },
         { label: 'History', path: '/moderator/history', icon: Clock },
         { label: 'My Tables', path: '/moderator/tables', icon: Target },
-        { label: 'My Wallet', path: '/wallet', icon: Wallet },
+        { label: 'Wallet', path: '/wallet', icon: Wallet },
       ];
     }
     return [
       { label: 'Active', path: '/dashboard', icon: LayoutDashboard },
       { label: 'History', path: '/dashboard/history', icon: Clock },
       { label: 'Open Tournaments', path: '/tournaments', icon: Calendar },
-      { label: 'My Wallet', path: '/wallet', icon: Wallet },
+      { label: 'Wallet', path: '/wallet', icon: Wallet },
     ];
   };
 

@@ -47,6 +47,9 @@ const TournamentManage = () => {
    const [invitations, setInvitations] = useState([]);
    const [activeTab, setActiveTab] = useState('brackets'); // 'brackets' or 'overview'
    const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
+   const [tables, setTables] = useState([]);
+   const [showTableModal, setShowTableModal] = useState(false);
+   const [selectedTableId, setSelectedTableId] = useState('');
 
    const togglePlayerSelection = (player) => {
       setSelectedPlayers(prev => {
@@ -76,14 +79,16 @@ const TournamentManage = () => {
 
    const fetchTournamentData = async () => {
       try {
-         const [{ data: tourney }, { data: players }, { data: invites }] = await Promise.all([
+         const [{ data: tourney }, { data: players }, { data: invites }, { data: tableList }] = await Promise.all([
             api.get(`/tournaments/${id}`),
             api.get('/users/players'),
-            api.get(`/invitations/tournament/${id}`)
+            api.get(`/invitations/tournament/${id}`),
+            api.get('/users/me/tables')
          ]);
          setTournament(tourney);
          setAvailablePlayers(players);
          setInvitations(invites);
+         setTables(tableList || []);
          
          // If tournament is not started yet, maybe default to overview
          if (tourney.status === 'draft' || tourney.status === 'open_for_players') {
@@ -196,6 +201,23 @@ const TournamentManage = () => {
          navigate('/moderator/ongoing');
       } catch (err) {
          toast.error(err.response?.data?.message || 'Failed to cancel tournament');
+      } finally {
+         setActionLoading(false);
+      }
+   };
+
+   const handleStartTournamentMatch = async () => {
+      if (!selectedTableId || !selectedMatchForSets?._id) return;
+      setActionLoading(true);
+      try {
+         await api.put(`/tournaments/matches/${selectedMatchForSets._id}/start`, { poolTableId: selectedTableId });
+         toast.success('Match started and table unlocked!');
+         setShowTableModal(false);
+         setSelectedTableId('');
+         setSelectedMatchForSets(null);
+         fetchTournamentData();
+      } catch (err) {
+         toast.error(err.response?.data?.message || 'Failed to start match');
       } finally {
          setActionLoading(false);
       }
@@ -492,8 +514,81 @@ const TournamentManage = () => {
             </div>
          </div>
 
+         {/* Table Selection Modal */}
+         {showTableModal && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-base1/80 backdrop-blur-md">
+               <div className="bg-base3 w-full max-w-lg rounded-[40px] shadow-2xl border border-base2 p-8 animate-in zoom-in-95 duration-300">
+                  <div className="flex items-center justify-between mb-8">
+                     <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                           <Zap size={20} />
+                        </div>
+                        <h4 className="text-xl font-black text-text-emphasis tracking-tight uppercase">Hardware Unlock</h4>
+                     </div>
+                     <button onClick={() => setShowTableModal(false)} className="text-text/20 hover:text-red transition-colors">
+                        <X size={24} />
+                     </button>
+                  </div>
+
+                  <p className="text-sm font-bold text-text/60 mb-6 uppercase tracking-widest leading-relaxed">
+                     Select the physical pool table for <span className="text-primary font-black underline underline-offset-4">{selectedMatchForSets?.player1Id?.fullName?.split(' ')[0]} vs {selectedMatchForSets?.player2Id?.fullName?.split(' ')[0]}</span>.
+                  </p>
+
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 thin-scrollbar">
+                     {tables.length === 0 ? (
+                        <div className="p-8 text-center border-2 border-dashed border-base2 rounded-3xl text-text/40 italic">
+                           No tables registered. Go to "My Tables" to add your hardware.
+                        </div>
+                     ) : (
+                        tables.map(table => (
+                           <button
+                              key={table._id}
+                              onClick={() => setSelectedTableId(table.tableId)}
+                              className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all group ${
+                                 selectedTableId === table.tableId 
+                                    ? 'bg-primary/5 border-primary shadow-inner' 
+                                    : 'bg-base2/10 border-transparent hover:border-base2'
+                              }`}
+                           >
+                              <div className="flex items-center gap-4">
+                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedTableId === table.tableId ? 'bg-primary text-base3' : 'bg-base2/50 text-text/20'}`}>
+                                    <MapPin size={18} />
+                                 </div>
+                                 <div className="text-left">
+                                    <p className="font-black text-text-emphasis leading-none mb-1">{table.tableId}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-text/40">{table.location}</p>
+                                 </div>
+                              </div>
+                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedTableId === table.tableId ? 'border-primary bg-primary text-base3' : 'border-base2'}`}>
+                                 {selectedTableId === table.tableId && <div className="w-2 h-2 bg-base3 rounded-full" />}
+                              </div>
+                           </button>
+                        ))
+                     )}
+                  </div>
+
+                  <div className="mt-8 pt-6 border-t border-base2 space-y-4">
+                     <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-2xl border border-amber-100 italic">
+                        <Shield size={20} className="text-amber-600 shrink-0" />
+                        <p className="text-[10px] text-amber-800 font-bold leading-tight">
+                           Table unlock pulse will be sent immediately upon confirmation. Ensure table is clear.
+                        </p>
+                     </div>
+                     <button
+                        disabled={!selectedTableId || actionLoading}
+                        onClick={handleStartTournamentMatch}
+                        className="w-full py-4 bg-primary text-base3 rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-3 disabled:opacity-50"
+                     >
+                        {actionLoading ? <Loader2 className="animate-spin" /> : <Play size={18} />}
+                        ENGAGE TABLE
+                     </button>
+                  </div>
+               </div>
+            </div>
+         )}
+
          {/* Match Console Modal */}
-         {selectedMatchForSets && (
+          {selectedMatchForSets && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-base1/80 backdrop-blur-sm animate-in fade-in duration-300">
                <div className="bg-base3 w-full max-w-2xl rounded-[40px] shadow-2xl border border-base2 overflow-hidden animate-in zoom-in-95 duration-300">
                   <div className="p-8 border-b border-base2 flex justify-between items-center bg-base2/10">
@@ -617,6 +712,24 @@ const TournamentManage = () => {
                             </div>
                          )}
                          
+                         {selectedMatchForSets.status === 'confirmed' && (
+                            <div className="absolute inset-x-0 inset-y-[-8px] bg-base3/95 backdrop-blur-md flex flex-col items-center justify-center z-10 rounded-[28px] border border-primary/20 shadow-xl p-8 space-y-4">
+                               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary animate-bounce">
+                                  <Zap size={32} />
+                               </div>
+                               <div className="text-center">
+                                  <p className="text-xl font-black text-text-emphasis tracking-tight uppercase">Ready to Play</p>
+                                  <p className="text-sm font-bold text-text/40 mt-1 uppercase tracking-widest italic">Waiting for Hardware Assignment</p>
+                                </div>
+                               <button 
+                                  onClick={() => setShowTableModal(true)}
+                                  className="px-10 py-4 bg-primary text-base3 rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all text-sm"
+                               >
+                                  ASSIGN TABLE & START
+                               </button>
+                            </div>
+                         )}
+
                          {selectingWinnerForSetInModal !== null && (
                             <div className="absolute inset-x-0 inset-y-[-8px] flex justify-center z-50">
                                <div className="w-[420px] bg-base3 border-2 border-primary rounded-[32px] shadow-2xl flex items-center p-2 gap-3 animate-in zoom-in-95 duration-200">

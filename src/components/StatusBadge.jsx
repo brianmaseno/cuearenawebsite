@@ -51,7 +51,7 @@ const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => 
   };
 
   return (
-    <span className={`px-2 py-1 rounded-md text-[10px] font-bold border transition-colors ${getStyles()}`}>
+    <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black border transition-all uppercase tracking-[0.1em] ${getStyles()}`}>
       {formatStatus(status)}
     </span>
   );

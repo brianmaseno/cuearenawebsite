@@ -236,12 +236,22 @@ const TopBar = ({ title }) => {
           )}
         </div>
 
-        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-base2 flex items-center justify-center text-primary font-bold overflow-hidden border border-base1 shrink-0">
-          {user?.profilePhoto ? (
-            <img src={user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <User size={18} />
-          )}
+        <div className="flex items-center gap-3 pl-2 border-l border-base2 ml-1">
+          <div className="hidden sm:flex flex-col items-end">
+            <p className="text-xs font-black text-text-emphasis tracking-tight truncate max-w-[100px] leading-none mb-1">
+              {user?.fullName?.split(' ')[0]}
+            </p>
+            <p className="text-[9px] font-bold text-text/30 uppercase tracking-widest leading-none">
+              {user?.role}
+            </p>
+          </div>
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-base1/30 flex items-center justify-center text-primary font-bold overflow-hidden border-2 border-base3 ring-1 ring-base2 shadow-sm shrink-0">
+            {user?.profilePhoto ? (
+              <img src={user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <User size={18} />
+            )}
+          </div>
         </div>
       </div>
     </header>
