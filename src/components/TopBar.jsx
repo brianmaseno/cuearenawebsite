@@ -220,7 +220,7 @@ const TopBar = ({ title }) => {
               {(user?.role === 'player' || user?.role === 'moderator' || user?.role === 'admin') && (
                 <>
                   <Link to="/wallet" className="px-4 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5 hover:bg-emerald-500/20 transition-colors">
-                    <WalletIcon size={12} className="fill-emerald-500" /> {user?.role === 'admin' ? 'Revenue: ' : ''} KES {liveBalance.toLocaleString()}
+                    <WalletIcon size={12} className="fill-emerald-500" /> {user?.role === 'admin' ? 'Wallet Bal: ' : ''} KES {liveBalance.toLocaleString()}
                   </Link>
                   {user?.role === 'player' && (
                     <span className="px-4 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-black uppercase tracking-tighter flex items-center gap-1.5">
