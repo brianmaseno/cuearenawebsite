@@ -279,33 +279,55 @@ const WalletPage = () => {
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="divide-y divide-slate-50">
+                {transactions.length > 0 && (
+                  <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                    <div className="col-span-5">Transaction Details</div>
+                    <div className="col-span-2 text-center">Ref ID</div>
+                    <div className="col-span-2 text-right">Amount</div>
+                    <div className="col-span-3 text-right">Running Balance</div>
+                  </div>
+                )}
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <div key={tx._id} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-2xl ${
+                    <div key={tx._id} className="p-4 md:px-6 hover:bg-slate-50 transition-colors flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 md:items-center">
+                      <div className="col-span-5 flex items-center gap-4">
+                        <div className={`p-2.5 rounded-xl shrink-0 ${
                           tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee' ? 'bg-emerald-50' : 
                           tx.type === 'withdrawal' ? 'bg-rose-50' : 'bg-slate-50'
                         }`}>
                           {getTransactionIcon(tx.type)}
                         </div>
-                        <div>
-                          <p className="font-semibold text-slate-800 capitalize">{tx.type.replace('_', ' ')}</p>
-                          <p className="text-xs text-slate-400 flex items-center gap-1">
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-800 capitalize truncate leading-tight">{tx.type.replace('_', ' ')}</p>
+                          <p className="text-[10px] text-slate-400 font-medium truncate">
                             {new Date(tx.createdAt).toLocaleDateString()} • {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            {tx.description && <span className="hidden md:inline">• {tx.description}</span>}
+                            {tx.description && <span className="hidden lg:inline"> • {tx.description}</span>}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right shrink-0">
-                        <p className={`font-bold ${
+
+                      <div className="col-span-2 md:text-center">
+                        <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200">
+                          {tx.txRef || 'LEGACY'}
+                        </span>
+                      </div>
+
+                      <div className="col-span-2 md:text-right">
+                        <p className={`font-black tracking-tight ${
                           ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-slate-900'
                         }`}>
                           {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
                         </p>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${getStatusColor(tx.status)} font-medium`}>
-                          {tx.status}
-                        </span>
+                      </div>
+
+                      <div className="col-span-3 text-right flex md:block items-center justify-between">
+                        <span className="md:hidden text-[10px] font-bold text-slate-400 uppercase tracking-wider">Balance</span>
+                        <div className="flex flex-col items-end">
+                          <p className="font-black text-slate-600 tabular-nums tracking-tight">Ksh {tx.postBalance?.toLocaleString() || '-'}</p>
+                          <span className={`text-[9px] px-2 py-0.5 rounded-full border ${getStatusColor(tx.status)} font-black uppercase mt-0.5`}>
+                            {tx.status}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))
