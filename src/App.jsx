@@ -35,6 +35,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import PlayerHistory from './pages/player/PlayerHistory';
 import OngoingActivities from './pages/moderator/OngoingActivities';
 import History from './pages/moderator/History';
+import ModeratorTables from './pages/moderator/ModeratorTables';
 import Profile from './pages/Profile';
 import ModeratorApplication from './pages/ModeratorApplication';
 import AdminModeratorRequests from './pages/admin/AdminModeratorRequests';
@@ -121,6 +122,11 @@ function App() {
                   <Route path="/moderator/history" element={
                     <ProtectedRoute roles={['moderator']}>
                       <History />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/moderator/tables" element={
+                    <ProtectedRoute roles={['moderator']}>
+                      <ModeratorTables />
                     </ProtectedRoute>
                   } />
 

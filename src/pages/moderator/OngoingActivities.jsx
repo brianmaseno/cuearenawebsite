@@ -15,24 +15,23 @@ const OngoingActivities = () => {
   const [activeSetMap, setActiveSetMap] = useState({});
   const [selectingWinnerForSetMap, setSelectingWinnerForSetMap] = useState({});
   const [expandedBattles, setExpandedBattles] = useState({});
+  const [tables, setTables] = useState([]);
+  const [showTableModal, setShowTableModal] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null); // { id, type }
+  const [selectedTableId, setSelectedTableId] = useState('');
 
-  const fetchOngoing = async () => {
+  const fetchTables = async () => {
     try {
-      const { data } = await api.get('/moderator/ongoing');
-      setData({
-        tournaments: data.tournaments || [],
-        matches: data.matches || [],
-        battles: data.battles || []
-      });
+      const { data } = await api.get('/users/me/tables');
+      setTables(data || []);
     } catch (err) {
-      toast.error('Failed to load ongoing activities');
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch tables');
     }
   };
 
   useEffect(() => {
     fetchOngoing();
+    fetchTables();
   }, []);
 
   const handleSetWinner = async (matchId, player) => {
@@ -97,6 +96,12 @@ const OngoingActivities = () => {
   };
 
   const handleStartBattle = async (battleId) => {
+    if (tables.length > 0) {
+      setSelectedActivity({ id: battleId, type: 'battle' });
+      setShowTableModal(true);
+      return;
+    }
+
     if (!window.confirm('Start this battle? This will cancel all remaining pending invitations.')) return;
     setActionLoading(true);
     try {
@@ -105,6 +110,48 @@ const OngoingActivities = () => {
       fetchOngoing();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to start battle');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleStartMatch = async (matchId) => {
+    if (tables.length > 0) {
+      setSelectedActivity({ id: matchId, type: 'match' });
+      setShowTableModal(true);
+      return;
+    }
+
+    if (!window.confirm('Start this match?')) return;
+    setActionLoading(true);
+    try {
+      await api.put(`/direct-matches/${matchId}/start`);
+      toast.success('Match started!');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to start match');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const confirmStartWithTable = async () => {
+    if (!selectedActivity) return;
+    
+    setActionLoading(true);
+    try {
+      const endpoint = selectedActivity.type === 'battle' 
+        ? `/battles/${selectedActivity.id}/start`
+        : `/direct-matches/${selectedActivity.id}/start`;
+      
+      await api.put(endpoint, { poolTableId: selectedTableId || undefined });
+      toast.success(`${selectedActivity.type === 'battle' ? 'Battle' : 'Match'} started! IoT Unlock signal sent.`);
+      setShowTableModal(false);
+      setSelectedActivity(null);
+      setSelectedTableId('');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to start activity');
     } finally {
       setActionLoading(false);
     }
@@ -664,7 +711,7 @@ const OngoingActivities = () => {
 
                       {battle.status === 'ongoing' && !battle.winnerId && (
                         <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
-                          ⚡ BATTLE IN PROGRESS
+                          ⚡ BATTLE IN PROGRESS {battle.poolTable && <span className="opacity-60 ml-1">(@{typeof battle.poolTable === 'object' ? battle.poolTable.tableId : 'Table'})</span>}
                         </div>
                       )}
 
@@ -680,6 +727,89 @@ const OngoingActivities = () => {
           </div>
         )}
       </div>
+
+      {/* IoT Table Selection Modal */}
+      {showTableModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-base3/80 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="card-premium w-full max-w-md p-6 relative animate-in zoom-in-95 duration-200">
+              <button 
+                onClick={() => { setShowTableModal(false); setSelectedActivity(null); }}
+                className="absolute top-4 right-4 text-text/40 hover:text-red transition-colors"
+              >
+                 <X size={20} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-6">
+                 <div className="w-12 h-12 bg-emerald-500/10 flex items-center justify-center text-emerald-500 rounded-2xl">
+                    <Play size={24} fill="currentColor" />
+                 </div>
+                 <div>
+                    <h2 className="text-xl font-black text-text-emphasis leading-tight">Identify Pool Table</h2>
+                    <p className="text-xs text-text/60">Select hardware to trigger ball release</p>
+                 </div>
+              </div>
+
+              <div className="space-y-4">
+                 <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Assigned Table Location/Number</label>
+                    <div className="grid grid-cols-1 gap-2">
+                       {tables.map(table => (
+                          <button
+                            key={table._id}
+                            onClick={() => setSelectedTableId(table._id)}
+                            className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
+                               selectedTableId === table._id 
+                               ? 'border-emerald-500 bg-emerald-500/5 ring-4 ring-emerald-500/10' 
+                               : 'border-base2 bg-base3 hover:border-primary/30'
+                            }`}
+                          >
+                             <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedTableId === table._id ? 'bg-emerald-500 text-white' : 'bg-base2 text-text/40'}`}>
+                                   <MapPin size={16} />
+                                </div>
+                                <div className="text-left">
+                                   <p className="text-sm font-bold text-text-emphasis leading-none">{table.tableId}</p>
+                                   <p className="text-[10px] text-text/40 font-bold uppercase mt-1">{table.location || 'Default Venue'}</p>
+                                </div>
+                             </div>
+                             {selectedTableId === table._id && <CheckCircle2 size={18} className="text-emerald-500" />}
+                          </button>
+                       ))}
+
+                       <button
+                          onClick={() => setSelectedTableId('')}
+                          className={`flex items-center justify-between p-4 rounded-xl border-2 border-dashed transition-all ${
+                              selectedTableId === '' 
+                              ? 'border-primary bg-primary/5' 
+                              : 'border-base2 bg-base3 hover:border-primary/30'
+                          }`}
+                        >
+                           <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-lg bg-base2 flex items-center justify-center text-text/40">
+                                 <AlertCircle size={16} />
+                              </div>
+                              <div className="text-left">
+                                 <p className="text-sm font-bold text-text-emphasis">Manual Unlock (No IoT)</p>
+                                 <p className="text-[10px] text-text/40 uppercase">Proceed without automated trigger</p>
+                              </div>
+                           </div>
+                           {selectedTableId === '' && <CheckCircle2 size={18} className="text-primary" />}
+                        </button>
+                    </div>
+                 </div>
+
+                 <button
+                    disabled={actionLoading}
+                    onClick={confirmStartWithTable}
+                    className="w-full bg-emerald-600 text-base3 py-4 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-emerald-600/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
+                 >
+                    {actionLoading ? <Loader2 className="animate-spin" size={20} /> : <Play size={20} fill="currentColor" />}
+                    START GAME & TRIGGER PULSE
+                 </button>
+              </div>
+           </div>
+        </div>
+      )}
     </DashboardLayout>
   );
 };

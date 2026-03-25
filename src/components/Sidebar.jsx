@@ -69,6 +69,7 @@ const Sidebar = () => {
       return [
         { label: 'Active', path: '/moderator/ongoing', icon: Calendar },
         { label: 'History', path: '/moderator/history', icon: Clock },
+        { label: 'My Tables', path: '/moderator/tables', icon: Target },
         { label: 'My Wallet', path: '/wallet', icon: Wallet },
       ];
     }
