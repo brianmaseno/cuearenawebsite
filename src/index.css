@@ -128,3 +128,22 @@
   border-radius: 50%;
   animation: nav-active 0.3s ease-out forwards;
 }
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(38, 139, 210, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}

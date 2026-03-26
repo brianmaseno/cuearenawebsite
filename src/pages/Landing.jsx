@@ -65,7 +65,7 @@ const Landing = () => {
         const [tResponse, sResponse, lResponse] = await Promise.all([
           api.get('/tournaments'),
           api.get('/tournaments/public/stats'),
-          api.get('/users/leaderboard?limit=8')
+          api.get('/users/leaderboard?limit=10')
         ]);
         
         const active = tResponse.data
@@ -258,7 +258,7 @@ const Landing = () => {
                                 </div>
                               </div>
                             </div>
-                            <Link to="/register" className="w-full py-3 rounded-xl bg-base2 font-black text-text-emphasis text-sm flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
+                            <Link to="/login" className="w-full py-3 rounded-xl btn-primary text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all">
                               Join Tournament <ArrowRight size={16} />
                             </Link>
                           </div>
@@ -302,9 +302,11 @@ const Landing = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-black text-text-emphasis truncate">{p.fullName}</h3>
-                        <p className="text-[10px] font-bold text-text/50 truncate">Prestige Champion</p>
                       </div>
-                      <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">{p.points || 0}</div>
+                      <div className="text-right flex flex-col items-end">
+                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text/30 leading-none mb-1">Points</span>
+                        <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 leading-none">{p.points || 0}</div>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
