@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, Menu, X, LogIn, ChevronUp, ChevronDown, Minus, Info } from 'lucide-react';
 import { animate } from 'framer-motion';
 import api from '../api/axios';
@@ -29,6 +29,35 @@ const AnimatedCounter = ({ value, duration = 2, suffix = "" }) => {
   return <span>{displayValue}{suffix}</span>;
 };
 
+const ParallaxIcon = ({ icon: LucideIcon, color, size = 24, top, left, delay = 0, speed = 1 }) => {
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, -200 * speed]);
+  const bounceDuration = 4 + (speed * 0.5);
+
+  if (!LucideIcon) return null;
+
+  return (
+    <motion.div 
+      style={{ y, top, left, perspective: 1000 }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 0.15, scale: 1 }}
+      transition={{ delay, duration: 1 }}
+      className={`absolute z-0 pointer-events-none ${color}`}
+    >
+      <motion.div
+        animate={{ 
+          rotateX: [0, 20, 0],
+          rotateY: [0, 30, 0],
+          y: [0, -10, 0]
+        }}
+        transition={{ duration: bounceDuration, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <LucideIcon size={size} />
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const Landing = () => {
   const [tournaments, setTournaments] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
@@ -41,6 +70,7 @@ const Landing = () => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (!motion) return; // Satisfy linter for false-positive unused-var
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = (window.pageYOffset / totalScroll) * 100;
@@ -111,8 +141,18 @@ const Landing = () => {
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } }
+    hidden: { y: 30, opacity: 0, rotateX: -15 },
+    visible: { y: 0, opacity: 1, rotateX: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+  };
+
+  const card3DVariants = {
+    hover: { 
+      scale: 1.05, 
+      rotateX: 5, 
+      rotateY: 5, 
+      z: 50,
+      transition: { duration: 0.4, ease: "easeOut" } 
+    }
   };
 
   return (
@@ -166,10 +206,17 @@ const Landing = () => {
       </AnimatePresence>
 
       <header className="relative min-h-[90vh] flex items-center pt-20 pb-16 overflow-hidden">
+        {/* 3D Parallax Ornaments */}
+        <ParallaxIcon icon={Trophy} color="text-yellow" size={40} top="15%" left="10%" delay={0.2} speed={1.2} />
+        <ParallaxIcon icon={Target} color="text-primary" size={32} top="65%" left="5%" delay={0.4} speed={0.8} />
+        <ParallaxIcon icon={Zap} color="text-special-red" size={28} top="25%" left="85%" delay={0.6} speed={1.5} />
+        <ParallaxIcon icon={Star} color="text-indigo-500" size={36} top="75%" left="90%" delay={0.8} speed={1} />
+        <ParallaxIcon icon={Target} color="text-emerald-500" size={24} top="45%" left="75%" delay={1} speed={1.3} />
+
         <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary/20 rounded-full blur-[100px] animate-blob" />
         <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-special-red/20 rounded-full blur-[120px] animate-blob" style={{ animationDelay: '2s' }} />
         <div className="container mx-auto px-6 relative z-10 text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="max-w-4xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="max-w-4xl mx-auto" style={{ perspective: 1200 }}>
             <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-base2/50 border border-base2 text-primary text-sm font-bold mb-8 backdrop-blur-md">
               <Star size={14} fill="currentColor" /><span className="uppercase tracking-widest text-[10px]">Elite pool tournament management</span>
             </motion.div>
@@ -181,32 +228,66 @@ const Landing = () => {
                 Register tournament <ArrowRight size={22} />
               </Link>
             </motion.div>
-            <motion.div variants={itemVariants} className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 px-6 sm:px-8 rounded-3xl bg-base3/30 border border-base2/40 backdrop-blur-2xl shadow-2xl relative overflow-hidden group/stats text-center">
-              <div><div className="text-3xl sm:text-4xl font-black text-primary mb-1"><AnimatedCounter value={stats.totalTournaments || 12} /></div><div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Active tournaments</div></div>
-              <div className="sm:border-x border-base2/40 sm:px-4"><div className="text-3xl sm:text-4xl font-black text-text-emphasis mb-1"><AnimatedCounter value={stats.totalMatches || 450} /></div><div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Matches played</div></div>
-              <div className="sm:col-span-2 lg:col-span-1 border-t sm:border-t-0 pt-6 sm:pt-0 border-base2/40"><div className="text-3xl sm:text-4xl font-black text-special-red mb-1"><AnimatedCounter value={stats.totalPlayers || '1.2k'} /></div><div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Players joined</div></div>
+            <motion.div variants={itemVariants} className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 px-6 sm:px-8 rounded-3xl bg-base3/30 border border-base2/40 backdrop-blur-2xl shadow-2xl relative overflow-hidden group/stats text-center" style={{ transformStyle: 'preserve-3d' }}>
+              <motion.div whileHover={{ translateZ: 20 }} className="relative">
+                <div className="text-3xl sm:text-4xl font-black text-primary mb-1"><AnimatedCounter value={stats.totalTournaments || 12} /></div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Active tournaments</div>
+              </motion.div>
+              <motion.div whileHover={{ translateZ: 20 }} className="sm:border-x border-base2/40 sm:px-4 relative">
+                <div className="text-3xl sm:text-4xl font-black text-text-emphasis mb-1"><AnimatedCounter value={stats.totalMatches || 450} /></div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Matches played</div>
+              </motion.div>
+              <motion.div whileHover={{ translateZ: 20 }} className="sm:col-span-2 lg:col-span-1 border-t sm:border-t-0 pt-6 sm:pt-0 border-base2/40 relative">
+                <div className="text-3xl sm:text-4xl font-black text-special-red mb-1"><AnimatedCounter value={stats.totalPlayers || '1.2k'} /></div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Players joined</div>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
       </header>
 
       {/* Evolution Section */}
-      <section className="py-24 bg-base2/20 relative overflow-hidden">
+      <section className="py-24 bg-base2/20 relative overflow-hidden" style={{ perspective: 1500 }}>
+        <ParallaxIcon icon={Shield} color="text-primary" size={24} top="20%" left="5%" delay={0.5} speed={0.5} />
+        <ParallaxIcon icon={Zap} color="text-indigo-500" size={20} top="80%" left="90%" delay={0.7} speed={0.7} />
+        
         <div className="container mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="w-full lg:w-1/2 relative group">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, rotateY: -20 }} 
+              whileInView={{ opacity: 1, scale: 1, rotateY: 0 }} 
+              viewport={{ once: true }} 
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="w-full lg:w-1/2 relative group"
+              style={{ transformStyle: 'preserve-3d' }}
+            >
               <div className="absolute -inset-6 bg-gradient-to-r from-special-red/30 via-primary/30 to-indigo-500/30 rounded-[48px] blur-3xl opacity-40 group-hover:opacity-100 transition-opacity duration-1000" />
-              <div className="relative rounded-[32px] overflow-hidden border border-white/20 shadow-2xl transition-all duration-700 hover:rotate-1 hover:scale-[1.02]">
+              <motion.div 
+                whileHover={{ rotateY: 10, rotateX: 5, z: 20 }}
+                className="relative rounded-[32px] overflow-hidden border border-white/20 shadow-2xl transition-all duration-700"
+              >
                 <img src="/images/old_way.png" alt="Traditional way" className="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-opacity duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8 text-left">
-                  <div className="flex items-center gap-3"><div className="w-12 h-12 rounded-full bg-special-red flex items-center justify-center text-base3 shadow-lg shadow-special-red/40 animate-pulse"><X size={28} strokeWidth={3} /></div><h4 className="text-2xl font-black text-base3 uppercase tracking-tighter leading-none italic text-left">No more manual brackets</h4></div>
+                  <div className="flex items-center gap-3" style={{ translateZ: 40 }}>
+                    <div className="w-12 h-12 rounded-full bg-special-red flex items-center justify-center text-base3 shadow-lg shadow-special-red/40 animate-pulse">
+                      <X size={28} strokeWidth={3} />
+                    </div>
+                    <h4 className="text-2xl font-black text-base3 uppercase tracking-tighter leading-none italic text-left">No more manual brackets</h4>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-            <motion.div initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="w-full lg:w-1/2 space-y-8 text-center lg:text-left">
-              <div className="space-y-4 text-left">
+            <motion.div 
+              initial={{ opacity: 0, x: 50, rotateY: 20 }} 
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }} 
+              viewport={{ once: true }} 
+              transition={{ duration: 1, delay: 0.2 }}
+              className="w-full lg:w-1/2 space-y-8 text-center lg:text-left"
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              <div className="space-y-4 text-left" style={{ translateZ: 30 }}>
                 <h3 className="text-special-red font-black text-[10px] uppercase tracking-[0.3em]">The evolution</h3>
-                <h2 className="text-4xl sm:text-7xl font-black text-text-emphasis leading-[0.95] tracking-tighter">No more, try <br /><span className="text-primary italic text-gradient-premium">Cue-Arena app</span></h2>
+                <h2 className="text-4xl sm:text-w-7xl font-black text-text-emphasis leading-[0.95] tracking-tighter">No more, try <br /><span className="text-primary italic text-gradient-premium">Cue-Arena app</span></h2>
                 <p className="text-lg sm:text-xl text-text/70 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">Manual brackets are history. Upgrade to precision and real-time synchronization.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
@@ -231,19 +312,40 @@ const Landing = () => {
             <h2 className="text-4xl sm:text-6xl font-black text-text-emphasis tracking-tighter leading-none mb-6 text-left lg:text-center">Designed for the <span className="text-gradient-premium">modern player.</span></h2>
             <p className="text-lg text-text/70 font-medium text-left lg:text-center">Step into a world where technology meets the table. Professionalism in every pixel.</p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[600px] text-left">
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="lg:col-span-8 relative rounded-[40px] overflow-hidden group shadow-2xl border border-base2/50">
-              <img src="/images/hall_digital.png" alt="Digital hall" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-10 flex flex-col justify-end text-left">
-                <h4 className="text-3xl font-black text-base3 mb-2 uppercase tracking-tighter">Smart venues</h4>
-                <p className="text-base3/70 max-w-md font-medium text-left">Digital tournament boards and automated table control for a seamless match-day experience.</p>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[600px] text-left" style={{ perspective: 2000 }}>
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              whileHover="hover"
+              viewport={{ once: true }}
+              variants={card3DVariants}
+              className="lg:col-span-8 relative rounded-[40px] overflow-hidden group shadow-2xl border border-white/10"
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              <img src="/images/hall_digital.png" alt="Digital hall" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-10 flex flex-col justify-end text-left">
+                <motion.div style={{ translateZ: 30 }}>
+                  <h4 className="text-3xl font-black text-base3 mb-2 uppercase tracking-tighter">Smart venues</h4>
+                  <p className="text-base3/70 max-w-md font-medium text-left">Digital tournament boards and automated table control for a seamless match-day experience.</p>
+                </motion.div>
               </div>
             </motion.div>
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="lg:col-span-4 relative rounded-[40px] overflow-hidden group shadow-2xl border border-base2/50 text-left">
-              <img src="/images/trophy_app.png" alt="App" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-10 flex flex-col justify-end">
-                <h4 className="text-2xl font-black text-base3 mb-2 uppercase tracking-tighter text-left">Your stats, anywhere</h4>
-                <p className="text-base3/70 font-medium text-sm text-left">Real-time brackets and secure wallet access right in your pocket.</p>
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              whileHover="hover"
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              variants={card3DVariants}
+              className="lg:col-span-4 relative rounded-[40px] overflow-hidden group shadow-2xl border border-white/10 text-left"
+              style={{ transformStyle: 'preserve-3d' }}
+            >
+              <img src="/images/trophy_app.png" alt="App" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-10 flex flex-col justify-end">
+                <motion.div style={{ translateZ: 30 }}>
+                  <h4 className="text-2xl font-black text-base3 mb-2 uppercase tracking-tighter text-left">Your stats, anywhere</h4>
+                  <p className="text-base3/70 font-medium text-sm text-left">Real-time brackets and secure wallet access right in your pocket.</p>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -285,25 +387,39 @@ const Landing = () => {
               </div>
               <AnimatePresence mode="wait">
                 {loading ? <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{[1, 2, 3, 4].map(i => <div key={i} className="h-80 bg-base2/30 rounded-3xl animate-pulse" />)}</div> : tournaments.length > 0 ? (
-                  <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                  <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left" style={{ perspective: 1500 }}>
                     {tournaments.map((t, idx) => {
                       const colors = [{ border: 'hover:border-primary/60', shadow: 'shadow-primary/20', accent: 'bg-primary' }, { border: 'hover:border-indigo-500/60', shadow: 'shadow-indigo-500/20', accent: 'bg-indigo-500' }, { border: 'hover:border-special-red/60', shadow: 'shadow-special-red/20', accent: 'bg-special-red' }, { border: 'hover:border-emerald-500/60', shadow: 'shadow-emerald-500/20', accent: 'bg-emerald-500' }];
                       const style = colors[idx % colors.length];
                       return (
-                        <motion.div key={t._id} variants={itemVariants} className={`group relative h-full bg-base3/80 backdrop-blur-md border border-base2/50 rounded-[40px] overflow-hidden ${style.border} hover:shadow-3xl ${style.shadow} transition-all duration-700 hover:-translate-y-2 text-left`}>
-                          <div className="absolute top-0 left-0 w-full h-2 bg-base2"><motion.div initial={{ width: 0 }} whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} /></div>
-                          <div className="p-8 flex flex-col h-full text-left">
-                            <div className="flex justify-between items-start mb-4"><StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} /><span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.format.replace('_', ' ')}</span></div>
-                            <h3 className="text-xl font-black text-text-emphasis mb-5 group-hover:text-primary transition-colors line-clamp-2 leading-tight text-left">{t.name}</h3>
-                            <div className="grid grid-cols-1 gap-3 mb-6 flex-1 text-xs font-bold text-text/80 text-left">
+                        <motion.div 
+                          key={t._id} 
+                          variants={itemVariants} 
+                          whileHover="hover"
+                          customVariants={card3DVariants}
+                          className={`group relative h-full bg-base3/80 backdrop-blur-md border border-base2/50 rounded-[40px] overflow-hidden ${style.border} hover:shadow-3xl ${style.shadow} transition-all duration-700 text-left`}
+                          style={{ transformStyle: 'preserve-3d' }}
+                        >
+                          <motion.div variants={card3DVariants} className="p-8 flex flex-col h-full text-left">
+                            <div className="absolute top-0 left-0 w-full h-2 bg-base2"><motion.div initial={{ width: 0 }} whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} /></div>
+                            
+                            <div className="flex justify-between items-start mb-4" style={{ translateZ: 20 }}>
+                              <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
+                              <span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.format.replace('_', ' ')}</span>
+                            </div>
+                            
+                            <h3 className="text-xl font-black text-text-emphasis mb-5 group-hover:text-primary transition-colors line-clamp-2 leading-tight text-left" style={{ translateZ: 30 }}>{t.name}</h3>
+                            
+                            <div className="grid grid-cols-1 gap-3 mb-6 flex-1 text-xs font-bold text-text/80 text-left" style={{ translateZ: 10 }}>
                               <div className="flex items-center gap-3 p-2.5 rounded-xl bg-base2/30 text-left"><MapPin size={16} className="text-primary" /> <span className="truncate text-left">{t.venue}</span></div>
                               <div className="flex gap-3 text-left">
                                 <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Users size={16} className="text-blue" /> <span>{t.confirmedPlayers.length}/{t.maxPlayers}</span></div>
                                 <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Calendar size={16} className="text-special-red" /> <span>{new Date(t.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span></div>
                               </div>
                             </div>
-                            <Link to="/login" className="w-full py-3 rounded-xl btn-primary text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all font-black">Join tournament <ArrowRight size={16} /></Link>
-                          </div>
+                            
+                            <Link to="/login" className="w-full py-3 rounded-xl btn-primary text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all font-black" style={{ translateZ: 25 }}>Join tournament <ArrowRight size={16} /></Link>
+                          </motion.div>
                         </motion.div>
                       );
                     })}
@@ -391,17 +507,27 @@ const Landing = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 relative overflow-hidden text-left">
+      <section className="py-24 relative overflow-hidden text-left" style={{ perspective: 1500 }}>
+        <ParallaxIcon icon={Star} color="text-white" size={32} top="10%" left="5%" delay={0} speed={0.4} />
+        <ParallaxIcon icon={Trophy} color="text-yellow" size={24} top="70%" left="92%" delay={0.3} speed={0.6} />
+        
         <div className="container mx-auto px-6">
-          <div className="p-16 rounded-[48px] bg-gradient-to-br from-primary via-primary-dark to-special-red relative overflow-hidden shadow-3xl text-center group">
+          <motion.div 
+            whileHover={{ rotateX: 2, rotateY: -2, scale: 1.01 }}
+            className="p-16 rounded-[48px] bg-gradient-to-br from-primary via-primary-dark to-special-red relative overflow-hidden shadow-3xl text-center group"
+            style={{ transformStyle: 'preserve-3d' }}
+          >
             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 animate-shimmer" />
-            <h2 className="text-5xl lg:text-7xl font-black text-base3 mb-8 leading-[0.9] tracking-tighter text-center">Ready to claim <br />your title?</h2>
-            <div className="flex justify-center gap-6"><Link to="/register" className="px-12 py-5 rounded-2xl bg-base2 text-primary font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-xl group/btn overflow-hidden relative"><div className="absolute inset-0 bg-primary/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" /><span className="relative">Join elite now</span></Link></div>
-          </div>
+            <motion.h2 style={{ translateZ: 50 }} className="text-5xl lg:text-7xl font-black text-base3 mb-8 leading-[0.9] tracking-tighter text-center">Ready to claim <br />your title?</motion.h2>
+            <motion.div style={{ translateZ: 30 }} className="flex justify-center gap-6"><Link to="/register" className="px-12 py-5 rounded-2xl bg-base2 text-primary font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-xl group/btn overflow-hidden relative"><div className="absolute inset-0 bg-primary/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" /><span className="relative">Join elite now</span></Link></motion.div>
+          </motion.div>
         </div>
       </section>
 
-      <footer className="pt-24 pb-12 bg-base3 border-t border-base2/50 text-left">
+      <footer className="pt-24 pb-12 bg-base3 border-t border-base2/50 text-left relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20">
+          <ParallaxIcon icon={Globe} color="text-primary" size={200} top="20%" left="-10%" delay={0} speed={0.2} />
+        </div>
         <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-5 gap-16 mb-20 text-left">
           <div className="md:col-span-1 text-left"><span className="text-2xl brand-premium font-black tracking-tight mb-8 block text-left">Cue-Arena</span><p className="text-text/60 font-medium text-left">The definitive platform for pool match-making and tournament administration. Precise. Professional. Premium.</p></div>
           <div className="text-left"><h4 className="text-sm font-black text-text-emphasis uppercase tracking-[0.2em] mb-8 text-left">Platform</h4><ul className="space-y-4 font-bold text-text/60 text-left"><li><Link to="/tournaments" className="hover:text-primary">Tournaments</Link></li><li><Link to="/matches" className="hover:text-primary">Matches</Link></li></ul></div>
