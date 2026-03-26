@@ -37,6 +37,27 @@ const Landing = () => {
   const [footerForm, setFooterForm] = useState({ fullName: '', email: '', phone: '' });
   const [footerSubmitting, setFooterSubmitting] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.pageYOffset / totalScroll) * 100;
+      setScrollProgress(progress);
+    };
+
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   const handleFooterSubmit = async (e) => {
     e.preventDefault();
@@ -95,7 +116,21 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/30">
+    <div className="min-h-screen bg-background selection:bg-primary/30 relative">
+      {/* Global Cursor Glow */}
+      <div 
+        className="fixed pointer-events-none z-[9999] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 hidden lg:block"
+        style={{ left: mousePos.x, top: mousePos.y, opacity: 0.4 }}
+      />
+
+      {/* Scroll Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1 z-[1000]">
+        <motion.div 
+          className="h-full bg-gradient-to-r from-primary via-indigo-500 to-special-red"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
       <nav className="border-b border-base2/50 bg-base3/70 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group relative">
@@ -158,8 +193,10 @@ const Landing = () => {
       </AnimatePresence>
 
       <header className="relative min-h-[90vh] flex items-center pt-20 pb-16 overflow-hidden">
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 translate-x-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute top-1/4 right-0 translate-x-[20%] w-[400px] h-[400px] bg-red-500/10 rounded-full blur-[100px] animate-pulse delay-700"></div>
+        {/* Animated Background Blobs */}
+        <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary/20 rounded-full blur-[100px] animate-blob" style={{ animationDelay: '0s' }}></div>
+        <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-special-red/20 rounded-full blur-[120px] animate-blob" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-indigo-500/20 rounded-full blur-[80px] animate-blob" style={{ animationDelay: '4s' }}></div>
 
         <div className="container mx-auto px-6 relative z-10">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={containerVariants} className="max-w-4xl mx-auto text-center">
@@ -169,8 +206,8 @@ const Landing = () => {
             </motion.div>
             
             <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl lg:text-8xl font-black text-text-emphasis mb-6 sm:mb-8 tracking-tighter leading-[1] sm:leading-[0.9]">
-              The Tournament for <br className="hidden sm:block" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-primary to-special-red animate-gradient">True Champions.</span>
+              The tournament for <br className="hidden sm:block" />
+              <span className="text-gradient-premium animate-gradient-x">true champions.</span>
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-xl lg:text-2xl text-text/80 max-w-3xl mx-auto mb-12 leading-relaxed font-medium">
@@ -178,8 +215,9 @@ const Landing = () => {
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link to="/register" className="btn-primary text-xl px-12 py-5 rounded-2xl flex items-center gap-3 shadow-2xl shadow-primary/25 hover:shadow-primary/50 transition-all hover:scale-105 active:scale-95 group">
-                Register Tournament <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+              <Link to="/register" className="btn-primary text-xl px-12 py-5 rounded-2xl flex items-center gap-3 shadow-2xl shadow-primary/25 hover:shadow-primary/50 transition-all hover:scale-105 active:scale-95 group relative overflow-hidden">
+                <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-50"></div>
+                Register tournament <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
 
@@ -219,8 +257,8 @@ const Landing = () => {
               transition={{ duration: 0.8 }}
               className="w-full lg:w-1/2 relative group"
             >
-              <div className="absolute -inset-4 bg-gradient-to-r from-special-red/20 to-primary/20 rounded-[40px] blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
-              <div className="relative rounded-[32px] overflow-hidden border border-white/20 shadow-2xl skew-x-1 group-hover:skew-x-0 transition-transform duration-700">
+              <div className="absolute -inset-6 bg-gradient-to-r from-special-red/30 via-primary/30 to-indigo-500/30 rounded-[48px] blur-3xl opacity-40 group-hover:opacity-100 transition-opacity duration-1000"></div>
+              <div className="relative rounded-[32px] overflow-hidden border border-white/20 shadow-2xl transition-all duration-700 hover:rotate-1 hover:scale-[1.02]">
                 <img src="/images/old_way.png" alt="Traditional tournament management" className="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
                   <div className="flex items-center gap-3">
@@ -246,7 +284,7 @@ const Landing = () => {
                 <h3 className="text-special-red font-black text-[10px] uppercase tracking-[0.3em]">The evolution</h3>
                 <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black text-text-emphasis leading-[0.95] tracking-tighter">
                   No more, try <br />
-                  <span className="text-primary italic">Cue Arena App</span>
+                  <span className="text-primary italic text-gradient-premium">Cue-Arena App</span>
                 </h2>
                 <p className="text-lg sm:text-xl text-text/70 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
                   Manual brackets are history. Upgrade to precision and real-time synchronization.
@@ -295,21 +333,21 @@ const Landing = () => {
                     {[1, 2, 3, 4].map(i => <div key={i} className="h-80 bg-base2/30 rounded-3xl animate-pulse"></div>)}
                   </div>
                 ) : tournaments.length > 0 ? (
-                  <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {tournaments.map((t, idx) => {
                       const colors = [
-                        { border: 'hover:border-primary/40', shadow: 'shadow-primary/10', accent: 'bg-primary' },
-                        { border: 'hover:border-indigo-500/40', shadow: 'shadow-indigo-500/10', accent: 'bg-indigo-500' },
-                        { border: 'hover:border-special-red/40', shadow: 'shadow-special-red/10', accent: 'bg-special-red' },
-                        { border: 'hover:border-emerald-500/40', shadow: 'shadow-emerald-500/10', accent: 'bg-emerald-500' }
+                        { border: 'hover:border-primary/60', shadow: 'shadow-primary/20', accent: 'bg-primary' },
+                        { border: 'hover:border-indigo-500/60', shadow: 'shadow-indigo-500/20', accent: 'bg-indigo-500' },
+                        { border: 'hover:border-special-red/60', shadow: 'shadow-special-red/20', accent: 'bg-special-red' },
+                        { border: 'hover:border-emerald-500/60', shadow: 'shadow-emerald-500/20', accent: 'bg-emerald-500' }
                       ];
                       const style = colors[idx % colors.length];
                       return (
-                        <motion.div key={t._id} variants={itemVariants} className={`group relative h-full bg-base3 border border-base2/50 rounded-3xl overflow-hidden ${style.border} hover:shadow-2xl ${style.shadow} transition-all duration-500`}>
-                          <div className="absolute top-0 left-0 w-full h-1.5 bg-base2">
-                            <motion.div initial={{ width: 0 }} whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent}`} />
+                        <motion.div key={t._id} variants={itemVariants} className={`group relative h-full bg-base3/80 backdrop-blur-md border border-base2/50 rounded-[40px] overflow-hidden ${style.border} hover:shadow-3xl ${style.shadow} transition-all duration-700 hover:-translate-y-2`}>
+                          <div className="absolute top-0 left-0 w-full h-2 bg-base2">
+                            <motion.div initial={{ width: 0 }} whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} />
                           </div>
-                          <div className="p-6 flex flex-col h-full">
+                          <div className="p-8 flex flex-col h-full">
                             <div className="flex justify-between items-start mb-4">
                               <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
                               <span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.format.replace('_', ' ')}</span>
@@ -354,7 +392,17 @@ const Landing = () => {
               <div className="bg-base3/50 backdrop-blur-xl border border-base2 rounded-[32px] overflow-hidden shadow-2xl relative h-auto">
                 <div className="divide-y divide-base2/50 max-h-[850px] overflow-y-auto custom-scrollbar">
                   {leaderboard.map((p, i) => (
-                    <motion.div key={p._id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="flex items-center gap-3 p-3 hover:bg-base2/20 transition-colors group">
+                    <motion.div 
+                      key={p._id} 
+                      initial={{ opacity: 0, x: -20 }} 
+                      whileInView={{ opacity: 1, x: 0 }} 
+                      viewport={{ once: true }} 
+                      transition={{ delay: i * 0.05 }} 
+                      className={`flex items-center gap-4 p-4 transition-all group relative overflow-hidden ${i === 0 ? 'bg-gradient-to-r from-yellow/10 to-transparent border-y border-yellow/20' : 'hover:bg-base2/20'}`}
+                    >
+                      {i === 0 && (
+                        <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20"></div>
+                      )}
                       <div className="flex flex-col items-center justify-center min-w-[24px]">
                         {p.rankTrend === 'up' ? (
                           <ChevronUp size={14} className="text-emerald-500 mb-0.5" />
@@ -365,17 +413,17 @@ const Landing = () => {
                         ) : (
                           <Minus size={14} className="text-text/20 mb-0.5" />
                         )}
-                        <div className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-[10px] shadow-inner ${i === 0 ? 'bg-yellow/10 text-yellow ring-1 ring-yellow/30' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>{i + 1}</div>
+                        <div className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-[11px] shadow-inner ${i === 0 ? 'bg-yellow text-base3 shadow-[0_0_15px_rgba(181,137,0,0.4)]' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>{i + 1}</div>
                       </div>
-                      <div className="w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-primary to-special-red shrink-0">
+                      <div className={`w-12 h-12 rounded-full p-0.5 shrink-0 ${i === 0 ? 'bg-yellow shadow-[0_0_15px_rgba(181,137,0,0.5)] scale-110' : 'bg-gradient-to-br from-primary to-special-red'}`}>
                         <img src={p.profilePhoto || `https://ui-avatars.com/api/?name=${p.fullName}&background=random`} alt={p.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-black text-text-emphasis truncate">{p.fullName}</h3>
+                        <h3 className={`font-black truncate ${i === 0 ? 'text-text-emphasis text-base' : 'text-sm text-text-emphasis'}`}>{p.fullName}</h3>
                       </div>
                       <div className="text-right flex flex-col items-end">
-                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-text/30 leading-none mb-1">Points</span>
-                        <div className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 leading-none">{p.points || 0}</div>
+                        <span className={`text-[8px] font-black uppercase tracking-[0.2em] leading-none mb-1 ${i === 0 ? 'text-yellow' : 'text-text/30'}`}>Points</span>
+                        <div className={`font-black leading-none ${i === 0 ? 'text-2xl text-yellow' : 'text-xl text-gradient-premium'}`}>{p.points || 0}</div>
                       </div>
                     </motion.div>
                   ))}

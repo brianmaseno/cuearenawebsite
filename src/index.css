@@ -147,3 +147,54 @@
 .btn-primary:active {
   transform: translateY(0);
 }
+
+/* Premium Animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes blob {
+  0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: translate3d(0, 0, 0) rotate(0); }
+  34% { border-radius: 70% 30% 46% 54% / 30% 29% 71% 70%; transform: translate3d(50px, 20px, 0) rotate(90deg); }
+  67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; transform: translate3d(-20px, 50px, 0) rotate(180deg); }
+}
+
+.animate-blob {
+  animation: blob 20s infinite alternate;
+}
+
+.text-gradient-premium {
+  background: linear-gradient(to right, var(--color-primary), var(--color-indigo-500), var(--color-special-red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass-premium {
+  background: rgba(var(--color-base3-rgb), 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+/* Base3 RGB for alpha blending */
+:root {
+  --color-base3-rgb: 253, 246, 227;
+}
