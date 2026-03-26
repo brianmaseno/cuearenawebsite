@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode, Clock } from 'lucide-react';
+import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode, Clock, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ModeratorTables = () => {
