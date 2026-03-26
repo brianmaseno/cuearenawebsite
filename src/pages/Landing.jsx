@@ -113,7 +113,7 @@ const Landing = () => {
           <div className="hidden md:flex items-center gap-10">
             <Link to="/login" className="text-text hover:text-primary font-bold transition-all">Login</Link>
             <Link to="/register" className="btn-primary shadow-lg shadow-primary/20 hover:shadow-primary/40 px-6 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 active:translate-y-0">
-              Get Started
+              Get started
             </Link>
           </div>
 
@@ -145,11 +145,11 @@ const Landing = () => {
               </button>
 
               <div className="w-full space-y-2 mt-2">
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-[#FFF9EA] text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-[#FFF2D1] transition-all active:scale-95 shadow-md">
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-base2/50 text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-base2 transition-all active:scale-95 shadow-md">
                   Login <LogIn size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-[#FFF9EA] text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-[#FFF2D1] transition-all active:scale-95 shadow-md">
-                  Get Started <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-base2/50 text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-base2 transition-all active:scale-95 shadow-md">
+                  Get started <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </motion.div>
@@ -189,24 +189,94 @@ const Landing = () => {
                 <div className="text-3xl sm:text-4xl font-black text-primary mb-1">
                   <AnimatedCounter value={stats.totalTournaments || 12} />
                 </div>
-                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Active Tournaments</div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest text-[10px]">Active tournaments</div>
               </div>
               <div className="relative text-center sm:border-x border-base2/40 sm:px-4">
                 <div className="text-3xl sm:text-4xl font-black text-text-emphasis mb-1">
                   <AnimatedCounter value={stats.totalMatches || 450} />
                 </div>
-                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Matches Played</div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest text-[10px]">Matches played</div>
               </div>
               <div className="relative text-center sm:col-span-2 lg:col-span-1 border-t sm:border-t-0 pt-6 sm:pt-0 border-base2/40">
                 <div className="text-3xl sm:text-4xl font-black text-special-red mb-1">
                   <AnimatedCounter value={stats.totalPlayers || '1.2k'} />
                 </div>
-                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Players Joined</div>
+                <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest text-[10px]">Players joined</div>
               </div>
             </motion.div>
           </motion.div>
         </div>
       </header>
+
+      {/* Evolution Section: Highlighting the transition from manual to digital */}
+      <section className="py-16 sm:py-24 bg-base2/20 relative overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="w-full lg:w-1/2 relative group"
+            >
+              <div className="absolute -inset-4 bg-gradient-to-r from-special-red/20 to-primary/20 rounded-[40px] blur-2xl opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div className="relative rounded-[32px] overflow-hidden border border-white/20 shadow-2xl skew-x-1 group-hover:skew-x-0 transition-transform duration-700">
+                <img src="/images/old_way.png" alt="Traditional tournament management" className="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-special-red flex items-center justify-center text-base3 shadow-lg shadow-special-red/40 animate-pulse">
+                      <X size={28} strokeWidth={3} />
+                    </div>
+                    <div>
+                      <h4 className="text-2xl font-black text-base3 uppercase tracking-tighter leading-none italic">No more manual brackets</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="w-full lg:w-1/2 space-y-6 sm:space-y-8 text-center lg:text-left"
+            >
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="text-special-red font-black text-[10px] uppercase tracking-[0.3em]">The evolution</h3>
+                <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black text-text-emphasis leading-[0.95] tracking-tighter">
+                  No more, try <br />
+                  <span className="text-primary italic">Cue Arena App</span>
+                </h2>
+                <p className="text-lg sm:text-xl text-text/70 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">
+                  Manual brackets are history. Upgrade to precision and real-time synchronization.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                {[
+                  { title: "Instant brackets", desc: "Automated tree generation and updates." },
+                  { title: "Live updates", desc: "Match data synced instantly to every player." },
+                  { title: "Secure flows", desc: "Automated fees and payout distribution." },
+                  { title: "Elite design", desc: "A premium interface for modern halls." }
+                ].map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-[20px] bg-base3/80 backdrop-blur-sm border border-base2/50 shadow-sm hover:shadow-md transition-all group text-left">
+                    <h4 className="text-xs sm:text-sm font-black text-text-emphasis mb-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      {item.title}
+                    </h4>
+                    <p className="text-[10px] sm:text-xs text-text/60 leading-normal font-bold uppercase tracking-tight">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Link to="/login" className="inline-flex items-center gap-3 btn-primary px-8 py-3.5 sm:px-10 sm:py-4 rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center text-sm">
+                Get Started Now <ArrowRight size={18} />
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       <section id="tournaments-section" className="py-24 bg-base3/50 relative overflow-hidden">
         <div className="container mx-auto px-6">
@@ -214,7 +284,7 @@ const Landing = () => {
             <div className="flex-1 min-w-0">
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
                 <div>
-                  <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Active Tournaments</h2>
+                  <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Active tournaments</h2>
                   <p className="text-lg text-text/70 font-medium">Join high-stakes competitions and prove your mastery.</p>
                 </div>
               </div>
@@ -258,9 +328,9 @@ const Landing = () => {
                                 </div>
                               </div>
                             </div>
-                            <Link to="/login" className="w-full py-3 rounded-xl btn-primary text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all">
-                              Join Tournament <ArrowRight size={16} />
-                            </Link>
+                             <Link to="/login" className="w-full py-3 rounded-xl btn-primary text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all">
+                               Join tournament <ArrowRight size={16} />
+                             </Link>
                           </div>
                         </motion.div>
                       );
@@ -278,7 +348,7 @@ const Landing = () => {
 
             <div className="w-full xl:w-[420px] shrink-0">
                <div className="mb-10 text-center xl:text-left">
-                <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite Rank</h2>
+                <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite rank</h2>
                 <p className="text-lg text-text/70 font-medium">The most prestigious players.</p>
               </div>
               <div className="bg-base3/50 backdrop-blur-xl border border-base2 rounded-[32px] overflow-hidden shadow-2xl relative h-auto">
@@ -335,9 +405,9 @@ const Landing = () => {
       <section className="py-24 relative overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="p-16 rounded-[48px] bg-gradient-to-br from-primary via-primary-dark to-special-red relative overflow-hidden shadow-3xl text-center">
-            <h2 className="text-5xl lg:text-7xl font-black text-white mb-8 leading-[0.9] tracking-tighter">Ready to Claim <br />Your Title?</h2>
+            <h2 className="text-5xl lg:text-7xl font-black text-base3 mb-8 leading-[0.9] tracking-tighter">Ready to claim <br />your title?</h2>
             <div className="flex justify-center gap-6">
-              <Link to="/register" className="px-12 py-5 rounded-2xl bg-white text-primary font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-xl">Join Elite Now</Link>
+              <Link to="/register" className="px-12 py-5 rounded-2xl bg-base2 text-primary font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-xl">Join elite now</Link>
             </div>
           </div>
         </div>
@@ -372,14 +442,14 @@ const Landing = () => {
                 <input type="email" placeholder="Email" value={footerForm.email} onChange={(e) => setFooterForm({ ...footerForm, email: e.target.value })} className="bg-base3 border border-base2 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-primary" />
               </div>
               <input type="text" placeholder="Phone" value={footerForm.phone} onChange={(e) => setFooterForm({ ...footerForm, phone: e.target.value })} className="w-full bg-base3 border border-base2 rounded-xl px-4 py-2.5 text-xs outline-none focus:border-primary" />
-              <button type="submit" disabled={footerSubmitting} className="w-full py-2.5 bg-primary text-white rounded-xl font-black text-xs hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50">
-                {footerSubmitting ? <Loader2 size={14} className="animate-spin" /> : <><Send size={14} /> Apply Now</>}
+              <button type="submit" disabled={footerSubmitting} className="w-full py-2.5 bg-primary text-base3 rounded-xl font-black text-xs hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50">
+                {footerSubmitting ? <Loader2 size={14} className="animate-spin" /> : <><Send size={14} /> Apply now</>}
               </button>
             </form>
           </div>
         </div>
         <div className="container mx-auto px-6 pt-12 border-t border-base2/30 flex justify-between items-center text-sm font-bold text-text/40">
-          <p>© 2026 Cue-Arena. Designed for Champions.</p>
+          <p>© 2026 Cue-Arena. Designed for champions.</p>
           <div className="flex gap-8 uppercase tracking-widest text-[10px]"><a>Twitter</a><a>Discord</a></div>
         </div>
       </footer>
