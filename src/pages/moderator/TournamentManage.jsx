@@ -211,7 +211,7 @@ const TournamentManage = () => {
       setActionLoading(true);
       try {
          await api.put(`/tournaments/matches/${selectedMatchForSets._id}/start`, { poolTableId: selectedTableId });
-         toast.success('Match started and table unlocked!');
+         toast.success('Match started! Table Unlocked successfully 🎱', { icon: '🔓', duration: 4000 });
          setShowTableModal(false);
          setSelectedTableId('');
          setSelectedMatchForSets(null);

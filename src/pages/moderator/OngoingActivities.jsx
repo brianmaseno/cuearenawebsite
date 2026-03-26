@@ -158,9 +158,10 @@ const OngoingActivities = () => {
       const endpoint = selectedActivity.type === 'battle' 
         ? `/battles/${selectedActivity.id}/start`
         : `/direct-matches/${selectedActivity.id}/start`;
-      
+
       await api.put(endpoint, { poolTableId: selectedTableId || undefined });
-      toast.success(`${selectedActivity.type === 'battle' ? 'Battle' : 'Match'} started! IoT Unlock signal sent.`);
+      const activityLabel = selectedActivity.type === 'battle' ? 'Battle' : 'Match';
+      toast.success(`${activityLabel} started! Table Unlocked successfully 🎱`, { icon: '🔓', duration: 4000 });
       setShowTableModal(false);
       setSelectedActivity(null);
       setSelectedTableId('');
