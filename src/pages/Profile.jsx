@@ -87,7 +87,7 @@ const Profile = () => {
       <div className="max-w-3xl mx-auto space-y-6 pb-20 pt-2">
         
         {/* Profile Card */}
-        <div className="bg-base2/20 backdrop-blur-md p-6 rounded-[32px] border border-base2/30 shadow-xl relative overflow-hidden group">
+        <div className="aura-card p-6 border-none shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-[80px] group-hover:bg-primary/10 transition-all duration-700"></div>
           
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
@@ -284,7 +284,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-primary text-base3 rounded-2xl font-medium uppercase tracking-widest text-xs hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all duration-300 disabled:opacity-50 ring-1 ring-primary/10 flex items-center justify-center gap-3 group/btn"
+                  className="aura-btn w-full py-4 bg-primary text-base3 rounded-2xl font-medium uppercase tracking-widest text-xs active:scale-95 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-3 group/btn"
                 >
                   {loading ? <Loader2 className="animate-spin" size={18} strokeWidth={1.5} /> : <Save size={18} strokeWidth={1.5} className="group-hover:rotate-12 transition-transform" />}
                   Save Changes

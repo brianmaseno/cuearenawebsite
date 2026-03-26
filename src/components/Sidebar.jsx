@@ -91,7 +91,7 @@ const Sidebar = () => {
       }`}>
         <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
           <Link to={dashboardPath} className="flex items-center gap-3" onClick={() => navigate(dashboardPath)}>
-            {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter">Cue-Arena</span>}
+            {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter text-aura">Cue-Arena</span>}
           </Link>
           <button 
             onClick={toggleSidebar}
@@ -163,7 +163,7 @@ const Sidebar = () => {
       </aside>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-base3/90 backdrop-blur-xl border border-base2/50 rounded-2xl shadow-2xl z-[100] flex justify-around items-center px-2 safe-bottom">
+      <nav className="md:hidden fixed bottom-6 left-4 right-4 h-16 aura-card backdrop-blur-xl border-none shadow-2xl z-[100] flex justify-around items-center px-2 safe-bottom">
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;

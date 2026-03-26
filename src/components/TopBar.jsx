@@ -77,6 +77,7 @@ const TopBar = ({ title }) => {
     return new Date(date).toLocaleDateString();
   };
 
+
   return (
     <header className="h-16 md:h-20 bg-base3/80 backdrop-blur-md border-b border-base2 px-4 md:px-8 flex items-center justify-between sticky top-0 z-40 safe-top">
       <div className="flex-1 min-w-0 pr-4">
@@ -99,8 +100,8 @@ const TopBar = ({ title }) => {
 
         <div className="flex items-center gap-1.5">
           {(user?.role === 'player' || user?.role === 'moderator' || user?.role === 'admin') && (
-            <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/15 rounded-full px-2 py-1 transition-all">
-              <WalletIcon size={12} className="fill-emerald-500" />
+            <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full px-2 py-1 transition-all shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+              <WalletIcon size={12} className="fill-emerald-500/20" />
               <span className="text-[10px] md:text-xs font-black tabular-nums">
                 {liveBalance.toLocaleString()}
               </span>
@@ -108,8 +109,8 @@ const TopBar = ({ title }) => {
           )}
           
           {user?.role === 'player' && (
-            <div className="hidden sm:flex items-center gap-1 bg-primary/10 text-primary border border-primary/15 rounded-full px-2 py-1">
-              <Star size={12} className="fill-primary" />
+            <div className="hidden sm:flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-full px-2 py-1 shadow-[0_0_10px_rgba(38,139,210,0.1)]">
+              <Star size={12} className="fill-primary/20" />
               <span className="text-[10px] md:text-xs font-black tabular-nums">
                 {livePoints}
               </span>
@@ -241,7 +242,7 @@ const TopBar = ({ title }) => {
             <p className="text-xs font-black text-text-emphasis tracking-tight truncate max-w-[100px] leading-none mb-1">
               {user?.fullName?.split(' ')[0]}
             </p>
-            <p className="text-[9px] font-bold text-text/30 uppercase tracking-widest leading-none">
+            <p className="text-[9px] font-bold text-primary uppercase tracking-widest leading-none bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
               {user?.role}
             </p>
           </div>

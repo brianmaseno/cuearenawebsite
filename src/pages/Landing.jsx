@@ -182,8 +182,11 @@ const Landing = () => {
           </button>
 
           <div className="hidden md:flex items-center gap-10">
-            <Link to="/login" className="text-text hover:text-primary font-bold transition-all">Login</Link>
-            <Link to="/register" className="btn-primary shadow-lg shadow-primary/20 hover:shadow-primary/40 px-6 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 active:translate-y-0 text-sm">
+            <Link to="/login" className="text-text hover:text-primary font-bold transition-all relative group">
+              Login
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
+            </Link>
+            <Link to="/register" className="aura-btn px-8 py-3 text-sm">
               Get started
             </Link>
           </div>
@@ -223,14 +226,13 @@ const Landing = () => {
             <motion.h1 variants={itemVariants} className="text-4xl sm:text-6xl lg:text-8xl font-black text-text-emphasis mb-6 sm:mb-8 tracking-tighter leading-[1] sm:leading-[0.9]">The tournament for <br className="hidden sm:block" /><span className="text-gradient-premium animate-gradient-x">true champions.</span></motion.h1>
             <motion.p variants={itemVariants} className="text-xl lg:text-2xl text-text/80 max-w-3xl mx-auto mb-12 leading-relaxed font-medium">Elevate your pool tournaments with industry-leading tools. Real-time bracket sync, professional officiating, and premium match-day experiences.</motion.p>
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link to="/register" className="btn-primary text-xl px-12 py-5 rounded-2xl flex items-center gap-3 shadow-2xl shadow-primary/25 hover:shadow-primary/50 transition-all hover:scale-105 active:scale-95 group relative overflow-hidden">
-                <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-50" />
+              <Link to="/register" className="aura-btn text-xl px-14 py-6 flex items-center gap-3">
                 Register tournament <ArrowRight size={22} />
               </Link>
             </motion.div>
-            <motion.div variants={itemVariants} className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 px-6 sm:px-8 rounded-3xl bg-base3/30 border border-base2/40 backdrop-blur-2xl shadow-2xl relative overflow-hidden group/stats text-center" style={{ transformStyle: 'preserve-3d' }}>
+            <motion.div variants={itemVariants} className="mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 py-8 sm:py-10 px-6 sm:px-8 aura-card relative overflow-hidden group/stats text-center" style={{ transformStyle: 'preserve-3d' }}>
               <motion.div whileHover={{ translateZ: 20 }} className="relative">
-                <div className="text-3xl sm:text-4xl font-black text-primary mb-1"><AnimatedCounter value={stats.totalTournaments || 12} /></div>
+                <div className="text-3xl sm:text-4xl font-black text-primary mb-1 text-aura"><AnimatedCounter value={stats.totalTournaments || 12} /></div>
                 <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Active tournaments</div>
               </motion.div>
               <motion.div whileHover={{ translateZ: 20 }} className="sm:border-x border-base2/40 sm:px-4 relative">
@@ -238,7 +240,7 @@ const Landing = () => {
                 <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Matches played</div>
               </motion.div>
               <motion.div whileHover={{ translateZ: 20 }} className="sm:col-span-2 lg:col-span-1 border-t sm:border-t-0 pt-6 sm:pt-0 border-base2/40 relative">
-                <div className="text-3xl sm:text-4xl font-black text-special-red mb-1"><AnimatedCounter value={stats.totalPlayers || '1.2k'} /></div>
+                <div className="text-3xl sm:text-4xl font-black text-aura mb-1"><AnimatedCounter value={stats.totalPlayers || '1.2k'} /></div>
                 <div className="text-[10px] font-bold text-text/50 uppercase tracking-widest">Players joined</div>
               </motion.div>
             </motion.div>
@@ -298,7 +300,7 @@ const Landing = () => {
                   </div>
                 ))}
               </div>
-              <Link to="/login" className="inline-flex items-center gap-3 btn-primary px-10 py-4 rounded-2xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto justify-center text-sm">Get started now <ArrowRight size={18} /></Link>
+              <Link to="/login" className="inline-flex items-center gap-3 aura-btn px-12 py-5 shadow-xl transition-all w-full sm:w-auto justify-center text-sm">Get started now <ArrowRight size={18} /></Link>
             </motion.div>
           </div>
         </div>
@@ -319,14 +321,14 @@ const Landing = () => {
               whileHover="hover"
               viewport={{ once: true }}
               variants={card3DVariants}
-              className="lg:col-span-8 relative rounded-[40px] overflow-hidden group shadow-2xl border border-white/10"
+              className="lg:col-span-8 aura-card relative overflow-hidden group shadow-2xl border-none"
               style={{ transformStyle: 'preserve-3d' }}
             >
-              <img src="/images/hall_digital.png" alt="Digital hall" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-10 flex flex-col justify-end text-left">
+              <img src="/images/hall_digital.png" alt="Digital hall" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent p-10 flex flex-col justify-end text-left">
                 <motion.div style={{ translateZ: 30 }}>
-                  <h4 className="text-3xl font-black text-base3 mb-2 uppercase tracking-tighter">Smart venues</h4>
-                  <p className="text-base3/70 max-w-md font-medium text-left">Digital tournament boards and automated table control for a seamless match-day experience.</p>
+                  <h4 className="text-3xl font-black text-text-emphasis mb-2 uppercase tracking-tighter">Smart venues</h4>
+                  <p className="text-text/70 max-w-md font-medium text-left">Digital tournament boards and automated table control for a seamless match-day experience.</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -337,14 +339,14 @@ const Landing = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
               variants={card3DVariants}
-              className="lg:col-span-4 relative rounded-[40px] overflow-hidden group shadow-2xl border border-white/10 text-left"
+              className="lg:col-span-4 aura-card relative overflow-hidden group shadow-2xl border-none text-left"
               style={{ transformStyle: 'preserve-3d' }}
             >
-              <img src="/images/trophy_app.png" alt="App" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-10 flex flex-col justify-end">
+              <img src="/images/trophy_app.png" alt="App" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent p-10 flex flex-col justify-end">
                 <motion.div style={{ translateZ: 30 }}>
-                  <h4 className="text-2xl font-black text-base3 mb-2 uppercase tracking-tighter text-left">Your stats, anywhere</h4>
-                  <p className="text-base3/70 font-medium text-sm text-left">Real-time brackets and secure wallet access right in your pocket.</p>
+                  <h4 className="text-2xl font-black text-text-emphasis mb-2 uppercase tracking-tighter text-left">Your stats, anywhere</h4>
+                  <p className="text-text/70 font-medium text-sm text-left">Real-time brackets and secure wallet access right in your pocket.</p>
                 </motion.div>
               </div>
             </motion.div>
@@ -364,9 +366,9 @@ const Landing = () => {
             </div>
             <div className="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-8">
               {[ { step: "01", icon: Target, title: "Register", desc: "Browse active tournaments and join with a single tap. Secure your spot." }, { step: "02", icon: Zap, title: "Play", desc: "Arrive at the hall, scan your entry, and play. Real-time sync." }, { step: "03", icon: Trophy, title: "Win", desc: "Claim your title. Platform-automated payouts ensure winnings are instant." } ].map((item, idx) => (
-                <motion.div key={idx} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="p-8 rounded-[32px] bg-base3 border border-base2 relative group hover:border-indigo-500/50 transition-colors text-left">
-                  <span className="absolute top-8 right-8 text-4xl font-black text-base2/50 group-hover:text-indigo-500/10 transition-colors">{item.step}</span>
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-6"><item.icon size={28} /></div>
+                <motion.div key={idx} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="p-8 aura-card relative group border-none transition-colors text-left">
+                  <span className="absolute top-8 right-8 text-4xl font-black text-primary/10 group-hover:text-primary/20 transition-colors">{item.step}</span>
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6"><item.icon size={28} /></div>
                   <h4 className="text-xl font-black text-text-emphasis mb-3 text-left">{item.title}</h4>
                   <p className="text-sm text-text/60 leading-relaxed font-medium text-left">{item.desc}</p>
                 </motion.div>
@@ -397,7 +399,7 @@ const Landing = () => {
                           variants={itemVariants} 
                           whileHover="hover"
                           customVariants={card3DVariants}
-                          className={`group relative h-full bg-base3/80 backdrop-blur-md border border-base2/50 rounded-[40px] overflow-hidden ${style.border} hover:shadow-3xl ${style.shadow} transition-all duration-700 text-left`}
+                          className={`group relative h-full aura-card border-none overflow-hidden hover:shadow-3xl ${style.shadow} transition-all duration-700 text-left`}
                           style={{ transformStyle: 'preserve-3d' }}
                         >
                           <motion.div variants={card3DVariants} className="p-8 flex flex-col h-full text-left">
@@ -418,7 +420,7 @@ const Landing = () => {
                               </div>
                             </div>
                             
-                            <Link to="/login" className="w-full py-3 rounded-xl btn-primary text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all font-black" style={{ translateZ: 25 }}>Join tournament <ArrowRight size={16} /></Link>
+                            <Link to="/login" className="w-full py-3 aura-btn text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all font-black" style={{ translateZ: 25 }}>Join tournament <ArrowRight size={16} /></Link>
                           </motion.div>
                         </motion.div>
                       );
@@ -429,18 +431,18 @@ const Landing = () => {
             </div>
             <div className="w-full xl:w-[420px] shrink-0 text-left">
               <div className="mb-10 text-center xl:text-left"><h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite rank</h2><p className="text-lg text-text/70 font-medium">The most prestigious players.</p></div>
-              <div className="bg-base3/50 backdrop-blur-xl border border-base2 rounded-[32px] overflow-hidden shadow-2xl relative h-auto text-left">
+              <div className="aura-card border-none overflow-hidden shadow-2xl relative h-auto text-left">
                 <div className="divide-y divide-base2/50 max-h-[850px] overflow-y-auto custom-scrollbar text-left">
                   {leaderboard.map((p, i) => (
-                    <motion.div key={p._id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className={`flex items-center gap-4 p-4 transition-all group relative overflow-hidden ${i === 0 ? 'bg-gradient-to-r from-yellow/10 to-transparent border-y border-yellow/20' : 'hover:bg-base2/20'}`}>
+                    <motion.div key={p._id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className={`flex items-center gap-4 p-4 transition-all group relative overflow-hidden ${i === 0 ? 'bg-primary/5' : 'hover:bg-primary/5'}`}>
                       {i === 0 && <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />}
                       <div className="flex flex-col items-center justify-center min-w-[24px]">
-                        {p.rankTrend === 'up' ? <ChevronUp size={14} className="text-emerald-500 mb-0.5" /> : p.rankTrend === 'down' ? <ChevronDown size={14} className="text-special-red mb-0.5" /> : p.rankTrend === 'new' ? <Info size={14} className="text-blue mx-auto mb-0.5" /> : <Minus size={14} className="text-text/20 mb-0.5" />}
-                        <div className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-[11px] shadow-inner ${i === 0 ? 'bg-yellow text-base3 shadow-[0_0_15px_rgba(181,137,0,0.4)]' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>{i+1}</div>
+                        {p.rankTrend === 'up' ? <ChevronUp size={14} className="text-emerald-500 mb-0.5" /> : p.rankTrend === 'down' ? <ChevronDown size={14} className="text-aura-cyan mb-0.5" /> : p.rankTrend === 'new' ? <Info size={14} className="text-primary mx-auto mb-0.5" /> : <Minus size={14} className="text-text/20 mb-0.5" />}
+                        <div className={`w-9 h-9 flex items-center justify-center rounded-xl font-black text-[11px] shadow-inner ${i === 0 ? 'bg-primary text-base3 shadow-[0_0_15px_rgba(38,139,210,0.4)]' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-aura-cyan/5 text-aura-cyan ring-1 ring-aura-cyan/20' : 'bg-base2 text-text/40'}`}>{i+1}</div>
                       </div>
-                      <div className={`w-12 h-12 rounded-full p-0.5 shrink-0 ${i === 0 ? 'bg-yellow shadow-[0_0_15px_rgba(181,137,0,0.5)] scale-110' : 'bg-gradient-to-br from-primary to-special-red'}`}><img src={p.profilePhoto || `https://ui-avatars.com/api/?name=${p.fullName}&background=random`} alt={p.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" /></div>
-                      <div className="flex-1 min-w-0"><h3 className={`font-black truncate text-left ${i === 0 ? 'text-text-emphasis text-base' : 'text-sm text-text-emphasis'}`}>{p.fullName}</h3></div>
-                      <div className="text-right flex flex-col items-end"><span className={`text-[8px] font-black uppercase tracking-[0.2em] leading-none mb-1 ${i === 0 ? 'text-yellow' : 'text-text/30'}`}>Points</span><div className={`font-black leading-none ${i === 0 ? 'text-2xl text-yellow' : 'text-xl text-gradient-premium'}`}>{p.points || 0}</div></div>
+                      <div className={`w-12 h-12 rounded-full p-0.5 shrink-0 ${i === 0 ? 'bg-primary shadow-[0_0_15px_rgba(38,139,210,0.5)] scale-110' : 'bg-gradient-to-br from-primary to-aura-cyan'}`}><img src={p.profilePhoto || `https://ui-avatars.com/api/?name=${p.fullName}&background=random`} alt={p.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" /></div>
+                      <div className="flex-1 min-w-0"><h3 className={`font-black truncate text-left ${i === 0 ? 'text-text-emphasis text-base text-aura' : 'text-sm text-text-emphasis'}`}>{p.fullName}</h3></div>
+                      <div className="text-right flex flex-col items-end"><span className={`text-[8px] font-black uppercase tracking-[0.2em] leading-none mb-1 ${i === 0 ? 'text-primary' : 'text-text/30'}`}>Points</span><div className={`font-black leading-none ${i === 0 ? 'text-2xl text-primary' : 'text-xl text-gradient-premium'}`}>{p.points || 0}</div></div>
                     </motion.div>
                   ))}
                 </div>
@@ -470,7 +472,7 @@ const Landing = () => {
             { icon: Shield, title: "Pro guard", color: "from-special-red/20 to-special-red/5", iconColor: "text-special-red", desc: "Secure results verification and moderator-only conflict resolution protocols." },
             { icon: Globe, title: "Open access", color: "from-emerald-500/20 to-emerald-500/5", iconColor: "text-emerald-500", desc: "Access from any device. Mobile-optimized for real-time play monitoring." }
           ].map((f, i) => (
-            <div key={i} className="group p-10 rounded-[40px] bg-base3/50 border border-base2/50 hover:border-primary/40 hover:bg-base3 transition-all relative overflow-hidden text-left">
+            <div key={i} className="group aura-card p-10 border-none transition-all relative overflow-hidden text-left">
               <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${f.color} blur-3xl opacity-50 group-hover:opacity-100 transition-opacity`} />
               <div className={`w-16 h-16 rounded-2xl bg-base2 flex items-center justify-center mb-8 ${f.iconColor} shadow-inner relativo z-10`}><f.icon size={32} /></div>
               <h3 className="text-2xl font-black text-text-emphasis mb-4 relativo z-10 text-left">{f.title}</h3>

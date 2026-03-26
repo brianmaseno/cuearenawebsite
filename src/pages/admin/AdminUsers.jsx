@@ -249,38 +249,38 @@ const AdminUsers = () => {
   return (
     <DashboardLayout title="Member Management">
       <div 
-        className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)] glass rounded-3xl p-1"
-        style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif' }}
+        className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)] aura-card p-1 border-none"
+        style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
       >
         {/* Main Pillar */}
         <div className={`flex-1 transition-all duration-300 space-y-6 flex flex-col min-h-0 ${selectedUser ? 'hidden xl:flex' : 'flex'}`}>
           {/* Statistics Summary */}
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 animate-reveal">
-            <div className="bg-base3 border border-base2 p-3 rounded-2xl">
-              <p className="text-[9px] text-red uppercase font-black tracking-widest leading-none mb-1">Admins</p>
+            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+              <p className="text-[9px] text-aura-crimson uppercase font-black tracking-widest leading-none mb-1">Admins</p>
               <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'admin').length}</p>
             </div>
-            <div className="bg-base3 border border-base2 p-3 rounded-2xl">
-              <p className="text-[9px] text-purple uppercase font-black tracking-widest leading-none mb-1">Moderators</p>
+            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+              <p className="text-[9px] text-aura-violet uppercase font-black tracking-widest leading-none mb-1">Moderators</p>
               <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'moderator').length}</p>
             </div>
-            <div className="bg-base3 border border-base2 p-3 rounded-2xl">
-              <p className="text-[9px] text-blue uppercase font-black tracking-widest leading-none mb-1">Players</p>
+            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+              <p className="text-[9px] text-primary uppercase font-black tracking-widest leading-none mb-1">Players</p>
               <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'player').length}</p>
             </div>
-            <div className="bg-base3 border border-base2 p-3 rounded-2xl text-center">
-              <p className="text-[9px] text-emerald uppercase font-black tracking-widest leading-none mb-1">Logged In</p>
-              <p className="text-xl font-black text-emerald leading-none">
+            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+              <p className="text-[9px] text-emerald-500 uppercase font-black tracking-widest leading-none mb-1">Logged In</p>
+              <p className="text-xl font-black text-emerald-500 leading-none">
                 {users.filter(u => (new Date() - new Date(u.lastActive)) <= 600000).length}
               </p>
             </div>
-            <div className="bg-base3 border border-base2 p-3 rounded-2xl text-center">
-              <p className="text-[9px] text-yellow uppercase font-black tracking-widest leading-none mb-1">Suspended</p>
-              <p className="text-xl font-black text-yellow leading-none">{users.filter(u => u.status === 'suspended').length}</p>
+            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+              <p className="text-[9px] text-aura-gold uppercase font-black tracking-widest leading-none mb-1">Suspended</p>
+              <p className="text-xl font-black text-aura-gold leading-none">{users.filter(u => u.status === 'suspended').length}</p>
             </div>
-            <div className="bg-base3 border border-base2 p-3 rounded-2xl text-center">
-              <p className="text-[9px] text-red uppercase font-black tracking-widest leading-none mb-1">Blocked</p>
-              <p className="text-xl font-black text-red leading-none">{users.filter(u => u.status === 'blocked').length}</p>
+            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+              <p className="text-[9px] text-aura-crimson uppercase font-black tracking-widest leading-none mb-1">Blocked</p>
+              <p className="text-xl font-black text-aura-crimson leading-none">{users.filter(u => u.status === 'blocked').length}</p>
             </div>
           </div>
 
@@ -319,7 +319,7 @@ const AdminUsers = () => {
               </select>
               <button 
                 onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-primary text-base3 rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-xs uppercase tracking-widest"
+                className="aura-btn px-6 py-2.5 shadow-lg shadow-primary/20 text-xs flex items-center gap-2"
               >
                 <UserCheck size={16} /> Add User
               </button>
@@ -328,7 +328,7 @@ const AdminUsers = () => {
 
           {/* User Directory Table */}
           <div className="flex-1 overflow-y-auto pr-2 min-h-0">
-            <div className="bg-base3 border border-base2 rounded-2xl overflow-hidden shadow-sm animate-reveal" style={{ animationDelay: '0.2s' }}>
+            <div className="aura-card border-none overflow-hidden shadow-sm animate-reveal" style={{ animationDelay: '0.2s' }}>
               {loading ? (
                 <div className="p-16 text-center">
                   <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -480,7 +480,7 @@ const AdminUsers = () => {
 
         {/* User Detail Side Panel */}
         {selectedUser && (
-          <div className="w-full lg:w-[320px] bg-base3 border border-base2 rounded-2xl flex flex-col animate-reveal-right shadow-xl overflow-hidden h-full shrink-0">
+          <div className="w-full lg:w-[320px] aura-card border-none flex flex-col animate-reveal-right shadow-xl overflow-hidden h-full shrink-0">
             <div className="p-4 border-b border-base2 flex items-center justify-between sticky top-0 bg-base3/80 backdrop-blur-md z-10">
                <h3 className="font-black uppercase text-xs tracking-widest text-text-emphasis">Member Dossier</h3>
                <button onClick={() => setSelectedUser(null)} className="p-1.5 hover:bg-base2 rounded-lg transition-all">

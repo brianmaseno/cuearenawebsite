@@ -51,7 +51,10 @@ const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => 
   };
 
   return (
-    <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black border transition-all uppercase tracking-[0.1em] ${getStyles()}`}>
+    <span 
+      className={`px-2 py-0.5 rounded-lg text-[9px] font-black border transition-all uppercase tracking-[0.1em] ${getStyles()}`}
+      style={['open_for_players', 'ongoing', 'confirmed'].includes(status) && !isExpired ? { animation: 'aura-breathe 4s ease-in-out infinite' } : {}}
+    >
       {formatStatus(status)}
     </span>
   );

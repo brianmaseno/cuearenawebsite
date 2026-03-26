@@ -130,14 +130,14 @@ const WalletPage = () => {
             {userInfo?.role === 'player' && (
               <button 
                 onClick={() => { setShowDeposit(true); setShowWithdraw(false); }}
-                className="flex items-center gap-2 px-4 py-1.5 md:px-6 md:py-2 bg-primary text-base3 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 text-[10px] md:text-xs font-black uppercase tracking-widest"
+                className="aura-btn px-6 py-2 text-xs"
               >
                 <Plus size={16} /> Deposit
               </button>
             )}
             <button 
               onClick={() => { setShowWithdraw(true); setShowDeposit(false); }}
-              className="flex items-center gap-2 px-4 py-1.5 md:px-6 md:py-2 bg-base3 text-text-emphasis border border-base2 rounded-xl hover:bg-base2/20 transition-all shadow-sm text-[10px] md:text-xs font-black uppercase tracking-widest"
+              className="flex items-center gap-2 px-6 py-2 bg-base3 text-text-emphasis border border-base2 rounded-xl hover:bg-base2/20 transition-all shadow-sm text-xs font-black uppercase tracking-widest"
             >
               <Minus size={16} /> Withdraw
             </button>
@@ -173,7 +173,8 @@ const WalletPage = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#073642] p-5 md:p-8 text-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-white/10 group"
+              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#073642] p-5 md:p-8 text-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-white/10 group aura-card"
+              style={{ animation: 'aura-breathe 8s ease-in-out infinite' }}
             >
               {/* Glossy Overlay */}
               <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-20 group-hover:opacity-40 transition-opacity"></div>
@@ -253,7 +254,7 @@ const WalletPage = () => {
                     </div>
                     <button 
                       disabled={submitting}
-                      className="w-full py-4 bg-primary hover:bg-primary-dark disabled:opacity-50 text-base3 font-black rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 text-sm uppercase tracking-widest"
+                      className="w-full py-4 aura-btn flex items-center justify-center gap-2 text-sm"
                     >
                       {submitting ? <Loader2 className="animate-spin" /> : <>Confirm Deposit <ArrowRight size={18} /></>}
                     </button>
@@ -305,7 +306,7 @@ const WalletPage = () => {
           <div className="col-span-1 lg:col-span-1">
             <motion.div 
               whileHover={{ y: -3, scale: 1.01 }}
-              className="card-premium p-4 md:p-6 flex flex-col justify-between hover:border-amber-500/40 relative overflow-hidden h-full"
+              className="aura-card p-4 md:p-6 flex flex-col justify-between border-none relative overflow-hidden h-full"
             >
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shadow-inner border border-amber-100">
@@ -325,7 +326,7 @@ const WalletPage = () => {
           <div className="col-span-1 lg:col-span-1">
             <motion.div 
               whileHover={{ y: -3, scale: 1.01 }}
-              className="card-premium p-4 md:p-6 flex flex-col justify-between hover:border-emerald-500/40 relative overflow-hidden h-full"
+              className="aura-card p-4 md:p-6 flex flex-col justify-between border-none relative overflow-hidden h-full"
             >
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner border border-emerald-100">
@@ -361,10 +362,10 @@ const WalletPage = () => {
             </div>
             {/* ... Rest of transaction history ... */}
 
-            <div className="bg-base3 rounded-[2.5rem] border border-base2 shadow-md overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="aura-card border-none overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="divide-y divide-base2/10">
                 {transactions.length > 0 && (
-                  <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 bg-base2/20 text-[10px] font-black text-text/40 uppercase tracking-[0.2em]">
+                  <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 bg-primary/5 text-[10px] font-black text-primary/40 uppercase tracking-[0.2em]">
                     <div className="col-span-5">Transaction Details</div>
                     <div className="col-span-2 text-center">Reference</div>
                     <div className="col-span-2 text-right">Amount</div>
