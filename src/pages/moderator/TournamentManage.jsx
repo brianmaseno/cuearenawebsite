@@ -530,12 +530,12 @@ const TournamentManage = () => {
                   </p>
 
                   <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 thin-scrollbar">
-                     {tables.length === 0 ? (
+                     {tables.filter(t => t.status === 'available').length === 0 ? (
                         <div className="p-8 text-center border-2 border-dashed border-base2 rounded-3xl text-text/40 italic">
-                           No tables registered. Go to "My Tables" to add your hardware.
+                           No available tables found at this location.
                         </div>
                      ) : (
-                        tables.map(table => (
+                        tables.filter(t => t.status === 'available').map(table => (
                            <button
                               key={table._id}
                               onClick={() => setSelectedTableId(table.tableId)}

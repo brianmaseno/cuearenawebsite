@@ -130,9 +130,9 @@ const OngoingActivities = () => {
     }
   };
 
-  const handleStartMatch = async (matchId) => {
+  const handleStartMatch = async (match, isTournament = false) => {
     if (tables.length > 0) {
-      setSelectedActivity({ id: matchId, type: 'match' });
+      setSelectedActivity({ id: match._id, type: isTournament ? 'tournament_match' : 'match' });
       setShowTableModal(true);
       return;
     }
@@ -155,9 +155,14 @@ const OngoingActivities = () => {
 
     setActionLoading(true);
     try {
-      const endpoint = selectedActivity.type === 'battle'
-        ? `/battles/${selectedActivity.id}/start`
-        : `/direct-matches/${selectedActivity.id}/start`;
+      let endpoint = '';
+      if (selectedActivity.type === 'battle') {
+        endpoint = `/battles/${selectedActivity.id}/start`;
+      } else if (selectedActivity.type === 'tournament_match') {
+        endpoint = `/tournaments/matches/${selectedActivity.id}/start`;
+      } else {
+        endpoint = `/direct-matches/${selectedActivity.id}/start`;
+      }
 
       await api.put(endpoint, { poolTableId: selectedTableId || undefined });
       const activityLabel = selectedActivity.type === 'battle' ? 'Battle' : 'Match';
@@ -262,8 +267,9 @@ const OngoingActivities = () => {
                 }
                 const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
                 const setRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
-                const isMatchFinished = match.status === 'completed';
-                const isOngoing = ['ongoing', 'confirmed'].includes(match.status);
+                 const isMatchFinished = match.status === 'completed';
+                 const isOngoing = match.status === 'ongoing';
+                 const isConfirmed = match.status === 'confirmed';
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
@@ -513,21 +519,27 @@ const OngoingActivities = () => {
                         <div className="w-full py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 shadow-sm border bg-green/10 text-green border-green/20">
                           🏆 MATCH COMPLETED: {match.scorePlayer1} - {match.scorePlayer2}
                         </div>
-                      ) : (match.isTournamentMatch || (match.player1Status === 'accepted' && match.player2Status === 'accepted')) ? (
-                        match.isTournamentMatch ? (
-                          <Link
-                            to={`/moderator/manage-tournament/${match.tournamentId?._id || match.tournamentId}`}
-                            className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
-                          >
-                            <Trophy size={14} />
-                            ENTER ROOM
-                          </Link>
-                        ) : (
-                          <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
-                            ⚡ ONGOING MATCH
-                          </div>
-                        )
-                      ) : null}
+                      ) : (isConfirmed || (match.player1Status === 'accepted' && match.player2Status === 'accepted' && !isOngoing)) ? (
+                         <button
+                           onClick={() => handleStartMatch(match, match.isTournamentMatch)}
+                           className="w-full bg-emerald-600 text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20"
+                         >
+                           <Play size={14} fill="white" />
+                           START MATCH
+                         </button>
+                       ) : isOngoing ? (
+                         <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
+                           ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-60 ml-1">(@{typeof match.poolTable === 'object' ? match.poolTable.tableId : 'Table'})</span>}
+                         </div>
+                       ) : (
+                         <Link
+                           to={match.isTournamentMatch ? `/moderator/manage-tournament/${match.tournamentId?._id || match.tournamentId}` : '#'}
+                           className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
+                         >
+                           <Trophy size={14} />
+                           {match.isTournamentMatch ? 'ENTER ROOM' : 'VIEW DETAILS'}
+                         </Link>
+                       )}
                     </div>
                   </div>
                 );
@@ -751,8 +763,8 @@ const OngoingActivities = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-primary">Assigned Table Location/Number</label>
-                <div className="grid grid-cols-1 gap-2">
-                  {tables.map(table => (
+                 <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto pr-2 thin-scrollbar">
+                   {tables.filter(t => t.status === 'available').map(table => (
                     <button
                       key={table._id}
                       onClick={() => setSelectedTableId(table.tableId)}
