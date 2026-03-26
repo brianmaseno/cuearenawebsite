@@ -529,7 +529,7 @@ const OngoingActivities = () => {
                          </button>
                        ) : isOngoing ? (
                          <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
-                           ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-60 ml-1">(@{typeof match.poolTable === 'object' ? match.poolTable.tableId : 'Table'})</span>}
+                           ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{typeof match.poolTable === 'object' ? match.poolTable.tableId : match.poolTable}"</span>}
                          </div>
                        ) : (
                          <Link
@@ -722,7 +722,7 @@ const OngoingActivities = () => {
 
                     {battle.status === 'ongoing' && !battle.winnerId && (
                       <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
-                        ⚡ BATTLE IN PROGRESS {battle.poolTable && <span className="opacity-60 ml-1">(@{typeof battle.poolTable === 'object' ? battle.poolTable.tableId : 'Table'})</span>}
+                        ⚡ BATTLE IN PROGRESS {battle.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{typeof battle.poolTable === 'object' ? battle.poolTable.tableId : battle.poolTable}"</span>}
                       </div>
                     )}
 

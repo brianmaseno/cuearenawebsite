@@ -414,7 +414,7 @@ const PlayerDashboard = () => {
                                   </Link>
                                ) : (
                                   <div className="w-full bg-primary/5 text-primary py-3 rounded-xl text-sm font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
-                                     ⚡ ONGOING MATCH
+                                      ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{match.poolTable.tableId || (typeof match.poolTable === 'string' ? match.poolTable : 'Table')}"</span>}
                                   </div>
                                )
                             ) : (
@@ -524,7 +524,7 @@ const PlayerDashboard = () => {
                         <div className="w-full">
                            {battle.status === 'ongoing' && !battle.winnerId && (
                             <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20">
-                              ⚡ BATTLE IN PROGRESS
+                                                             ⚡ BATTLE IN PROGRESS {battle.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{battle.poolTable.tableId || (typeof battle.poolTable === 'string' ? battle.poolTable : 'Table')}"</span>}
                             </div>
                           )}
 

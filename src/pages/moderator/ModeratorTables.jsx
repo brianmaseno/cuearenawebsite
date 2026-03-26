@@ -131,9 +131,15 @@ const ModeratorTables = () => {
                                  <div className="flex items-center gap-2">
                                     <span className="text-[10px] font-bold text-text/40 uppercase tracking-tight">{table.location}</span>
                                     <span className="w-1 h-1 rounded-full bg-base2"></span>
-                                    <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1">
-                                       <CheckCircle2 size={10} /> IoT Active
-                                    </span>
+                                    {table.status === 'busy' ? (
+                                       <span className="text-[10px] font-bold text-orange uppercase flex items-center gap-1 bg-orange/10 px-2 py-0.5 rounded-full border border-orange/20">
+                                          <Clock size={10} /> Busy (In Game)
+                                       </span>
+                                    ) : (
+                                       <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                                          <CheckCircle2 size={10} /> IoT Active
+                                       </span>
+                                    )}
                                  </div>
                               </div>
                            </div>
