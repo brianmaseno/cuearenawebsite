@@ -518,7 +518,7 @@ const TournamentManage = () => {
                         <div className="w-10 h-10 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
                            <Zap size={20} />
                         </div>
-                        <h4 className="text-xl font-black text-text-emphasis tracking-tight uppercase">Hardware Unlock</h4>
+                        <h4 className="text-xl font-black text-text-emphasis tracking-tight uppercase">Identify Pool Table</h4>
                      </div>
                      <button onClick={() => setShowTableModal(false)} className="text-text/20 hover:text-red transition-colors">
                         <X size={24} />
