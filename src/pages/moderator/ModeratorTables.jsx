@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode } from 'lucide-react';
+import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ModeratorTables = () => {
@@ -69,9 +69,9 @@ const ModeratorTables = () => {
    }
 
    return (
-      <DashboardLayout title="Manage Pool Tables">
+      <DashboardLayout title="Tables">
          <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <div className="card-premium p-8 rounded-2xl">
+            <div className="aura-card p-8 border-none">
                <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis mb-6">
                   <Plus size={20} className="text-primary" />
                   Register New Physical Table
@@ -100,7 +100,7 @@ const ModeratorTables = () => {
                   <div className="flex items-end">
                      <button
                         disabled={adding}
-                        className="w-full bg-primary text-base3 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20"
+                        className="aura-btn w-full bg-primary text-base3 py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
                      >
                         {adding ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
                         Add Table
@@ -116,12 +116,12 @@ const ModeratorTables = () => {
                <h3 className="text-sm font-black uppercase tracking-widest text-primary ml-2">Your Physical Infrastructure</h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {tables.length === 0 ? (
-                     <div className="col-span-full py-12 text-center card-premium border-dashed border-2 text-text/40 italic">
+                     <div className="col-span-full py-12 text-center aura-card border-dashed border-2 text-text/40 italic">
                         No tables registered yet. Add your hardware above to enable automated unlocking.
                      </div>
                   ) : (
                      tables.map(table => (
-                        <div key={table._id} className="card-premium p-5 flex items-center justify-between group hover:border-primary transition-all">
+                        <div key={table._id} className="aura-card p-5 flex items-center justify-between group border-none transition-all">
                            <div className="flex items-center gap-4">
                               <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary border border-primary/10">
                                  <MapPin size={24} />
