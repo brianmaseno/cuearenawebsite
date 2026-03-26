@@ -1,0 +1,296 @@
+
+> client@0.0.0 lint
+> eslint .
+
+
+C:\Users\godie\Downloads\cue-masters\client\dev-dist\sw.js
+  34:13  error  'importScripts' is not defined  no-undef
+  70:1   error  'define' is not defined         no-undef
+
+C:\Users\godie\Downloads\cue-masters\client\dev-dist\workbox-5a5d9309.js
+     1:1   error    'define' is not defined                                                         no-undef
+     5:37  error    '_' is not defined                                                              no-undef
+     6:14  error    'e' is defined but never used                                                   no-unused-vars
+     6:17  error    Empty block statement                                                           no-empty
+    69:7   error    Definition for rule '@typescript-eslint/ban-types' was not found                @typescript-eslint/ban-types
+   436:5   error    Definition for rule '@typescript-eslint/ban-types' was not found                @typescript-eslint/ban-types
+   452:5   warning  Unused eslint-disable directive (no problems were reported)
+   475:40  error    '_' is not defined                                                              no-undef
+   476:14  error    'e' is defined but never used                                                   no-unused-vars
+   476:17  error    Empty block statement                                                           no-empty
+   769:11  error    Definition for rule '@typescript-eslint/no-unsafe-member-access' was not found  @typescript-eslint/no-unsafe-member-access
+   771:13  error    Definition for rule '@typescript-eslint/no-unsafe-assignment' was not found     @typescript-eslint/no-unsafe-assignment
+   965:11  error    Definition for rule '@typescript-eslint/no-unsafe-assignment' was not found     @typescript-eslint/no-unsafe-assignment
+   981:13  error    Definition for rule '@typescript-eslint/no-unsafe-assignment' was not found     @typescript-eslint/no-unsafe-assignment
+   987:13  warning  Unused eslint-disable directive (no problems were reported)
+  1214:53  error    'registration' is not defined                                                   no-undef
+  1272:43  error    '_' is not defined                                                              no-undef
+  1273:14  error    'e' is defined but never used                                                   no-unused-vars
+  1273:17  error    Empty block statement                                                           no-empty
+  1406:11  warning  Unused eslint-disable directive (no problems were reported)
+  1521:20  error    'error' is defined but never used                                               no-unused-vars
+  1665:5   error    Definition for rule '@typescript-eslint/ban-types' was not found                @typescript-eslint/ban-types
+  1717:43  error    '_' is not defined                                                              no-undef
+  1718:14  error    'e' is defined but never used                                                   no-unused-vars
+  1718:17  error    Empty block statement                                                           no-empty
+  1796:56  error    'ExtendableEvent' is not defined                                                no-undef
+  1835:61  error    'FetchEvent' is not defined                                                     no-undef
+  1870:15  error    Unexpected constant condition                                                   no-constant-condition
+  2062:35  warning  Unused eslint-disable directive (no problems were reported)
+  2336:32  error    'FetchEvent' is not defined                                                     no-undef
+  2404:18  error    'error' is defined but never used                                               no-unused-vars
+  2793:9   error    Definition for rule '@typescript-eslint/no-unsafe-return' was not found         @typescript-eslint/no-unsafe-return
+  2840:9   error    Definition for rule '@typescript-eslint/no-unsafe-return' was not found         @typescript-eslint/no-unsafe-return
+
+C:\Users\godie\Downloads\cue-masters\client\src\components\FloatingActionButton.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\components\InactivityTimer.jsx
+   3:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  11:34  error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+   9 |   const [timeLeft, setTimeLeft] = useState(30); // 30 seconds warning countdown
+  10 |   
+> 11 |   const lastActivityRef = useRef(Date.now());
+     |                                  ^^^^^^^^^^ Cannot call impure function
+  12 |   const timerRef = useRef(null);
+  13 |   const countdownRef = useRef(null);
+  14 |  react-hooks/purity
+  67:6   warning  React Hook useEffect has missing dependencies: 'TIMEOUT' and 'WARNING_TIME'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\Users\godie\Downloads\cue-masters\client\src\components\QuickStatsBar.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\components\Sidebar.jsx
+  36:34  error  'api' is not defined  no-undef
+
+C:\Users\godie\Downloads\cue-masters\client\src\components\Tournament\TournamentPayoutModal.jsx
+   3:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                         no-unused-vars
+  56:6   warning  React Hook useEffect has a missing dependency: 'getInitialPayouts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\godie\Downloads\cue-masters\client\src\context\AuthContext.jsx
+  67:25  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `updateProfile`, but the source dependencies were [user, loading]. Inferred different dependency than source.
+
+  65 |   };
+  66 |
+> 67 |   const value = useMemo(() => ({ 
+     |                         ^^^^^^^^^
+> 68 |     user, 
+     | ^^^^^^^^^^
+> 69 |     loading, 
+     | ^^^^^^^^^^
+> 70 |     login, 
+     | ^^^^^^^^^^
+> 71 |     register, 
+     | ^^^^^^^^^^
+> 72 |     logout, 
+     | ^^^^^^^^^^
+> 73 |     updateProfile 
+     | ^^^^^^^^^^
+> 74 |   }), [user, loading]);
+     | ^^^^^ Could not preserve existing manual memoization
+  75 |
+  76 |   return (
+  77 |     <AuthContext.Provider value={value}>  react-hooks/preserve-manual-memoization
+  74:7   warning  React Hook useMemo has a missing dependency: 'updateProfile'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+  83:14  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-refresh/only-export-components
+
+C:\Users\godie\Downloads\cue-masters\client\src\context\NotificationContext.jsx
+  98:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\godie\Downloads\cue-masters\client\src\context\SidebarContext.jsx
+  24:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\godie\Downloads\cue-masters\client\src\context\SocketContext.jsx
+   7:14  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-refresh/only-export-components
+  17:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  15 |     if (user && user._id) {
+  16 |       const newSocket = io(import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`);
+> 17 |       setSocket(newSocket);
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |
+  19 |       // Join user-specific room for private notifications
+  20 |       newSocket.emit('join_room', `user_${user._id}`);  react-hooks/set-state-in-effect
+  31:6   warning  React Hook useEffect has a missing dependency: 'socket'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  49:31  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `joinMatchRoom`, but the source dependencies were [socket]. Inferred different dependency than source.
+
+  47 |   };
+  48 |
+> 49 |   const value = React.useMemo(() => ({
+     |                               ^^^^^^^^
+> 50 |     socket, 
+     | ^^^^^^^^^^^^
+> 51 |     joinMatchRoom, 
+     | ^^^^^^^^^^^^
+> 52 |     leaveMatchRoom, 
+     | ^^^^^^^^^^^^
+> 53 |     joinTournamentRoom, 
+     | ^^^^^^^^^^^^
+> 54 |     leaveTournamentRoom 
+     | ^^^^^^^^^^^^
+> 55 |   }), [socket]);
+     | ^^^^^ Could not preserve existing manual memoization
+  56 |
+  57 |   return (
+  58 |     <SocketContext.Provider value={value}>                                                                                                        react-hooks/preserve-manual-memoization
+  49:31  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `leaveMatchRoom`, but the source dependencies were [socket]. Inferred different dependency than source.
+
+  47 |   };
+  48 |
+> 49 |   const value = React.useMemo(() => ({
+     |                               ^^^^^^^^
+> 50 |     socket, 
+     | ^^^^^^^^^^^^
+> 51 |     joinMatchRoom, 
+     | ^^^^^^^^^^^^
+> 52 |     leaveMatchRoom, 
+     | ^^^^^^^^^^^^
+> 53 |     joinTournamentRoom, 
+     | ^^^^^^^^^^^^
+> 54 |     leaveTournamentRoom 
+     | ^^^^^^^^^^^^
+> 55 |   }), [socket]);
+     | ^^^^^ Could not preserve existing manual memoization
+  56 |
+  57 |   return (
+  58 |     <SocketContext.Provider value={value}>                                                                                                       react-hooks/preserve-manual-memoization
+  49:31  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `joinTournamentRoom`, but the source dependencies were [socket]. Inferred different dependency than source.
+
+  47 |   };
+  48 |
+> 49 |   const value = React.useMemo(() => ({
+     |                               ^^^^^^^^
+> 50 |     socket, 
+     | ^^^^^^^^^^^^
+> 51 |     joinMatchRoom, 
+     | ^^^^^^^^^^^^
+> 52 |     leaveMatchRoom, 
+     | ^^^^^^^^^^^^
+> 53 |     joinTournamentRoom, 
+     | ^^^^^^^^^^^^
+> 54 |     leaveTournamentRoom 
+     | ^^^^^^^^^^^^
+> 55 |   }), [socket]);
+     | ^^^^^ Could not preserve existing manual memoization
+  56 |
+  57 |   return (
+  58 |     <SocketContext.Provider value={value}>                                                                                                   react-hooks/preserve-manual-memoization
+  49:31  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `leaveTournamentRoom`, but the source dependencies were [socket]. Inferred different dependency than source.
+
+  47 |   };
+  48 |
+> 49 |   const value = React.useMemo(() => ({
+     |                               ^^^^^^^^
+> 50 |     socket, 
+     | ^^^^^^^^^^^^
+> 51 |     joinMatchRoom, 
+     | ^^^^^^^^^^^^
+> 52 |     leaveMatchRoom, 
+     | ^^^^^^^^^^^^
+> 53 |     joinTournamentRoom, 
+     | ^^^^^^^^^^^^
+> 54 |     leaveTournamentRoom 
+     | ^^^^^^^^^^^^
+> 55 |   }), [socket]);
+     | ^^^^^ Could not preserve existing manual memoization
+  56 |
+  57 |   return (
+  58 |     <SocketContext.Provider value={value}>                                                                                                  react-hooks/preserve-manual-memoization
+  55:7   warning  React Hook React.useMemo has missing dependencies: 'joinMatchRoom', 'joinTournamentRoom', 'leaveMatchRoom', and 'leaveTournamentRoom'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+C:\Users\godie\Downloads\cue-masters\client\src\hooks\useActivityTracker.js
+   8:9  error  'location' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  26:9  error  'addLog' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\Landing.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\ModeratorApplication.jsx
+  6:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\Profile.jsx
+  26:26  error  'type' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\Wallet.jsx
+  18:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  41:14  error  'err' is defined but never used                                                no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\admin\AdminFinance.jsx
+  25:10  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  38:14  error  'err' is defined but never used                                                          no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\admin\AdminLogs.jsx
+  34:14  error  'err' is defined but never used                                                             no-unused-vars
+  35:7   error  'toast' is not defined                                                                      no-undef
+  58:9   error  'severities' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\admin\AdminModeratorRequests.jsx
+  22:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  49:14  error  'err' is defined but never used                                                no-unused-vars
+  61:14  error  'err' is defined but never used                                                no-unused-vars
+  74:14  error  'err' is defined but never used                                                no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\admin\AdminUsers.jsx
+   99:14  error    'err' is defined but never used                                                                                no-unused-vars
+  131:6   warning  React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\moderator\CreateTournament.jsx
+  1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\moderator\History.jsx
+  39:14  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\moderator\ModeratorTables.jsx
+  17:16  error  'err' is defined but never used  no-unused-vars
+  56:16  error  'err' is defined but never used  no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\moderator\OngoingActivities.jsx
+   31:14  error  'err' is defined but never used                                                                  no-unused-vars
+   42:14  error  'err' is defined but never used                                                                  no-unused-vars
+   52:9   error  'handleSetWinner' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   60:14  error  'err' is defined but never used                                                                  no-unused-vars
+   75:14  error  'err' is defined but never used                                                                  no-unused-vars
+  106:14  error  'err' is defined but never used                                                                  no-unused-vars
+  143:40  error  'matchId' is not defined                                                                         no-undef
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\moderator\TournamentManage.jsx
+   97:16  error    'err' is defined but never used                                                                                                                                            no-unused-vars
+  115:7   warning  React Hook useEffect has missing dependencies: 'fetchTournamentData', 'joinTournamentRoom', and 'leaveTournamentRoom'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  136:7   warning  React Hook useEffect has a missing dependency: 'fetchTournamentData'. Either include it or remove the dependency array                                                     react-hooks/exhaustive-deps
+  138:10  error    'handleInvite' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                               no-unused-vars
+  158:16  error    'err' is defined but never used                                                                                                                                            no-unused-vars
+  188:16  error    'err' is defined but never used                                                                                                                                            no-unused-vars
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\player\PlayerDashboard.jsx
+   16:10  error  'activeSetMap' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                  no-unused-vars
+   16:24  error  'setActiveSetMap' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u               no-unused-vars
+  175:23  error  'isMatchFinished' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u               no-unused-vars
+  198:66  error  Unsafe usage of optional chaining. If it short-circuits with 'undefined' the evaluation will throw TypeError  no-unsafe-optional-chaining
+
+C:\Users\godie\Downloads\cue-masters\client\src\pages\player\PlayerHistory.jsx
+   36:14  error  'err' is defined but never used                                                                               no-unused-vars
+  152:23  error  'winnerName' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                    no-unused-vars
+  178:70  error  Unsafe usage of optional chaining. If it short-circuits with 'undefined' the evaluation will throw TypeError  no-unsafe-optional-chaining
+
+Γ£û 98 problems (86 errors, 12 warnings)
+  0 errors and 4 warnings potentially fixable with the `--fix` option.
+
