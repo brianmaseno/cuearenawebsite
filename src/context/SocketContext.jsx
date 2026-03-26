@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Only connect if user is logged in
     if (user && user._id) {
-      const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
+      const newSocket = io(import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`);
       setSocket(newSocket);
 
       // Join user-specific room for private notifications
