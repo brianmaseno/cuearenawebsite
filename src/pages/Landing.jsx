@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, User, Mail, Phone, Menu, X, LogIn } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, User, Mail, Phone, Menu, X, LogIn, ChevronUp, ChevronDown, Minus, Info } from 'lucide-react';
 import { animate } from 'framer-motion';
 import api from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
@@ -285,7 +285,18 @@ const Landing = () => {
                 <div className="divide-y divide-base2/50 max-h-[850px] overflow-y-auto custom-scrollbar">
                   {leaderboard.map((p, i) => (
                     <motion.div key={p._id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="flex items-center gap-3 p-3 hover:bg-base2/20 transition-colors group">
-                      <div className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-sm shadow-inner ${i === 0 ? 'bg-yellow/10 text-yellow ring-1 ring-yellow/30' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>#{i + 1}</div>
+                      <div className="flex flex-col items-center justify-center min-w-[24px]">
+                        {p.rankTrend === 'up' ? (
+                          <ChevronUp size={14} className="text-emerald-500 mb-0.5" />
+                        ) : p.rankTrend === 'down' ? (
+                          <ChevronDown size={14} className="text-special-red mb-0.5" />
+                        ) : p.rankTrend === 'new' ? (
+                          <Info size={14} className="text-blue mx-auto mb-0.5" />
+                        ) : (
+                          <Minus size={14} className="text-text/20 mb-0.5" />
+                        )}
+                        <div className={`w-8 h-8 flex items-center justify-center rounded-xl font-black text-[10px] shadow-inner ${i === 0 ? 'bg-yellow/10 text-yellow ring-1 ring-yellow/30' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-special-red/5 text-special-red ring-1 ring-special-red/20' : 'bg-base2 text-text/40'}`}>{i + 1}</div>
+                      </div>
                       <div className="w-10 h-10 rounded-full p-0.5 bg-gradient-to-br from-primary to-special-red shrink-0">
                         <img src={p.profilePhoto || `https://ui-avatars.com/api/?name=${p.fullName}&background=random`} alt={p.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" />
                       </div>
