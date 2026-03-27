@@ -230,22 +230,22 @@ const OngoingActivities = () => {
         
         <QuickStatsBar />
         {/* Tabs */}
-        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
+        <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
           {[
-            { id: 'matches', label: 'Matches', count: data.matches.length, icon: Target },
-            { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy },
-            { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield }
+            { id: 'matches', label: 'Matches', count: data.matches.length, icon: Target, color: 'bg-blue-500', shadow: 'shadow-blue-500/40' },
+            { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy, color: 'bg-amber-500', shadow: 'shadow-amber-500/40' },
+            { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield, color: 'bg-emerald-600', shadow: 'shadow-emerald-600/40' }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 md:flex-none px-8 py-3.5 text-[12px] font-black uppercase tracking-[0.15em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${
+              className={`flex-1 md:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider md:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap ${
                 activeTab === tab.id 
-                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]' 
+                ? `${tab.color} text-white shadow-lg ${tab.shadow} scale-[1.02]` 
                 : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
               }`}
             >
-              <tab.icon size={16} />
+              <tab.icon size={14} className="sm:w-4 sm:h-4" />
               {tab.label} ({tab.count})
             </button>
           ))}
@@ -277,7 +277,7 @@ const OngoingActivities = () => {
 
                 return (
                   <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-2 border-primary/20 transition-all perspective-1000 bg-white/[0.02]">
-                    <div className="bg-base2/10 p-3 flex justify-between items-center border-b border-base2 preserve-3d">
+                    <div className="bg-base2/5 p-3 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50 preserve-3d">
                       <div className="flex items-center gap-2">
                         {match.isTournamentMatch ? (
                           <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
@@ -290,7 +290,7 @@ const OngoingActivities = () => {
                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Tournament'}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex flex-wrap items-center gap-1.5 justify-end">
                         {match.stakeAmount > 0 && !match.isTournamentMatch && (
                           <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
                             <Award size={10} className="text-emerald-500" />
@@ -305,7 +305,7 @@ const OngoingActivities = () => {
                         )}
                         <div className="flex items-center gap-1">
                           {match.status === 'cancelled' && match.declinedBy ? (
-                            <span className="text-xs font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse">
+                            <span className="text-[10px] font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse truncate max-w-[120px] sm:max-w-[200px]">
                               {match.declinedBy.fullName} Declined
                             </span>
                           ) : (
@@ -374,7 +374,7 @@ const OngoingActivities = () => {
                         </div>
 
                         <div className="flex flex-col items-center gap-1">
-                          <div className="text-[10px] font-black uppercase tracking-[0.1em] text-primary/60 text-center max-w-[150px] leading-tight mb-1">
+                          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[200px] leading-tight mb-2 drop-shadow-sm">
                             {match.title || 'Exhibition Match'}
                           </div>
                           <div className="text-lg font-black text-primary/5 italic leading-none">VS</div>
@@ -593,8 +593,8 @@ const OngoingActivities = () => {
                         <ChevronRight size={16} />
                       </Link>
                     </div>
-                    </div>
-                  </AuraCard>
+                  </div>
+                </AuraCard>
               ))
             )}
           </div>

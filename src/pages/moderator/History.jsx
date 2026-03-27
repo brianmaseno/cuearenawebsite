@@ -93,42 +93,42 @@ const History = () => {
           <p className="text-slate-500 font-medium">Review and manage past tournaments, matches, and battles.</p>
         </div>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
             {[
-              { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon },
-              { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon },
-              { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield }
+              { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon, color: 'bg-blue-500', shadow: 'shadow-blue-500/40' },
+              { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon, color: 'bg-amber-500', shadow: 'shadow-amber-500/40' },
+              { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield, color: 'bg-emerald-600', shadow: 'shadow-emerald-600/40' }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => { setActiveTab(tab.id); setSubFilter('all'); }}
-                className={`flex-1 md:flex-none px-8 py-3.5 text-[12px] font-black uppercase tracking-[0.15em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${
+                className={`flex-1 md:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider md:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap ${
                   activeTab === tab.id 
-                  ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]' 
+                  ? `${tab.color} text-white shadow-lg ${tab.shadow} scale-[1.02]` 
                   : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
                 }`}
               >
-                <tab.icon size={16} />
+                <tab.icon size={14} className="sm:w-4 sm:h-4" />
                 {tab.label} ({tab.count})
               </button>
             ))}
           </div>
 
           {/* Sub-Filters */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border-2 border-primary/20 w-full sm:w-fit">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[20px] sm:rounded-[24px] border-2 border-primary/20 w-full sm:w-fit gap-1 overflow-x-auto no-scrollbar scroll-smooth">
             {[
               { id: 'all', label: 'All', icon: TargetIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },
               { id: 'cancelled', label: 'Cancelled', icon: CancelIcon }
             ].map(f => {
               const currentList = activeTab === 'matches' ? data.matches : (activeTab === 'tournaments' ? data.tournaments : data.battles);
-              const count = currentList.filter(item => f.id === 'all' ? true : item.status === f.id).length;
+              const count = currentList?.filter(item => f.id === 'all' ? true : item.status === f.id).length || 0;
 
               return (
                 <button
                   key={f.id}
                   onClick={() => setSubFilter(f.id)}
-                  className={`flex-1 md:flex-none px-6 py-2.5 rounded-[18px] text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${subFilter === f.id
+                  className={`flex-1 md:flex-none px-4 sm:px-6 py-2.5 rounded-[16px] sm:rounded-[18px] text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap min-w-fit ${subFilter === f.id
                       ? 'bg-[#fcf9f1] text-blue-600 shadow-sm border border-slate-200'
                       : 'text-slate-400 hover:text-slate-600'
                     }`}
@@ -164,13 +164,13 @@ const History = () => {
                 const winnerName = match.winnerId?.fullName || (isP1Winner ? match.player1Id?.fullName : isP2Winner ? match.player2Id?.fullName : null);
 
                 return (
-                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group transition-all border-2 border-primary/20 bg-base3/10 shadow-sm hover:shadow-md">
+                    <div className="bg-base2/5 p-4 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50">
                       <div className="flex items-center gap-3">
                         <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2 justify-end">
                         {match.isTournamentMatch ? (
                           match.tournamentId?.stakePerPlayer > 0 && (
                             <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
@@ -187,9 +187,9 @@ const History = () => {
                           )
                         )}
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2.5 py-1 rounded-lg tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2.5 py-1 rounded-lg tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
                         )}
                       </div>
                     </div>
@@ -227,7 +227,7 @@ const History = () => {
                         </div>
 
                         <div className="flex flex-col items-center gap-2">
-                          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight mb-2 drop-shadow-sm">
+                          <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[200px] leading-tight mb-2 drop-shadow-sm">
                             {match.title || 'Exhibition Match'}
                           </div>
                           <div className="text-xl font-black text-primary/10 italic">VS</div>
@@ -267,11 +267,13 @@ const History = () => {
 
                     <div className="bg-base2/10 p-4 border-t border-base2 space-y-3 relative overflow-visible mt-auto">
                       <div className="flex flex-col items-center justify-center text-center space-y-2">
-                        <div className={`flex items-center gap-2 font-black uppercase tracking-widest text-[11px] ${isCancelled ? 'text-red/60' : 'text-green'}`}>
-                          {isCancelled ? <CancelIcon size={16} /> : <AwardIcon size={16} />}
-                          {isCancelled ? (
-                            match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
-                          ) : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
+                        <div className={`flex items-center gap-2 font-black uppercase tracking-widest text-[10px] sm:text-[11px] flex-wrap justify-center ${isCancelled ? 'text-red/60' : 'text-green'}`}>
+                          {isCancelled ? <CancelIcon size={14} /> : <AwardIcon size={14} />}
+                          <span className="truncate max-w-[140px] xs:max-w-[200px]">
+                            {isCancelled ? (
+                              match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
+                            ) : (winnerName ? `Winner: ${winnerName}` : 'No Winner Announced')}
+                          </span>
                         </div>
                         <div className="flex items-center gap-4 text-text/40 font-bold text-[10px]">
                           <div className="flex items-center gap-1.5 leading-none">
@@ -311,8 +313,8 @@ const History = () => {
                 filteredData.map((battle) => {
                   const isCancelled = battle.status === 'cancelled';
                   return (
-                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col border-none shadow-sm transition-all hover:shadow-md">
-                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col transition-all shadow-sm hover:shadow-md border-2 border-primary/20 bg-base3/10">
+                      <div className="bg-base2/5 p-4 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50">
                         <div className="flex items-center gap-2">
                            <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
                               <Shield size={16} />
@@ -320,9 +322,9 @@ const History = () => {
                            <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Battle Room</span>
                         </div>
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2.5 py-1 rounded-lg tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2.5 py-1 rounded-lg tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
                         )}
                       </div>
                       
@@ -423,17 +425,17 @@ const History = () => {
               filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
-                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group transition-all shadow-sm hover:shadow-md h-full border-2 border-primary/20 bg-base3/10">
+                    <div className="bg-base2/5 p-4 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50">
                       <div className="flex items-center gap-3">
                         <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
                         <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
                       </div>
                       <div>
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2.5 py-1 rounded-lg tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2.5 py-1 rounded-lg tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
                         )}
                       </div>
                     </div>

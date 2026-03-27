@@ -127,20 +127,20 @@ const WalletPage = () => {
                   : 'Manage your funds and track your tournament winnings'}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 w-full sm:w-auto mt-4 sm:mt-0">
             {userInfo?.role === 'player' && (
               <button
                 onClick={() => { setShowDeposit(true); setShowWithdraw(false); }}
-                className="aura-btn px-6 py-2 text-xs"
+                className="aura-btn-emerald px-8 py-4 sm:px-6 sm:py-2 text-sm sm:text-xs flex-1 sm:flex-none flex justify-center items-center gap-2"
               >
-                <Plus size={16} /> Deposit
+                <Plus size={18} className="sm:w-4 sm:h-4" /> Deposit
               </button>
             )}
             <button
               onClick={() => { setShowWithdraw(true); setShowDeposit(false); }}
-              className="flex items-center gap-2 px-6 py-2 bg-base3 text-text-emphasis border border-base2 rounded-xl hover:bg-base2/20 transition-all shadow-sm text-xs font-black uppercase tracking-widest"
+              className="aura-btn-rose flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-2 text-white shadow-sm text-sm sm:text-xs font-black uppercase tracking-widest flex-1 sm:flex-none"
             >
-              <Minus size={16} /> Withdraw
+              <Minus size={18} className="sm:w-4 sm:h-4" /> Withdraw
             </button>
           </div>
         </div>
@@ -377,43 +377,43 @@ const WalletPage = () => {
                 )}
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <div key={tx._id} className="p-3 md:px-6 hover:bg-base2/10 transition-colors flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 md:items-center group">
-                      <div className="md:col-span-5 flex items-center gap-3 overflow-hidden">
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee'
+                    <div key={tx._id} className="p-3 md:px-6 hover:bg-base2/10 transition-colors flex md:grid md:grid-cols-12 gap-3 md:gap-4 items-center group overflow-hidden">
+                      {/* Icon & Type & Date Combined */}
+                      <div className="md:col-span-5 flex items-center gap-3 min-w-0 flex-1">
+                        <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee'
                             ? 'bg-emerald-500/10 border-emerald-500/20'
                             : tx.type === 'withdrawal' ? 'bg-red/10 border-red/20' : 'bg-base2/20 border-base2/30'
                           }`}>
                           {getTransactionIcon(tx.type)}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-black text-text-emphasis capitalize truncate text-sm tracking-tight mb-0">{tx.type.replace('_', ' ')}</p>
-                          <p className="text-[9px] text-text/40 font-bold uppercase tracking-widest">
-                            {new Date(tx.createdAt).toLocaleDateString()} • {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          <p className="font-black text-text-emphasis capitalize truncate text-xs md:text-sm tracking-tight mb-0">{tx.type.replace('_', ' ')}</p>
+                          <p className="text-[8px] md:text-[9px] text-text/40 font-bold uppercase tracking-widest truncate">
+                            {new Date(tx.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                           </p>
                         </div>
                       </div>
 
-                      <div className="md:col-span-2 flex md:justify-center items-center gap-3">
-                        <span className="md:hidden text-[9px] font-black text-text/20 uppercase tracking-[0.2em]">Ref</span>
-                        <span className="text-[10px] md:text-[11px] font-mono font-black bg-base2/30 text-text/60 px-3 py-1 rounded-lg border border-base2/50 tracking-tighter italic">
+                      {/* Reference - Hidden on Mobile */}
+                      <div className="hidden md:flex md:col-span-2 justify-center items-center gap-3">
+                        <span className="text-[11px] font-mono font-black bg-base2/30 text-text/60 px-3 py-1 rounded-lg border border-base2/50 tracking-tighter italic">
                           {tx.txRef || 'LEGACY'}
                         </span>
                       </div>
 
-                      <div className="md:col-span-2 flex md:justify-end items-center gap-3">
-                        <span className="md:hidden text-[9px] font-black text-text/20 uppercase tracking-[0.2em]">Amount</span>
-                        <p className={`font-black tracking-tighter text-sm md:text-base ${['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-text-emphasis'
-                          }`}>
-                          {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
-                        </p>
-                      </div>
-
-                      <div className="md:col-span-3 flex md:flex-col items-center md:items-end justify-between gap-0.5">
-                        <div className="flex items-center gap-3">
-                          <span className="md:hidden text-[9px] font-black text-text/20 uppercase tracking-[0.2em]">Balance</span>
-                          <p className="text-xs font-black text-text/60 tabular-nums tracking-tighter">KES {tx.postBalance?.toLocaleString() || '-'}</p>
+                      {/* Amount & Status Combined for Mobile */}
+                      <div className="md:col-span-5 flex items-center justify-end gap-3 md:gap-10 shrink-0">
+                        <div className="flex flex-col items-end">
+                          <p className={`font-black tracking-tighter text-sm md:text-base ${['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-text-emphasis'
+                            }`}>
+                            {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
+                          </p>
+                          <p className="hidden md:block text-[9px] text-text/30 font-bold tabular-nums">
+                            {tx.postBalance ? `KES ${tx.postBalance.toLocaleString()}` : '-'}
+                          </p>
                         </div>
-                        <span className={`text-[8px] md:text-[9px] px-2 py-0.5 rounded-md border shadow-sm ${getStatusColor(tx.status)} font-black uppercase tracking-widest`}>
+                        
+                        <span className={`text-[8px] md:text-[9px] px-2 py-0.5 rounded-md border shadow-sm ${getStatusColor(tx.status)} font-black uppercase tracking-widest shrink-0`}>
                           {tx.status}
                         </span>
                       </div>

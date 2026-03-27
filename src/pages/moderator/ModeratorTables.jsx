@@ -28,21 +28,26 @@ const ModeratorTables = () => {
 
    const handleAddTable = async (e) => {
       e.preventDefault();
+      console.log('handleAddTable triggered', newTable);
       if (!newTable.location || !newTable.number) return toast.error('Please fill all fields');
 
+      const tid = toast.loading('Registering table...');
       setAdding(true);
       try {
-         // We need a backend endpoint to CREATE a table
-         // I'll assume POST /api/users/me/tables
-         await api.post('/users/me/tables', {
+         const tableData = {
             tableId: `${newTable.location}/${newTable.number}`,
             location: newTable.location
-         });
-         toast.success('Table registered successfully!');
+         };
+         console.log('Sending request to /users/me/tables', tableData);
+         const response = await api.post('/users/me/tables', tableData);
+         console.log('Registration Response:', response.data);
+         toast.success('Table registered successfully!', { id: tid });
          setNewTable({ location: '', number: '' });
          fetchTables();
       } catch (err) {
-         toast.error(err.response?.data?.message || 'Failed to register table');
+         console.error('Registration Error:', err);
+         const msg = err.response?.data?.message || 'Failed to register table';
+         toast.error(msg, { id: tid });
       } finally {
          setAdding(false);
       }
@@ -82,12 +87,13 @@ const ModeratorTables = () => {
    return (
       <DashboardLayout title="Tables">
          <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <AuraCard className="p-8 border-none perspective-1000">
-               <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis mb-6">
+            <div className="p-8 border-2 border-primary/20 bg-base2/10 rounded-[40px] shadow-xl shadow-primary/5 relative overflow-hidden group">
+               <div className="absolute inset-0 bg-primary/[0.02] pointer-events-none" />
+               <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis mb-6 relative z-10">
                   <Plus size={20} className="text-primary" />
                   Register New Physical Table
                </h3>
-               <form onSubmit={handleAddTable} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <form onSubmit={handleAddTable} className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
                   <div>
                      <label className="block text-[10px] font-black uppercase tracking-widest text-text/60 mb-1.5 ml-1">Location / Venue</label>
                      <input
@@ -95,7 +101,7 @@ const ModeratorTables = () => {
                         placeholder="e.g. Westlands"
                         value={newTable.location}
                         onChange={(e) => setNewTable({ ...newTable, location: e.target.value })}
-                        className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                        className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold"
                      />
                   </div>
                   <div>
@@ -105,23 +111,24 @@ const ModeratorTables = () => {
                         placeholder="e.g. 01"
                         value={newTable.number}
                         onChange={(e) => setNewTable({ ...newTable, number: e.target.value })}
-                        className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all"
+                        className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold"
                      />
                   </div>
                   <div className="flex items-end">
                      <button
+                        type="submit"
                         disabled={adding}
-                        className="aura-btn w-full bg-primary text-base3 py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
+                        className="aura-btn w-full bg-primary text-base3 py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-primary/20"
                      >
                         {adding ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
                         Add Table
                      </button>
                   </div>
                </form>
-               <p className="mt-4 text-[10px] text-text/40 font-bold italic">
+               <p className="mt-4 text-[10px] text-text/40 font-bold italic relative z-10">
                   * Unique ID will be generated as: {newTable.location || 'Location'}/{newTable.number || '00'}
                </p>
-            </AuraCard>
+            </div>
 
             <div className="space-y-4">
                <h3 className="text-sm font-black uppercase tracking-widest text-primary ml-2">Your Physical Infrastructure</h3>
@@ -132,7 +139,7 @@ const ModeratorTables = () => {
                      </div>
                   ) : (
                      tables.map(table => (
-                        <div key={table._id} className="aura-card p-5 flex items-center justify-between group border-none transition-all">
+                        <AuraCard key={table._id} className="p-5 flex items-center justify-between group border-2 border-primary/20 transition-all bg-white/[0.02] shadow-sm hover:shadow-md">
                            <div className="flex items-center gap-4">
                               <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary border border-primary/10">
                                  <MapPin size={24} />
@@ -187,7 +194,7 @@ const ModeratorTables = () => {
                                  <Trash2 size={18} />
                               </button>
                            </div>
-                        </div>
+                        </AuraCard>
                      ))
                   )}
                </div>

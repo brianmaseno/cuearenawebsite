@@ -221,6 +221,21 @@ const AdminUsers = () => {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('PERMANENT DELETION: Are you sure you want to terminate this account and all associated data? This action is IRREVOCABLE.')) return;
+    try {
+      setLoading(true);
+      const { data } = await api.delete(`/users/${userId}`);
+      toast.success(data.message);
+      fetchUsers();
+      if (selectedUser?._id === userId) setSelectedUser(null);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Deletion failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredUsers = users.filter(u => {
     const matchesSearch =
       u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -460,18 +475,25 @@ const AdminUsers = () => {
                                 {u.status === 'suspended' ? <UserCheck size={12} /> : <Slash size={12} />}
                                 {u.status === 'suspended' ? 'Activate' : 'Suspend'}
                               </button>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleBlockToggle(u._id); }}
-                                disabled={u.role === 'admin'}
-                                className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${u.status === 'blocked'
-                                    ? 'bg-blue/10 text-blue border-blue/20 hover:bg-blue/20'
-                                    : 'bg-red/5 text-red border-transparent hover:border-red/20 hover:bg-red/10'
-                                  }`}
-                              >
-                                {u.status === 'blocked' ? <UserCheck size={12} /> : <Ban size={12} />}
-                                {u.status === 'blocked' ? 'Unblock' : 'Block'}
-                              </button>
-                            </div>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleBlockToggle(u._id); }}
+                                  disabled={u.role === 'admin'}
+                                  className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${u.status === 'blocked'
+                                      ? 'bg-blue/10 text-blue border-blue/20 hover:bg-blue/20'
+                                      : 'bg-red/5 text-red border-transparent hover:border-red/20 hover:bg-red/10'
+                                    }`}
+                                >
+                                  {u.status === 'blocked' ? <UserCheck size={12} /> : <Ban size={12} />}
+                                  {u.status === 'blocked' ? 'Unblock' : 'Block'}
+                                </button>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id); }}
+                                  disabled={u.role === 'admin'}
+                                  className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-red hover:bg-red hover:text-white transition-all border border-red/20 flex items-center gap-1 shadow-sm"
+                                >
+                                  <UserX size={12} /> Terminate
+                                </button>
+                              </div>
                           </td>
                         </tr>
                       ))}
@@ -620,13 +642,21 @@ const AdminUsers = () => {
               </div>
             </div>
 
-            <div className="p-3 bg-base2/30 border-t border-base2">
+            <div className="p-3 bg-base2/30 border-t border-base2 space-y-2">
               <button
                 onClick={() => { navigate(`/admin/logs?search=${selectedUser.fullName}`); }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-base3 border border-base2 rounded-xl text-[9px] font-medium uppercase hover:bg-primary/10 hover:text-primary transition-all group"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-base3 border border-base2 rounded-xl text-[9px] font-medium uppercase hover:bg-primary/10 hover:text-primary transition-all group"
               >
                 <History size={14} className="group-hover:animate-spin-slow" /> View Audit Trail
               </button>
+              {selectedUser.role !== 'admin' && (
+                <button
+                  onClick={() => handleDeleteUser(selectedUser._id)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red/5 border border-red/10 rounded-xl text-[9px] font-black uppercase text-red hover:bg-red hover:text-white transition-all"
+                >
+                  <UserX size={14} /> Terminate Account
+                </button>
+              )}
             </div>
           </div>
         )}

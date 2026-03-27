@@ -162,26 +162,34 @@ const PlayerDashboard = () => {
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
+        {/* Tabs - Single Row Horizontal Scroll on Mobile */}
+        <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
           {[
-            { id: 'matches', label: 'Matches', count: data.matches.length + (data.tournamentMatches?.length || 0), icon: Target },
-            { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield },
-            { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 md:flex-none px-8 py-3.5 text-[12px] font-black uppercase tracking-[0.15em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${
-                activeTab === tab.id 
-                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]' 
-                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
-              }`}
-            >
-              <tab.icon size={16} />
-              {tab.label} ({tab.count})
-            </button>
-          ))}
+            { id: 'matches', label: 'Matches', count: data.matches.length + (data.tournamentMatches?.length || 0), icon: Target, color: 'blue' },
+            { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield, color: 'emerald' },
+            { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy, color: 'amber' }
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            const activeColorClass = 
+              tab.color === 'blue' ? 'bg-blue-500 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)]' :
+              tab.color === 'emerald' ? 'bg-emerald-500 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)]' :
+              'bg-amber-500 shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)]';
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 sm:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider sm:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap min-w-fit ${
+                  isActive 
+                  ? `${activeColorClass} text-white scale-[1.02]` 
+                  : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                }`}
+              >
+                <tab.icon size={16} />
+                {tab.label} ({tab.count})
+              </button>
+            );
+          })}
         </div>
 
         {activeTab === 'matches' ? (
@@ -274,7 +282,7 @@ const PlayerDashboard = () => {
                       </div>
 
                       <div className="flex flex-col items-center gap-2">
-                         <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[120px] leading-tight">
+                         <div className="text-[11px] font-black uppercase tracking-[0.3em] text-primary/80 text-center max-w-[200px] leading-tight mb-2 drop-shadow-sm">
                             {match.type === 'tournament' ? `Round ${match.round}` : (match.title || 'Direct')}
                          </div>
                          <div className="text-xl font-black text-primary/10 italic">VS</div>

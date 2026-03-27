@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import AuraCard from '../components/AuraCard';
 import { useAuth } from '../context/AuthContext';
@@ -6,7 +7,8 @@ import { User, Mail, Phone, FileText, Camera, Save, Key, Loader2, Bell, ShieldAl
 import toast from 'react-hot-toast';
 
 const Profile = () => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, logout } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
@@ -323,8 +325,8 @@ const Profile = () => {
                     type="button"
                     onClick={() => {
                         if(window.confirm('Are you sure you want to log out?')) {
-                            // The actual logout logic would go here if I had access to the context
-                            window.location.href = '/login'; // Fallback redirect if direct call isn't easy
+                            logout();
+                            navigate('/login');
                         }
                     }}
                     className="px-8 py-3 bg-primary text-base3 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all duration-300"
@@ -334,31 +336,43 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Danger Zone */}
-              <div className="col-span-full mt-4 p-6 bg-base2/5 rounded-[32px] border border-red/5 relative overflow-hidden">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10 text-center sm:text-left">
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="w-12 h-12 bg-red/10 text-red rounded-2xl flex items-center justify-center shrink-0 shadow-sm shadow-red/10">
-                       <ShieldAlert size={24} strokeWidth={1.5} />
+              {/* Danger Zone - Hidden for Admins */}
+              {user?.role !== 'admin' && (
+                <div className="col-span-full mt-4 p-6 bg-base2/5 rounded-[32px] border border-red/5 relative overflow-hidden">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6 relative z-10 text-center sm:text-left">
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="w-12 h-12 bg-red/10 text-red rounded-2xl flex items-center justify-center shrink-0 shadow-sm shadow-red/10">
+                        <ShieldAlert size={24} strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <h4 className="text-[15px] font-medium text-text-emphasis tracking-tight">Deactivate Account</h4>
+                        <p className="text-[11px] text-text/40 font-medium leading-relaxed mt-0.5 max-w-[240px]">Permanently remove your tournament presence.</p>
+                      </div>
                     </div>
-                    <div>
-                       <h4 className="text-[15px] font-medium text-text-emphasis tracking-tight">Deactivate Account</h4>
-                       <p className="text-[11px] text-text/40 font-medium leading-relaxed mt-0.5 max-w-[240px]">Permanently remove your tournament presence.</p>
-                    </div>
-                  </div>
-                  <button 
-                    type="button"
-                    onClick={() => {
-                        if(window.confirm('Terminate presence in Cue Arena? This action is irrevocable.')) {
-                            toast.error('Termination sequence initiated.');
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (window.confirm('Terminate presence in Cue Arena? This action is irrevocable.')) {
+                          try {
+                            setLoading(true);
+                            await api.delete('/auth/profile');
+                            toast.success('Account terminated. We are sorry to see you go.');
+                            logout();
+                            navigate('/login');
+                          } catch (err) {
+                            toast.error(err.response?.data?.message || 'Failed to terminate account');
+                          } finally {
+                            setLoading(false);
+                          }
                         }
-                    }}
-                    className="px-6 py-3 bg-red/5 text-red border border-red/10 rounded-2xl font-medium text-[10px] uppercase tracking-widest hover:bg-red hover:text-base3 transition-all duration-300 active:scale-95 whitespace-nowrap"
-                  >
-                    Terminate
-                  </button>
+                      }}
+                      className="px-6 py-3 bg-red/5 text-red border border-red/10 rounded-2xl font-medium text-[10px] uppercase tracking-widest hover:bg-red hover:text-base3 transition-all duration-300 active:scale-95 whitespace-nowrap"
+                    >
+                      Terminate
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </form>
           </div>
         </AuraCard>

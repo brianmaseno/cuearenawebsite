@@ -234,12 +234,12 @@ const TopBar = ({ title }) => {
           )}
         </div>
 
-        <div className="flex items-center gap-3 pl-2 border-l border-base2 ml-1">
-          <div className="hidden sm:flex flex-col items-end">
-            <p className="text-xs font-black text-text-emphasis tracking-tight truncate max-w-[100px] leading-none mb-1">
+        <div className="flex items-center gap-2 md:gap-3 pl-2 sm:pl-3 border-l border-base2 ml-1">
+          <div className="flex flex-col items-end justify-center py-1">
+            <p className="text-[10px] md:text-xs font-black text-text-emphasis tracking-tight truncate max-w-[80px] md:max-w-[100px] leading-tight">
               {user?.fullName?.split(' ')[0]}
             </p>
-            <p className="text-[9px] font-bold text-primary uppercase tracking-widest leading-none bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">
+            <p className="text-[7px] md:text-[8px] font-black text-primary uppercase tracking-widest leading-none bg-primary/5 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md border border-primary/10 mt-0.5">
               {user?.role}
             </p>
           </div>
