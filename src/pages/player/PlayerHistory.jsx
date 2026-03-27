@@ -93,7 +93,7 @@ const PlayerHistory = () => {
               const activeColorClass = 
                 tab.color === 'blue' ? 'bg-blue-500 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)]' :
                 tab.color === 'emerald' ? 'bg-emerald-500 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)]' :
-                'bg-amber-500 shadow-[0_10px_25px_-5px_rgba(245,158,11,0.4)]';
+                'bg-amber-500 shadow-[0_10px_25_px_-5px_rgba(245,158,11,0.4)]';
 
               return (
                 <button
@@ -167,27 +167,27 @@ const PlayerHistory = () => {
 
                 return (
                   <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                    <div className="bg-base2/10 p-3 flex items-center gap-4 border-b border-base2 overflow-x-auto no-scrollbar">
-                      <div className="flex items-center gap-2 shrink-0">
+                    <div className="bg-base2/10 p-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-2 border-b border-base2 overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
                            <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
                               <TrophyIcon size={12} />
                            </div>
                         ) : (
-                           <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm shrink-0" />
+                           <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 drop-shadow-sm shrink-0" />
                         )}
-                        <h3 className="text-[11px] font-black uppercase tracking-tighter text-text-emphasis whitespace-nowrap">
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">
                            {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
                         </h3>
                       </div>
                       
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         {(match.stakeAmount > 0 || (match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0)) && (
                           <>
-                            <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap">
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap shrink-0">
                               STAKE: KES {(match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}
                             </span>
-                            <span className="text-[8px] font-bold text-blue bg-blue/5 px-2 py-0.5 rounded-md border border-blue/10 flex items-center gap-1 whitespace-nowrap">
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-blue bg-blue/5 px-1.5 py-0.5 rounded-md border border-blue/10 flex items-center gap-1 whitespace-nowrap shrink-0">
                               <AwardIcon size={10} />
                               PRIZE: KES {match.isTournamentMatch 
                                 ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
@@ -197,9 +197,9 @@ const PlayerHistory = () => {
                           </>
                         )}
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest whitespace-nowrap">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap shrink-0">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest whitespace-nowrap">Completed</span>
+                          <StatusBadge status={match.status} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
                         )}
                       </div>
                     </div>
@@ -353,18 +353,20 @@ const PlayerHistory = () => {
                   const myWon = battle.winnerId?._id === userId;
                   return (
                     <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
-                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                        <div className="flex items-center gap-2">
-                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
+                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
                               <Shield size={16} />
                            </div>
-                           <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Battle Room</span>
+                           <span className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Battle Room</span>
                         </div>
-                        {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
-                        ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
-                        )}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {isCancelled ? (
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap">Cancelled</span>
+                          ) : (
+                            <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
+                          )}
+                        </div>
                       </div>
                       
                       <div className="p-5 flex-1 flex flex-col">
@@ -475,10 +477,10 @@ const PlayerHistory = () => {
                 const isCancelled = t.status === 'cancelled';
                 return (
                   <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
-                      <div className="flex items-center gap-3">
-                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <span className={`text-sm font-black uppercase tracking-widest ${t.status === 'completed' ? 'text-text-emphasis' : 'text-red'
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm shrink-0" />
+                        <span className={`text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-widest truncate min-w-0 ${t.status === 'completed' ? 'text-text-emphasis' : 'text-red'
                           }`}>
                           {t.status === 'cancelled' && t.declinedBy ? (
                             (t.declinedBy._id || t.declinedBy).toString() === (user?._id || user?.id)?.toString()
@@ -487,11 +489,11 @@ const PlayerHistory = () => {
                           ) : t.status}
                         </span>
                       </div>
-                      <div>
+                      <div className="shrink-0">
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2 py-0.5 rounded tracking-widest">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2 py-0.5 rounded tracking-widest">Completed</span>
+                          <StatusBadge status={t.status} className="text-[clamp(7.5px,0.85vw,9.5px)]" />
                         )}
                       </div>
                     </div>
@@ -521,7 +523,6 @@ const PlayerHistory = () => {
                       )}
                     </div>
 
-                    {/* Completion Metadata Footer matching Match Style */}
                     <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
                       <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
                         <Link to={`/dashboard/tournament/${t._id}#bracket`} className="flex items-center gap-1.5 font-black uppercase tracking-wider text-primary hover:text-primary-focus transition-colors">

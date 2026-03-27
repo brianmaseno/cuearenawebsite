@@ -1,6 +1,6 @@
 import React from 'react';
 
-const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => {
+const StatusBadge = ({ status, entryType, registrationDeadline, startDate, className = '' }) => {
   const now = new Date();
   const deadlineEOD = registrationDeadline ? new Date(registrationDeadline) : null;
   if (deadlineEOD) deadlineEOD.setHours(23, 59, 59, 999);
@@ -52,7 +52,7 @@ const StatusBadge = ({ status, entryType, registrationDeadline, startDate }) => 
 
   return (
     <span 
-      className={`px-2 py-0.5 rounded-lg text-[9px] font-black border transition-all uppercase tracking-[0.1em] ${getStyles()}`}
+      className={`px-1.5 py-0.5 rounded-md text-[8.5px] font-black border transition-all uppercase tracking-[0.05em] ${getStyles()} ${className}`}
       style={['open_for_players', 'ongoing', 'confirmed'].includes(status) && !isExpired ? { animation: 'aura-breathe 4s ease-in-out infinite' } : {}}
     >
       {formatStatus(status)}

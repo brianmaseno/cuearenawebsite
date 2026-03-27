@@ -165,31 +165,33 @@ const History = () => {
 
                 return (
                   <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group transition-all border-2 border-primary/20 bg-base3/10 shadow-sm hover:shadow-md">
-                    <div className="bg-base2/5 p-4 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50">
-                      <div className="flex items-center gap-3">
-                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
+                    <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 md:w-6 md:h-6 shrink-0 drop-shadow-sm" />
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">
+                          {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
+                        </h3>
                       </div>
-                      <div className="flex flex-wrap items-center gap-2 justify-end">
+                      <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 justify-end shrink-0">
                         {match.isTournamentMatch ? (
                           match.tournamentId?.stakePerPlayer > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
-                              <AwardIcon size={10} className="text-emerald-500" />
-                              PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
-                            </span>
-                          )
-                        ) : (
-                          match.stakeAmount > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
-                              <AwardIcon size={10} className="text-emerald-500" />
-                              PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
-                            </span>
-                          )
-                        )}
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                            <AwardIcon size={10} className="text-emerald-500" />
+                            PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
+                          </span>
+                        )
+                      ) : (
+                        match.stakeAmount > 0 && (
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                            <AwardIcon size={10} className="text-emerald-500" />
+                            PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
+                          </span>
+                        )
+                      )}
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2.5 py-1 rounded-lg tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded-md tracking-widest border border-red/10 whitespace-nowrap shrink-0">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2.5 py-1 rounded-lg tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-green bg-green/10 px-1.5 py-0.5 rounded-md tracking-widest border border-green/10 whitespace-nowrap shrink-0">Completed</span>
                         )}
                       </div>
                     </div>
@@ -314,19 +316,21 @@ const History = () => {
                   const isCancelled = battle.status === 'cancelled';
                   return (
                     <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col transition-all shadow-sm hover:shadow-md border-2 border-primary/20 bg-base3/10">
-                      <div className="bg-base2/5 p-4 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50">
-                        <div className="flex items-center gap-2">
-                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
+                      <div className="bg-base2/5 p-4 flex flex-wrap md:flex-nowrap gap-3 justify-between items-center border-b border-base2/50 overflow-hidden">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
                               <Shield size={16} />
                            </div>
-                           <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Battle Room</span>
+                           <span className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Battle Room</span>
                         </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2.5 py-1 rounded-lg tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded-md tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2.5 py-1 rounded-lg tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-green bg-green/10 px-1.5 py-0.5 rounded-md tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
                         )}
                       </div>
+                    </div>
                       
                       <div className="p-5 flex-1 flex flex-col">
                         <h3 className="text-sm font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
@@ -426,16 +430,16 @@ const History = () => {
                 const isCancelled = t.status === 'cancelled';
                 return (
                   <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group transition-all shadow-sm hover:shadow-md h-full border-2 border-primary/20 bg-base3/10">
-                    <div className="bg-base2/5 p-4 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50">
-                      <div className="flex items-center gap-3">
-                        <img src="/favicon.png" alt="7 Ball" className="w-7 h-7 drop-shadow-sm" />
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis">Cue Tournament</h3>
+                    <div className="bg-base2/5 p-4 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 shrink-0 drop-shadow-sm" />
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">{t.name || 'Cue Tournament'}</h3>
                       </div>
-                      <div>
+                      <div className="shrink-0 flex items-center gap-1.5">
                         {isCancelled ? (
-                          <span className="text-[10px] font-black uppercase text-red bg-red/10 px-2.5 py-1 rounded-lg tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded-md tracking-widest border border-red/10 whitespace-nowrap">Cancelled</span>
                         ) : (
-                          <span className="text-[10px] font-black uppercase text-green bg-green/10 px-2.5 py-1 rounded-lg tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-green bg-green/10 px-1.5 py-0.5 rounded-md tracking-widest border border-green/10 whitespace-nowrap">Completed</span>
                         )}
                       </div>
                     </div>

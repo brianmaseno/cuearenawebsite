@@ -277,39 +277,39 @@ const OngoingActivities = () => {
 
                 return (
                   <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-2 border-primary/20 transition-all perspective-1000 bg-white/[0.02]">
-                    <div className="bg-base2/5 p-3 flex flex-wrap gap-3 justify-between items-center border-b border-base2/50 preserve-3d">
-                      <div className="flex items-center gap-2">
+                    <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 preserve-3d overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
-                          <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
+                          <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
                             <Trophy size={12} />
                           </div>
                         ) : (
-                          <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm" />
+                          <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 shrink-0 drop-shadow-sm" />
                         )}
-                        <h3 className="text-sm font-black uppercase tracking-tighter text-text-emphasis truncate max-w-[150px]">
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">
                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Tournament'}
                         </h3>
                       </div>
-                      <div className="flex flex-wrap items-center gap-1.5 justify-end">
+                      <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 justify-end shrink-0">
                         {match.stakeAmount > 0 && !match.isTournamentMatch && (
-                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
                             <Award size={10} className="text-emerald-500" />
                             PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
                           </span>
                         )}
                         {match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0 && (
-                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
                             <Award size={10} className="text-emerald-500" />
                             PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
                           </span>
                         )}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 shrink-0">
                           {match.status === 'cancelled' && match.declinedBy ? (
-                            <span className="text-[10px] font-black uppercase text-red px-2 py-1 bg-red/10 rounded-lg border border-red/20 animate-pulse truncate max-w-[120px] sm:max-w-[200px]">
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red px-1.5 py-0.5 bg-red/10 rounded-md border border-red/20 animate-pulse truncate max-w-[120px] sm:max-w-[200px] shrink-0">
                               {match.declinedBy.fullName} Declined
                             </span>
                           ) : (
-                            <StatusBadge status={match.status} />
+                            <StatusBadge status={match.status} className="text-[clamp(7.5px,0.85vw,9.5px)]" />
                           )}
                           <button
                             disabled={actionLoading}
@@ -558,12 +558,15 @@ const OngoingActivities = () => {
             ) : (
               data.tournaments.map((t) => (
                   <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-2 border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
-                    <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
-                      <Trophy size={16} />
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
+                          <Trophy size={16} />
+                        </div>
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Tournament Room</h3>
+                      </div>
+                      <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
                     </div>
-                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} />
-                  </div>
 
                   <div className="p-5">
                     <h3 className="text-base font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
@@ -607,16 +610,16 @@ const OngoingActivities = () => {
             ) : (
               data.battles.map((battle) => (
                   <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-2 border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
-                    <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
+                    <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
                       <Shield size={16} />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 whitespace-nowrap">
                         <Award size={10} className="text-emerald-500" />
                         PRIZE: KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}
                       </span>
-                      <StatusBadge status={battle.status} />
+                      <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)]" />
                       <button
                         disabled={actionLoading}
                         onClick={() => handleCancelBattle(battle._id)}
