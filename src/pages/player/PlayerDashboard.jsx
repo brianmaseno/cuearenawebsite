@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 
 const PlayerDashboard = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState({ tournaments: [], matches: [], invitations: [], notifications: [] });
+  const [data, setData] = useState({ tournaments: [], matches: [], invitations: [], notifications: [], achievements: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [userId, setUserId] = useState(null);
@@ -18,12 +18,13 @@ const PlayerDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [ongoingRes, notifRes] = await Promise.all([
+      const [ongoingRes, notifRes, achievementsRes] = await Promise.all([
         api.get('/direct-matches/player/ongoing'),
         api.get('/notifications/my'),
+        api.get('/users/me/achievements'),
       ]);
       
-      const userStr = localStorage.getItem('userInfo');
+      const userStr = sessionStorage.getItem('userInfo');
       if (userStr) {
         const u = JSON.parse(userStr);
         setUserId(u._id);
@@ -35,6 +36,7 @@ const PlayerDashboard = () => {
         battles: ongoingRes.data.battles || [],
         tournaments: ongoingRes.data.tournaments || [],
         notifications: notifRes.data || [],
+        achievements: achievementsRes.data || [],
         // Calculate invitations from all sources
         invitations: [
           ...(ongoingRes.data.matches || []).filter(m => m.myStatus === 'pending'),
@@ -119,6 +121,39 @@ const PlayerDashboard = () => {
 
         {/* Quick Stats */}
         <QuickStatsBar />
+
+        {/* My Achievements (Horizontal Scroll) */}
+        {data.achievements?.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-black uppercase tracking-tighter text-text-emphasis flex items-center gap-2">
+                <Award className="text-primary h-5 w-5" />
+                Latest Achievements
+              </h2>
+              <Link to="/leaderboard" className="text-xs font-bold text-primary hover:underline">View Hall of Fame</Link>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
+              {data.achievements.map((ua) => (
+                <div key={ua._id} className="min-w-[200px] bg-dark-lighter p-4 rounded-2xl border border-white/5 relative group shrink-0 overflow-hidden">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full group-hover:bg-primary/10 transition-all"></div>
+                  <div className="relative z-10 flex items-center gap-3">
+                    <div className={`p-2 rounded-xl bg-opacity-10 ${
+                      ua.achievementId.rarity === 'legendary' ? 'bg-yellow-500 text-yellow-500' :
+                      ua.achievementId.rarity === 'epic' ? 'bg-purple-500 text-purple-500' :
+                      ua.achievementId.rarity === 'rare' ? 'bg-blue-500 text-blue-500' : 'bg-gray-400 text-gray-400'
+                    }`}>
+                      <Award size={20} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-white uppercase truncate tracking-tight">{ua.achievementId.name}</h4>
+                      <p className="text-[10px] text-gray-500 leading-tight">{new Date(ua.earnedAt).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-full sm:w-fit overflow-x-auto hide-scrollbar">

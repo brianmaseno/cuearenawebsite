@@ -62,7 +62,9 @@ const Sidebar = () => {
         { label: 'Mod Requests', path: '/admin/moderator-requests', icon: Shield },
         { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
         { label: 'Finance', path: '/admin/finance', icon: TrendingUp },
+        { label: 'Analytics', path: '/admin/analytics', icon: Activity },
         { label: 'Wallet', path: '/wallet', icon: Wallet },
+        { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
       ];
     }
     if (user.role === 'moderator') {
@@ -71,6 +73,7 @@ const Sidebar = () => {
         { label: 'History', path: '/moderator/history', icon: Clock },
         { label: 'Tables', path: '/moderator/tables', icon: Target },
         { label: 'Wallet', path: '/wallet', icon: Wallet },
+        { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
       ];
     }
     return [
@@ -78,6 +81,7 @@ const Sidebar = () => {
       { label: 'History', path: '/dashboard/history', icon: Clock },
       { label: 'Open Tournaments', path: '/tournaments', icon: Calendar },
       { label: 'Wallet', path: '/wallet', icon: Wallet },
+      { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
     ];
   };
 
@@ -147,6 +151,17 @@ const Sidebar = () => {
         </nav>
 
         <div className="p-4 border-t border-base2 space-y-1">
+          <Link
+            to="/support"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${
+              isCollapsed ? 'justify-center px-0' : ''
+            }`}
+            title={isCollapsed ? 'Support' : ''}
+          >
+            <HelpCircle size={20} className="shrink-0 text-primary group-hover:scale-110 transition-transform" />
+            {!isCollapsed && <span className="truncate">Support</span>}
+          </Link>
+
           <Link
             to="/profile"
             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${

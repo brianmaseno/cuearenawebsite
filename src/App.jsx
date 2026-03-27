@@ -31,7 +31,9 @@ const CreateBattle = React.lazy(() => import('./pages/moderator/CreateBattle'));
 const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 const AdminLogs = React.lazy(() => import('./pages/admin/AdminLogs'));
 const AdminUsers = React.lazy(() => import('./pages/admin/AdminUsers'));
+const AdminAnalytics = React.lazy(() => import('./pages/admin/AdminAnalytics'));
 const PlayerHistory = React.lazy(() => import('./pages/player/PlayerHistory'));
+const Leaderboard = React.lazy(() => import('./pages/player/Leaderboard'));
 const OngoingActivities = React.lazy(() => import('./pages/moderator/OngoingActivities'));
 const History = React.lazy(() => import('./pages/moderator/History'));
 const ModeratorTables = React.lazy(() => import('./pages/moderator/ModeratorTables'));
@@ -40,6 +42,7 @@ const ModeratorApplication = React.lazy(() => import('./pages/ModeratorApplicati
 const AdminModeratorRequests = React.lazy(() => import('./pages/admin/AdminModeratorRequests'));
 const AdminFinance = React.lazy(() => import('./pages/admin/AdminFinance'));
 const Wallet = React.lazy(() => import('./pages/Wallet'));
+const Support = React.lazy(() => import('./pages/Support'));
 
 function App() {
   return (
@@ -78,6 +81,11 @@ function App() {
                         <PlayerHistory />
                       </ProtectedRoute>
                     } />
+                    <Route path="/leaderboard" element={
+                      <ProtectedRoute>
+                        <Leaderboard />
+                      </ProtectedRoute>
+                    } />
                     {/* Match details are now handled inline in the player dashboard */}
                     <Route path="/dashboard/tournament/:id" element={
                       <ProtectedRoute roles={['player', 'moderator', 'admin']}>
@@ -92,6 +100,11 @@ function App() {
                     <Route path="/wallet" element={
                       <ProtectedRoute>
                         <Wallet />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/support" element={
+                      <ProtectedRoute>
+                        <Support />
                       </ProtectedRoute>
                     } />
 
@@ -158,6 +171,11 @@ function App() {
                     <Route path="/admin/finance" element={
                       <ProtectedRoute roles={['admin']}>
                         <AdminFinance />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/analytics" element={
+                      <ProtectedRoute roles={['admin']}>
+                        <AdminAnalytics />
                       </ProtectedRoute>
                     } />
                     <Route path="/moderator-apply" element={<ModeratorApplication />} />

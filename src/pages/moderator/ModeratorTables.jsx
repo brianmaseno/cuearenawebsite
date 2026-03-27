@@ -59,6 +59,16 @@ const ModeratorTables = () => {
       }
    };
 
+   const handleToggleMaintenance = async (id) => {
+      try {
+         await api.put(`/users/me/tables/${id}/maintenance`);
+         toast.success('Maintenance status updated');
+         fetchTables();
+      } catch (err) {
+         toast.error(err.response?.data?.message || 'Failed to update maintenance status');
+      }
+   };
+
    if (loading) {
       return (
          <DashboardLayout title="Manage Pool Tables">
@@ -136,15 +146,33 @@ const ModeratorTables = () => {
                                        <span className="text-[10px] font-bold text-orange uppercase flex items-center gap-1 bg-orange/10 px-2 py-0.5 rounded-full border border-orange/20">
                                           <Clock size={10} /> Busy (In Game)
                                        </span>
+                                    ) : table.status === 'maintenance' ? (
+                                       <span className="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
+                                          <AlertCircle size={10} /> Maintenance
+                                       </span>
                                     ) : (
                                        <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                                          <CheckCircle2 size={10} /> IoT Active
+                                          <CheckCircle2 size={10} /> {new Date() - new Date(table.lastPulse) < 600000 ? 'IoT Online' : 'IoT Idle'}
                                        </span>
                                     )}
+                                 </div>
+                                 <div className="mt-1 flex items-center gap-2">
+                                    <span className="text-[9px] text-text/30 font-bold uppercase">Health: </span>
+                                    <div className={`w-2 h-2 rounded-full ${new Date() - new Date(table.lastPulse) < 300000 ? 'bg-green animate-pulse' : 'bg-red/50'}`}></div>
+                                    <span className="text-[9px] text-text/40">{table.lastPulse ? `Seen ${new Date(table.lastPulse).toLocaleTimeString()}` : 'Never seen'}</span>
                                  </div>
                               </div>
                            </div>
                            <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                 onClick={() => handleToggleMaintenance(table._id)}
+                                 className={`p-2 rounded-lg transition-all active:scale-95 ${
+                                    table.status === 'maintenance' ? 'bg-red text-white shadow-sm' : 'text-text/40 hover:text-red hover:bg-red/5'
+                                 }`}
+                                 title={table.status === 'maintenance' ? 'Restore Table' : 'Mark for Maintenance'}
+                              >
+                                 <AlertCircle size={18} />
+                              </button>
                               <button
                                  className="p-2 text-text/40 hover:text-primary transition-colors active:scale-95"
                                  title="View QR Code/Config"

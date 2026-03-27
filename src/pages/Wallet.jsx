@@ -29,7 +29,7 @@ const WalletPage = () => {
   const [amount, setAmount] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
 
   const fetchData = async () => {
     try {
@@ -205,7 +205,7 @@ const WalletPage = () => {
                   <div className="flex flex-col gap-1.5">
                     <p className="text-[9px] font-black uppercase text-white/30 tracking-[0.2em] leading-none">Account Holder</p>
                     <p className="text-xs md:text-base font-black text-white tracking-[0.15em] uppercase drop-shadow-sm">
-                      {JSON.parse(localStorage.getItem('userInfo'))?.fullName || 'PREMIUM PLAYER'}
+                      {userInfo?.fullName || 'PREMIUM PLAYER'}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">

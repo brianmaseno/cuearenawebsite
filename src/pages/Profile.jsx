@@ -115,7 +115,12 @@ const Profile = () => {
                 />
               </div>
               <div className="text-center">
-                <h2 className="text-xl font-medium text-text-emphasis tracking-tight">{user?.fullName}</h2>
+                <div className="flex items-center gap-2 justify-center">
+                   <h2 className="text-xl font-medium text-text-emphasis tracking-tight">{user?.fullName}</h2>
+                   {user?.isVerified && (
+                     <CheckCircle2 size={18} className="text-primary fill-primary/10" title="Verified Master" />
+                   )}
+                </div>
                 <div className="px-3 py-1 bg-primary/10 rounded-full mt-1.5 inline-block">
                   <p className="text-[9px] font-medium text-primary uppercase tracking-widest">{user?.role}</p>
                 </div>
@@ -158,6 +163,16 @@ const Profile = () => {
                     className="w-full bg-base3/30 border border-base2/30 rounded-xl pl-11 pr-4 py-3 text-sm text-text-emphasis shadow-sm outline-none cursor-not-allowed font-medium"
                     readOnly
                   />
+                </div>
+                <div className="flex items-center justify-between mt-1 px-1">
+                  <span className={`text-[9px] font-black uppercase tracking-tighter ${user?.isVerified ? 'text-green' : 'text-gray-500'}`}>
+                    {user?.isVerified ? '✓ Identity Verified' : '⚠ Identity Unverified'}
+                  </span>
+                  {!user?.isVerified && (
+                    <button type="button" className="text-[9px] font-bold text-primary hover:underline hover:opacity-80 transition-opacity">
+                      Verify Now
+                    </button>
+                  )}
                 </div>
               </div>
 
