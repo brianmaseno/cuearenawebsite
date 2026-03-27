@@ -111,15 +111,36 @@ const TournamentDetails = () => {
    const isRegistrationOpen = tournament.status === 'open_for_players';
 
    return (
-      <DashboardLayout title={tournament.name}>
-         <div className="max-w-[1400px] mx-auto space-y-4 animate-in fade-in duration-700">
-            {/* Context Navigation */}
-            <div className="flex items-center justify-between">
-               <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-text/60 hover:text-primary transition-colors font-bold text-xs uppercase tracking-wider">
-                  <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                  Back
-               </button>
+    <DashboardLayout title={tournament.name}>
+      <div className="max-w-[1600px] mx-auto space-y-10 pb-20 px-4 md:px-8 bg-[#fcf9f1] min-h-screen animate-in fade-in duration-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        {/* Header Section */}
+        <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/50 pb-8">
+          <div>
+            <div className="flex items-center gap-4 mb-3">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="w-10 h-10 rounded-full bg-[#fcf9f1] border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+              >
+                <ArrowLeft size={18} />
+              </button>
+              <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
             </div>
+            <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight">{tournament.name}</h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="bg-[#f5f1e4]/80 backdrop-blur-sm px-6 py-3 rounded-[24px] border border-slate-200 shadow-sm text-center">
+              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-0.5">Entry Type</p>
+              <p className="font-black text-blue-600 text-sm">{tournament.entryType?.replace('_', ' ')}</p>
+            </div>
+            {tournament.stakePerPlayer > 0 && (
+              <div className="bg-blue-600 px-6 py-3 rounded-[24px] shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] text-center text-white">
+                <p className="text-[10px] font-black uppercase text-white/70 tracking-widest mb-0.5">Stake</p>
+                <p className="font-black text-sm uppercase">KES {tournament.stakePerPlayer.toLocaleString()}</p>
+              </div>
+            )}
+          </div>
+        </div>
 
             {/* Registration Banner */}
             {!isPlayerConfirmed && isRegistrationOpen && (
@@ -151,31 +172,29 @@ const TournamentDetails = () => {
                </div>
             )}
 
-            {/* Tab Navigation */}
-            <div className="flex items-center gap-2 bg-base2/10 p-1 rounded-2xl w-fit">
-               <button
-                  onClick={() => setActiveTab('info')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                     activeTab === 'info' 
-                        ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
-                        : 'text-text/40 hover:text-text hover:bg-base2/20'
-                  }`}
-               >
-                  <Info size={14} />
-                  Info
-               </button>
-               <button
-                  onClick={() => setActiveTab('brackets')}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
-                     activeTab === 'brackets' 
-                        ? 'bg-base3 text-primary shadow-lg shadow-primary/5 border border-primary/10' 
-                        : 'text-text/40 hover:text-text hover:bg-base2/20'
-                  }`}
-               >
-                  <Target size={14} />
-                  Brackets
-               </button>
-            </div>
+        {/* Tab Navigation */}
+        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+          <button
+            onClick={() => setActiveTab('info')}
+            className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'info'
+                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+              }`}
+          >
+            <Info size={16} />
+            Info
+          </button>
+          <button
+            onClick={() => setActiveTab('brackets')}
+            className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'brackets'
+                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+              }`}
+          >
+            <Target size={16} />
+            Brackets
+          </button>
+        </div>
 
             {/* Tab Content */}
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

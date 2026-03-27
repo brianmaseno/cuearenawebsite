@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
 import DashboardLayout from '../components/DashboardLayout';
 import AuraCard from '../components/AuraCard';
-import { 
-  MessageSquare, 
-  Send, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle, 
+import {
+  MessageSquare,
+  Send,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
   HelpCircle,
   Plus,
   ChevronDown
@@ -71,7 +71,7 @@ const Support = () => {
             <h2 className="text-2xl font-black text-text-emphasis uppercase tracking-tighter">Support Center</h2>
             <p className="text-gray-500 text-sm">Need help? We're here for you 24/7.</p>
           </div>
-          <button 
+          <button
             onClick={() => setShowNewTicket(!showNewTicket)}
             className="aura-btn bg-primary text-base3 p-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-2"
           >
@@ -89,22 +89,22 @@ const Support = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-text-emphasis mb-2">Issue Title</label>
-                <input 
+                <input
                   type="text"
                   required
                   placeholder="Summarize your issue..."
                   className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold"
                   value={formData.title}
-                  onChange={e => setFormData({...formData, title: e.target.value})}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-text-emphasis mb-2">Category</label>
-                  <select 
+                  <select
                     className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/40 appearance-none font-bold"
                     value={formData.category}
-                    onChange={e => setFormData({...formData, category: e.target.value})}
+                    onChange={e => setFormData({ ...formData, category: e.target.value })}
                   >
                     <option value="technical">Technical Issue</option>
                     <option value="payment">Payment / Wallet</option>
@@ -114,10 +114,10 @@ const Support = () => {
                 </div>
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-text-emphasis mb-2">Priority</label>
-                  <select 
+                  <select
                     className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/40 appearance-none font-bold"
                     value={formData.priority}
-                    onChange={e => setFormData({...formData, priority: e.target.value})}
+                    onChange={e => setFormData({ ...formData, priority: e.target.value })}
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -128,13 +128,13 @@ const Support = () => {
               </div>
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-text-emphasis mb-2">Description</label>
-                <textarea 
+                <textarea
                   rows="5"
                   required
                   placeholder="Provide details about your issue..."
                   className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/40 transition-all font-bold resize-none"
                   value={formData.description}
-                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
                 ></textarea>
               </div>
               <button type="submit" className="w-full aura-btn bg-primary text-base3 py-4 rounded-xl font-black uppercase tracking-widest">
@@ -165,7 +165,7 @@ const Support = () => {
                     <h4 className="text-lg font-black text-text-emphasis uppercase tracking-tighter mb-2">{ticket.title}</h4>
                     <p className="text-gray-400 text-sm line-clamp-2 italic">"{ticket.description}"</p>
                   </div>
-                  
+
                   {ticket.responses?.length > 0 && (
                     <div className="bg-primary/5 p-6 border-t border-primary/10">
                       <div className="flex items-center gap-2 mb-2">

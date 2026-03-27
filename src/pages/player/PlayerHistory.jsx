@@ -73,37 +73,38 @@ const PlayerHistory = () => {
 
   return (
     <DashboardLayout title="Activity History">
-      <div className="space-y-6 pb-20">
-        <div className="flex flex-col gap-6">
-          <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-fit">
-            <button
-              onClick={() => { setActiveTab('matches'); setSubFilter('all'); }}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'matches' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
-                }`}
-            >
-              <TargetIcon size={18} />
-              Matches ({data.matches.length})
-            </button>
-            <button
-              onClick={() => { setActiveTab('tournaments'); setSubFilter('all'); }}
-              className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
-                }`}
-            >
-              <TrophyIcon size={18} />
-              Tournaments ({data.tournaments.length})
-          </button>
-          <button
-            onClick={() => { setActiveTab('battles'); setSubFilter('all'); }}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'battles' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
-              }`}
-          >
-            <Shield size={18} />
-            Battles ({data.battles.length})
-          </button>
+      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        {/* Header Section */}
+        <div className="pt-8">
+          <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight mb-2">
+            Activity <span className="text-blue-500">History</span>
+          </h1>
+          <p className="text-slate-500 font-medium">Your complete journey through tournaments, matches, and battles.</p>
         </div>
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+            {[
+              { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon },
+              { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon },
+              { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setSubFilter('all'); }}
+                className={`flex-1 md:flex-none px-8 py-3.5 text-[12px] font-black uppercase tracking-[0.15em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${
+                  activeTab === tab.id 
+                  ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]' 
+                  : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                }`}
+              >
+                <tab.icon size={16} />
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
 
           {/* Sub-Filters */}
-          <div className="flex items-center gap-2 bg-base2/20 p-1.5 rounded-2xl w-fit border border-base2/50">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border border-slate-200/40 w-full sm:w-fit">
             {[
               { id: 'all', label: 'All', icon: ArrowIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },
@@ -116,14 +117,14 @@ const PlayerHistory = () => {
                 <button
                   key={f.id}
                   onClick={() => setSubFilter(f.id)}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2.5 ${subFilter === f.id
-                      ? 'bg-primary/10 text-primary shadow-sm border border-primary/20'
-                      : 'text-text/60 hover:text-text hover:bg-base2/50 border border-transparent'
+                  className={`flex-1 md:flex-none px-6 py-2.5 rounded-[18px] text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${subFilter === f.id
+                      ? 'bg-[#fcf9f1] text-blue-600 shadow-sm border border-slate-200'
+                      : 'text-slate-400 hover:text-slate-600'
                     }`}
                 >
-                  <f.icon size={14} />
+                  <f.icon size={12} />
                   {f.label}
-                  <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[10px] ${subFilter === f.id ? 'bg-primary/10 text-primary' : 'bg-base2 text-text/30'
+                  <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[9px] ${subFilter === f.id ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-400'
                     }`}>
                     {count}
                   </span>

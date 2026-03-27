@@ -9,11 +9,11 @@ import toast from 'react-hot-toast';
 
 const AnimatedCounter = ({ value, duration = 2, suffix = "" }) => {
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     const isK = value?.toString().includes('k');
     const targetValue = isK ? parseFloat(value.toString()) * 1000 : (parseInt(value) || 0);
-    
+
     const controls = animate(0, targetValue, {
       duration: duration,
       ease: "easeOut",
@@ -21,7 +21,7 @@ const AnimatedCounter = ({ value, duration = 2, suffix = "" }) => {
         setCount(Math.floor(latest));
       }
     });
-    
+
     return () => controls.stop();
   }, [value, duration]);
 
@@ -37,7 +37,7 @@ const ParallaxIcon = ({ icon: LucideIcon, color, size = 24, top, left, delay = 0
   if (!LucideIcon) return null;
 
   return (
-    <motion.div 
+    <motion.div
       style={{ y, top, left, perspective: 1000 }}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: 0.15, scale: 1 }}
@@ -45,7 +45,7 @@ const ParallaxIcon = ({ icon: LucideIcon, color, size = 24, top, left, delay = 0
       className={`absolute z-0 pointer-events-none ${color}`}
     >
       <motion.div
-        animate={{ 
+        animate={{
           rotateX: [0, 20, 0],
           rotateY: [0, 30, 0],
           y: [0, -10, 0]
@@ -118,11 +118,11 @@ const Landing = () => {
           api.get('/tournaments/public/stats'),
           api.get('/users/leaderboard?limit=10')
         ]);
-        
+
         const active = tResponse.data
           .filter(t => ['open_for_players', 'full', 'ongoing'].includes(t.status) && t.entryType === 'open_request')
           .slice(0, 4);
-        
+
         setTournaments(active);
         setStats(sResponse.data);
         setLeaderboard(lResponse.data);
@@ -146,26 +146,26 @@ const Landing = () => {
   };
 
   const card3DVariants = {
-    hover: { 
-      scale: 1.05, 
-      rotateX: 5, 
-      rotateY: 5, 
+    hover: {
+      scale: 1.05,
+      rotateX: 5,
+      rotateY: 5,
       z: 50,
-      transition: { duration: 0.4, ease: "easeOut" } 
+      transition: { duration: 0.4, ease: "easeOut" }
     }
   };
 
   return (
     <div className="min-h-screen bg-background selection:bg-primary/30 relative">
       {/* Global Cursor Glow */}
-      <div 
+      <div
         className="fixed pointer-events-none z-[9999] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 hidden lg:block"
         style={{ left: mousePos.x, top: mousePos.y, opacity: 0.4 }}
       />
 
       {/* Scroll Progress Bar */}
       <div className="fixed top-0 left-0 w-full h-1 z-[1000]">
-        <motion.div 
+        <motion.div
           className="h-full bg-gradient-to-r from-primary via-indigo-500 to-special-red"
           style={{ width: `${scrollProgress}%` }}
         />
@@ -176,7 +176,7 @@ const Landing = () => {
           <Link to="/" className="flex items-center gap-2 group relative">
             <span className="text-xl md:text-2xl brand-premium font-black tracking-tight">Cue-Arena</span>
           </Link>
-          
+
           <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden p-2 text-text/60 hover:text-primary transition-colors">
             <Menu size={24} />
           </button>
@@ -252,19 +252,19 @@ const Landing = () => {
       <section className="py-24 bg-base2/20 relative overflow-hidden" style={{ perspective: 1500 }}>
         <ParallaxIcon icon={Shield} color="text-primary" size={24} top="20%" left="5%" delay={0.5} speed={0.5} />
         <ParallaxIcon icon={Zap} color="text-indigo-500" size={20} top="80%" left="90%" delay={0.7} speed={0.7} />
-        
+
         <div className="container mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, rotateY: -20 }} 
-              whileInView={{ opacity: 1, scale: 1, rotateY: 0 }} 
-              viewport={{ once: true }} 
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, rotateY: -20 }}
+              whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 1, ease: "easeOut" }}
               className="w-full lg:w-1/2 relative group"
               style={{ transformStyle: 'preserve-3d' }}
             >
               <div className="absolute -inset-6 bg-gradient-to-r from-special-red/30 via-primary/30 to-indigo-500/30 rounded-[48px] blur-3xl opacity-40 group-hover:opacity-100 transition-opacity duration-1000" />
-              <motion.div 
+              <motion.div
                 whileHover={{ rotateY: 10, rotateX: 5, z: 20 }}
                 className="relative rounded-[32px] overflow-hidden border border-base3/20 shadow-2xl transition-all duration-700"
               >
@@ -279,10 +279,10 @@ const Landing = () => {
                 </div>
               </motion.div>
             </motion.div>
-            <motion.div 
-              initial={{ opacity: 0, x: 50, rotateY: 20 }} 
-              whileInView={{ opacity: 1, x: 0, rotateY: 0 }} 
-              viewport={{ once: true }} 
+            <motion.div
+              initial={{ opacity: 0, x: 50, rotateY: 20 }}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 1, delay: 0.2 }}
               className="w-full lg:w-1/2 space-y-8 text-center lg:text-left"
               style={{ transformStyle: 'preserve-3d' }}
@@ -293,7 +293,7 @@ const Landing = () => {
                 <p className="text-lg sm:text-xl text-text/70 leading-relaxed font-medium max-w-xl mx-auto lg:mx-0">Manual brackets are history. Upgrade to precision and real-time synchronization.</p>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
-                {[ { title: "Instant brackets", desc: "Automated tree generation." }, { title: "Live updates", desc: "Match data synced instantly." }, { title: "Secure flows", desc: "Automated fee distribution." }, { title: "Elite design", desc: "A premium interface." } ].map((item, idx) => (
+                {[{ title: "Instant brackets", desc: "Automated tree generation." }, { title: "Live updates", desc: "Match data synced instantly." }, { title: "Secure flows", desc: "Automated fee distribution." }, { title: "Elite design", desc: "A premium interface." }].map((item, idx) => (
                   <div key={idx} className="p-4 rounded-[20px] bg-base3/80 backdrop-blur-sm border border-base2/50 shadow-sm hover:shadow-md transition-all group">
                     <h4 className="text-sm font-black text-text-emphasis mb-1 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary" />{item.title}</h4>
                     <p className="text-[10px] text-text/60 leading-normal font-bold uppercase tracking-tight">{item.desc}</p>
@@ -315,7 +315,7 @@ const Landing = () => {
             <p className="text-lg text-text/70 font-medium text-left lg:text-center">Step into a world where technology meets the table. Professionalism in every pixel.</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-auto lg:h-[600px] text-left" style={{ perspective: 2000 }}>
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               whileHover="hover"
@@ -332,7 +332,7 @@ const Landing = () => {
                 </motion.div>
               </div>
             </motion.div>
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               whileHover="hover"
@@ -365,7 +365,7 @@ const Landing = () => {
               <Link to="/register" className="inline-flex items-center gap-3 px-8 py-4 bg-indigo-500 text-base3 rounded-2xl font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-indigo-500/20">Join now <ArrowRight size={20} /></Link>
             </div>
             <div className="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[ { step: "01", icon: Target, title: "Register", desc: "Browse active tournaments and join with a single tap. Secure your spot." }, { step: "02", icon: Zap, title: "Play", desc: "Arrive at the hall, scan your entry, and play. Real-time sync." }, { step: "03", icon: Trophy, title: "Win", desc: "Claim your title. Platform-automated payouts ensure winnings are instant." } ].map((item, idx) => (
+              {[{ step: "01", icon: Target, title: "Register", desc: "Browse active tournaments and join with a single tap. Secure your spot." }, { step: "02", icon: Zap, title: "Play", desc: "Arrive at the hall, scan your entry, and play. Real-time sync." }, { step: "03", icon: Trophy, title: "Win", desc: "Claim your title. Platform-automated payouts ensure winnings are instant." }].map((item, idx) => (
                 <motion.div key={idx} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.1 }} className="p-8 aura-card relative group border-none transition-colors text-left">
                   <span className="absolute top-8 right-8 text-4xl font-black text-primary/10 group-hover:text-primary/20 transition-colors">{item.step}</span>
                   <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6"><item.icon size={28} /></div>
@@ -394,9 +394,9 @@ const Landing = () => {
                       const colors = [{ border: 'hover:border-primary/60', shadow: 'shadow-primary/20', accent: 'bg-primary' }, { border: 'hover:border-indigo-500/60', shadow: 'shadow-indigo-500/20', accent: 'bg-indigo-500' }, { border: 'hover:border-special-red/60', shadow: 'shadow-special-red/20', accent: 'bg-special-red' }, { border: 'hover:border-emerald-500/60', shadow: 'shadow-emerald-500/20', accent: 'bg-emerald-500' }];
                       const style = colors[idx % colors.length];
                       return (
-                        <motion.div 
-                          key={t._id} 
-                          variants={itemVariants} 
+                        <motion.div
+                          key={t._id}
+                          variants={itemVariants}
                           whileHover="hover"
                           customVariants={card3DVariants}
                           className={`group relative h-full aura-card border-none overflow-hidden hover:shadow-3xl ${style.shadow} transition-all duration-700 text-left`}
@@ -404,14 +404,14 @@ const Landing = () => {
                         >
                           <motion.div variants={card3DVariants} className="p-8 flex flex-col h-full text-left">
                             <div className="absolute top-0 left-0 w-full h-2 bg-base2"><motion.div initial={{ width: 0 }} whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} /></div>
-                            
+
                             <div className="flex justify-between items-start mb-4" style={{ translateZ: 20 }}>
                               <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
                               <span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.format.replace('_', ' ')}</span>
                             </div>
-                            
+
                             <h3 className="text-xl font-black text-text-emphasis mb-5 group-hover:text-primary transition-colors line-clamp-2 leading-tight text-left" style={{ translateZ: 30 }}>{t.name}</h3>
-                            
+
                             <div className="grid grid-cols-1 gap-3 mb-6 flex-1 text-xs font-bold text-text/80 text-left" style={{ translateZ: 10 }}>
                               <div className="flex items-center gap-3 p-2.5 rounded-xl bg-base2/30 text-left"><MapPin size={16} className="text-primary" /> <span className="truncate text-left">{t.venue}</span></div>
                               <div className="flex gap-3 text-left">
@@ -419,7 +419,7 @@ const Landing = () => {
                                 <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Calendar size={16} className="text-special-red" /> <span>{new Date(t.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span></div>
                               </div>
                             </div>
-                            
+
                             <Link to="/login" className="w-full py-3 aura-btn text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all font-black" style={{ translateZ: 25 }}>Join tournament <ArrowRight size={16} /></Link>
                           </motion.div>
                         </motion.div>
@@ -438,7 +438,7 @@ const Landing = () => {
                       {i === 0 && <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />}
                       <div className="flex flex-col items-center justify-center min-w-[20px]">
                         {p.rankTrend === 'up' ? <ChevronUp size={12} className="text-emerald-500 mb-0.5" /> : p.rankTrend === 'down' ? <ChevronDown size={12} className="text-aura-cyan mb-0.5" /> : p.rankTrend === 'new' ? <Info size={12} className="text-primary mx-auto mb-0.5" /> : <Minus size={12} className="text-text/20 mb-0.5" />}
-                        <div className={`w-7 h-7 flex items-center justify-center rounded-lg font-black text-[10px] shadow-inner ${i === 0 ? 'bg-primary text-base3 shadow-[0_0_15px_rgba(38,139,210,0.4)]' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-aura-cyan/5 text-aura-cyan ring-1 ring-aura-cyan/20' : 'bg-base2 text-text/40'}`}>{i+1}</div>
+                        <div className={`w-7 h-7 flex items-center justify-center rounded-lg font-black text-[10px] shadow-inner ${i === 0 ? 'bg-primary text-base3 shadow-[0_0_15px_rgba(38,139,210,0.4)]' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-aura-cyan/5 text-aura-cyan ring-1 ring-aura-cyan/20' : 'bg-base2 text-text/40'}`}>{i + 1}</div>
                       </div>
                       <div className={`w-10 h-10 rounded-full p-0.5 shrink-0 ${i === 0 ? 'bg-primary shadow-[0_0_15px_rgba(38,139,210,0.5)]' : 'bg-gradient-to-br from-primary to-aura-cyan'}`}><img src={p.profilePhoto || `https://ui-avatars.com/api/?name=${p.fullName}&background=random`} alt={p.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" /></div>
                       <div className="flex-1 min-w-0"><h3 className={`font-black truncate text-left ${i === 0 ? 'text-text-emphasis text-sm text-aura' : 'text-xs text-text-emphasis'}`}>{p.fullName}</h3></div>
@@ -457,7 +457,7 @@ const Landing = () => {
         <div className="container mx-auto px-6 text-center">
           <div className="mb-16"><h2 className="text-3xl font-black text-text-emphasis tracking-tight">Diverse game formats</h2><p className="text-text/60 font-medium">Tournament-ready for every discipline.</p></div>
           <div className="flex flex-wrap justify-center gap-8">
-            {[ { name: "8-Ball", color: "bg-black" }, { name: "9-Ball", color: "bg-yellow" }, { name: "10-Ball", color: "bg-blue" }, { name: "Straight Pool", color: "bg-red" } ].map((game, i) => (
+            {[{ name: "8-Ball", color: "bg-black" }, { name: "9-Ball", color: "bg-yellow" }, { name: "10-Ball", color: "bg-blue" }, { name: "Straight Pool", color: "bg-red" }].map((game, i) => (
               <motion.div key={i} whileHover={{ y: -5 }} className="flex flex-col items-center gap-4 bg-base3 p-6 rounded-3xl border border-base2 shadow-sm min-w-[140px]"><div className={`w-12 h-12 rounded-full ${game.color} shadow-lg flex items-center justify-center text-base3 font-black italic`}>{game.name.charAt(0)}</div><span className="font-black text-sm text-text-emphasis">{game.name}</span></motion.div>
             ))}
           </div>
@@ -512,9 +512,9 @@ const Landing = () => {
       <section className="py-24 relative overflow-hidden text-left" style={{ perspective: 1500 }}>
         <ParallaxIcon icon={Star} color="text-text-light" size={32} top="10%" left="5%" delay={0} speed={0.4} />
         <ParallaxIcon icon={Trophy} color="text-yellow" size={24} top="70%" left="92%" delay={0.3} speed={0.6} />
-        
+
         <div className="container mx-auto px-6">
-          <motion.div 
+          <motion.div
             whileHover={{ rotateX: 2, rotateY: -2, scale: 1.01 }}
             className="p-16 rounded-[48px] bg-gradient-to-br from-primary via-primary-dark to-special-red relative overflow-hidden shadow-3xl text-center group"
             style={{ transformStyle: 'preserve-3d' }}

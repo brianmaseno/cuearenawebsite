@@ -4,12 +4,12 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import AuraCard from '../../components/AuraCard';
 import toast from 'react-hot-toast';
-import { 
-  Users as UsersIcon, 
-  Search, 
-  Shield, 
-  User, 
-  UserCheck, 
+import {
+  Users as UsersIcon,
+  Search,
+  Shield,
+  User,
+  UserCheck,
   UserX,
   Ban,
   Slash,
@@ -94,7 +94,7 @@ const AdminUsers = () => {
       setLoading(true);
       const { data } = await api.get('/users');
       setUsers(data);
-      
+
       // Batch fetch stats for all users after getting the list
       fetchAllStats(data);
     } catch (err) {
@@ -109,7 +109,7 @@ const AdminUsers = () => {
     try {
       // Since there's no batch endpoint, we'll fetch in parallel for visible users or just fetch all
       // For now, let's assume we fetch all to simplify caching logic in this component
-      const statsPromises = userList.slice(0, 50).map(u => 
+      const statsPromises = userList.slice(0, 50).map(u =>
         api.get(`/users/${u._id}/stats`).then(res => ({ id: u._id, stats: res.data }))
       );
       const results = await Promise.allSettled(statsPromises);
@@ -222,7 +222,7 @@ const AdminUsers = () => {
   };
 
   const filteredUsers = users.filter(u => {
-    const matchesSearch = 
+    const matchesSearch =
       u.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'ALL' || u.role === filterRole;
@@ -249,7 +249,7 @@ const AdminUsers = () => {
 
   return (
     <DashboardLayout title="Member Management">
-      <div 
+      <div
         className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)] aura-card p-1 border-none"
         style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
       >
@@ -289,7 +289,7 @@ const AdminUsers = () => {
           <div className="flex flex-col md:flex-row gap-3 animate-reveal" style={{ animationDelay: '0.1s' }}>
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/40" size={18} />
-              <input 
+              <input
                 type="text"
                 placeholder="Lookup member by name or unique email..."
                 value={searchTerm}
@@ -318,7 +318,7 @@ const AdminUsers = () => {
                 <option value="suspended">Suspended</option>
                 <option value="blocked">Blocked</option>
               </select>
-              <button 
+              <button
                 onClick={() => setShowAddModal(true)}
                 className="aura-btn px-6 py-2.5 shadow-lg shadow-primary/20 text-xs flex items-center gap-2"
               >
@@ -358,8 +358,8 @@ const AdminUsers = () => {
                     </thead>
                     <tbody className="divide-y divide-base2/50">
                       {filteredUsers.map((u) => (
-                        <tr 
-                          key={u._id} 
+                        <tr
+                          key={u._id}
                           onClick={() => setSelectedUser(u)}
                           className={`hover:bg-primary/5 transition-colors cursor-pointer group ${selectedUser?._id === u._id ? 'bg-primary/5 ring-1 ring-inset ring-primary/10' : ''}`}
                         >
@@ -386,7 +386,7 @@ const AdminUsers = () => {
                           </td>
                           <td className="px-4 py-2.5">
                             <div className="flex justify-center">
-                                <UserStatsBadge stats={userStats[u._id]} loading={statsLoading && !userStats[u._id]} />
+                              <UserStatsBadge stats={userStats[u._id]} loading={statsLoading && !userStats[u._id]} />
                             </div>
                           </td>
                           <td className="px-4 py-2.5 text-center">
@@ -404,12 +404,12 @@ const AdminUsers = () => {
                           </td>
                           <td className="px-4 py-2.5 text-center">
                             <span className="text-[10px] font-bold text-text/60 uppercase whitespace-nowrap">
-                                {new Date(u.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+                              {new Date(u.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                           </td>
                           <td className="px-4 py-2.5 text-center">
                             <span className="text-[12px] font-black text-primary/80 uppercase whitespace-nowrap">
-                                {u.points || 0}
+                              {u.points || 0}
                             </span>
                           </td>
                           <td className="px-4 py-2.5">
@@ -429,43 +429,41 @@ const AdminUsers = () => {
                           </td>
                           <td className="px-4 py-2.5 text-right pr-6">
                             <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button 
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/admin/logs?search=${u.fullName}`); }}
-                                  className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-text/60 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20 flex items-center gap-1"
+                              <button
+                                onClick={(e) => { e.stopPropagation(); navigate(`/admin/logs?search=${u.fullName}`); }}
+                                className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-text/60 hover:text-primary hover:bg-primary/10 transition-all border border-transparent hover:border-primary/20 flex items-center gap-1"
                               >
-                                  <History size={12} /> Logs
+                                <History size={12} /> Logs
                               </button>
-                              <button 
-                                  onClick={(e) => { e.stopPropagation(); handleResetPassword(u._id); }}
-                                  disabled={u.role === 'admin'}
-                                  className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-text/60 hover:text-yellow hover:bg-yellow/10 transition-all border border-transparent hover:border-yellow/20 disabled:opacity-20 flex items-center gap-1"
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleResetPassword(u._id); }}
+                                disabled={u.role === 'admin'}
+                                className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-text/60 hover:text-yellow hover:bg-yellow/10 transition-all border border-transparent hover:border-yellow/20 disabled:opacity-20 flex items-center gap-1"
                               >
-                                  <Key size={12} /> Reset
+                                <Key size={12} /> Reset
                               </button>
                               <div className="w-px h-3 bg-base2 mx-1" />
-                              <button 
-                                  onClick={(e) => { e.stopPropagation(); handleStatusToggle(u._id); }}
-                                  disabled={u.role === 'admin' || u.status === 'blocked'}
-                                  className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${
-                                    u.status === 'suspended' 
-                                      ? 'bg-emerald/10 text-emerald border-emerald/20 hover:bg-emerald/20' 
-                                      : 'bg-yellow/5 text-yellow border-transparent hover:border-yellow/20 hover:bg-yellow/10 disabled:opacity-20'
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleStatusToggle(u._id); }}
+                                disabled={u.role === 'admin' || u.status === 'blocked'}
+                                className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${u.status === 'suspended'
+                                    ? 'bg-emerald/10 text-emerald border-emerald/20 hover:bg-emerald/20'
+                                    : 'bg-yellow/5 text-yellow border-transparent hover:border-yellow/20 hover:bg-yellow/10 disabled:opacity-20'
                                   }`}
                               >
-                                  {u.status === 'suspended' ? <UserCheck size={12} /> : <Slash size={12} />}
-                                  {u.status === 'suspended' ? 'Activate' : 'Suspend'}
+                                {u.status === 'suspended' ? <UserCheck size={12} /> : <Slash size={12} />}
+                                {u.status === 'suspended' ? 'Activate' : 'Suspend'}
                               </button>
-                              <button 
-                                  onClick={(e) => { e.stopPropagation(); handleBlockToggle(u._id); }}
-                                  disabled={u.role === 'admin'}
-                                  className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${
-                                    u.status === 'blocked' 
-                                      ? 'bg-blue/10 text-blue border-blue/20 hover:bg-blue/20' 
-                                      : 'bg-red/5 text-red border-transparent hover:border-red/20 hover:bg-red/10'
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleBlockToggle(u._id); }}
+                                disabled={u.role === 'admin'}
+                                className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${u.status === 'blocked'
+                                    ? 'bg-blue/10 text-blue border-blue/20 hover:bg-blue/20'
+                                    : 'bg-red/5 text-red border-transparent hover:border-red/20 hover:bg-red/10'
                                   }`}
                               >
-                                  {u.status === 'blocked' ? <UserCheck size={12} /> : <Ban size={12} />}
-                                  {u.status === 'blocked' ? 'Unblock' : 'Block'}
+                                {u.status === 'blocked' ? <UserCheck size={12} /> : <Ban size={12} />}
+                                {u.status === 'blocked' ? 'Unblock' : 'Block'}
                               </button>
                             </div>
                           </td>
@@ -483,146 +481,146 @@ const AdminUsers = () => {
         {selectedUser && (
           <div className="w-full lg:w-[320px] aura-card border-none flex flex-col animate-reveal-right shadow-xl overflow-hidden h-full shrink-0">
             <div className="p-4 border-b border-base2 flex items-center justify-between sticky top-0 bg-base3/80 backdrop-blur-md z-10">
-               <h3 className="font-black uppercase text-xs tracking-widest text-text-emphasis">Member Dossier</h3>
-               <button onClick={() => setSelectedUser(null)} className="p-1.5 hover:bg-base2 rounded-lg transition-all">
-                  <X size={18} />
-               </button>
+              <h3 className="font-black uppercase text-xs tracking-widest text-text-emphasis">Member Dossier</h3>
+              <button onClick={() => setSelectedUser(null)} className="p-1.5 hover:bg-base2 rounded-lg transition-all">
+                <X size={18} />
+              </button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-4 space-y-5">
-               {/* Identity Card */}
-               <div className="text-center space-y-4">
-                  <div 
-                    className="relative w-20 h-20 mx-auto group cursor-pointer"
-                    onClick={() => dossierFileRef.current.click()}
+              {/* Identity Card */}
+              <div className="text-center space-y-4">
+                <div
+                  className="relative w-20 h-20 mx-auto group cursor-pointer"
+                  onClick={() => dossierFileRef.current.click()}
+                >
+                  <img
+                    src={editData?.profilePhoto || `https://ui-avatars.com/api/?name=${selectedUser.fullName}&background=random`}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-[28px] object-cover ring-2 ring-base2 shadow-lg group-hover:scale-[1.02] transition-all"
+                  />
+                  <div className="absolute inset-0 bg-black/40 rounded-[28px] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all">
+                    <Camera className="text-text-emphasis mb-0.5" size={16} />
+                    <span className="text-[7px] text-text-emphasis font-medium uppercase tracking-widest">Change</span>
+                  </div>
+                  <input
+                    type="file"
+                    ref={dossierFileRef}
+                    onChange={(e) => handlePhotoUpload(e, 'dossier')}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    value={editData?.fullName || ''}
+                    onChange={(e) => setEditData({ ...editData, fullName: e.target.value })}
+                    className="text-xl font-medium text-text-emphasis leading-tight text-center bg-transparent border-none focus:ring-0 outline-none w-full"
+                  />
+                  <p className="text-[10px] text-text font-medium uppercase tracking-widest opacity-60 underline decoration-primary decoration-2 underline-offset-4 mt-1">{selectedUser.role}</p>
+                </div>
+              </div>
+
+              {/* Stats Overview */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-primary/5 p-3 rounded-2xl border border-primary/10 text-center backdrop-blur-sm group hover:border-primary/30 transition-all">
+                  <p className="text-[8px] uppercase font-black text-primary/60 mb-1 tracking-tighter">Prestige</p>
+                  <p className="text-xl font-black text-primary leading-none">
+                    {selectedUser.points || 0}
+                  </p>
+                </div>
+                <div className="bg-base2/20 p-3 rounded-2xl border border-base2/40 text-center backdrop-blur-sm group hover:border-text/30 transition-all">
+                  <p className="text-[8px] uppercase font-black text-text/40 mb-1 tracking-tighter">Battles</p>
+                  <p className="text-xl font-black text-text-emphasis leading-none">
+                    {userStats[selectedUser._id]?.totalGames || 0}
+                  </p>
+                </div>
+                <div className="bg-yellow/5 p-3 rounded-2xl border border-yellow/20 text-center backdrop-blur-sm group hover:border-yellow transition-all">
+                  <p className="text-[8px] uppercase font-black text-yellow/60 mb-1 tracking-tighter">Victories</p>
+                  <p className="text-xl font-black text-yellow leading-none">
+                    {userStats[selectedUser._id]?.totalWins || 0}
+                  </p>
+                </div>
+              </div>
+
+              {/* Detailed Information */}
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="text-[9px] uppercase font-medium text-text/40">Registered Email</p>
+                  <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50 opacity-60">
+                    <Mail size={14} className="text-primary/60" />
+                    <span className="text-xs font-medium truncate">{maskEmail(selectedUser.email)}</span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[9px] uppercase font-medium text-text/40">Mobile Contact</p>
+                  <div className="flex items-center gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
+                    <Phone size={13} className="text-primary/60 ml-2" />
+                    <input
+                      type="text"
+                      value={editData?.phone || ''}
+                      onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                      className="bg-transparent border-none focus:ring-0 outline-none text-[11px] font-medium w-full py-1"
+                      placeholder="No phone set"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[9px] uppercase font-medium text-text/40">Member Bio</p>
+                  <div className="flex items-start gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
+                    <FileText size={13} className="text-primary/60 ml-2 mt-2" />
+                    <textarea
+                      value={editData?.bio || ''}
+                      onChange={(e) => setEditData({ ...editData, bio: e.target.value })}
+                      className="bg-transparent border-none focus:ring-0 outline-none text-[11px] font-medium w-full py-1 resize-none italic leading-tight"
+                      rows="2"
+                      placeholder="No bio available"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={handleUpdateUser}
+                    disabled={updating}
+                    className="w-full py-2.5 bg-primary text-base3 rounded-xl font-medium text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                   >
-                    <img 
-                      src={editData?.profilePhoto || `https://ui-avatars.com/api/?name=${selectedUser.fullName}&background=random`} 
-                      alt="Profile" 
-                      className="w-20 h-20 rounded-[28px] object-cover ring-2 ring-base2 shadow-lg group-hover:scale-[1.02] transition-all"
-                    />
-                    <div className="absolute inset-0 bg-black/40 rounded-[28px] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all">
-                      <Camera className="text-text-emphasis mb-0.5" size={16} />
-                      <span className="text-[7px] text-text-emphasis font-medium uppercase tracking-widest">Change</span>
-                    </div>
-                    <input 
-                      type="file" 
-                      ref={dossierFileRef} 
-                      onChange={(e) => handlePhotoUpload(e, 'dossier')} 
-                      accept="image/*" 
-                      className="hidden" 
-                    />
-                  </div>
-                  <div>
-                     <input 
-                        type="text"
-                        value={editData?.fullName || ''}
-                        onChange={(e) => setEditData({...editData, fullName: e.target.value})}
-                        className="text-xl font-medium text-text-emphasis leading-tight text-center bg-transparent border-none focus:ring-0 outline-none w-full"
-                     />
-                     <p className="text-[10px] text-text font-medium uppercase tracking-widest opacity-60 underline decoration-primary decoration-2 underline-offset-4 mt-1">{selectedUser.role}</p>
-                  </div>
-               </div>
+                    {updating ? <div className="animate-spin w-3 h-3 border-2 border-base3 border-t-transparent rounded-full" /> : <Save size={14} />}
+                    Save Member Profile
+                  </button>
+                </div>
+              </div>
 
-                {/* Stats Overview */}
-               <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-primary/5 p-3 rounded-2xl border border-primary/10 text-center backdrop-blur-sm group hover:border-primary/30 transition-all">
-                     <p className="text-[8px] uppercase font-black text-primary/60 mb-1 tracking-tighter">Prestige</p>
-                     <p className="text-xl font-black text-primary leading-none">
-                        {selectedUser.points || 0}
-                     </p>
-                  </div>
-                  <div className="bg-base2/20 p-3 rounded-2xl border border-base2/40 text-center backdrop-blur-sm group hover:border-text/30 transition-all">
-                     <p className="text-[8px] uppercase font-black text-text/40 mb-1 tracking-tighter">Battles</p>
-                     <p className="text-xl font-black text-text-emphasis leading-none">
-                        {userStats[selectedUser._id]?.totalGames || 0}
-                     </p>
-                  </div>
-                  <div className="bg-yellow/5 p-3 rounded-2xl border border-yellow/20 text-center backdrop-blur-sm group hover:border-yellow transition-all">
-                     <p className="text-[8px] uppercase font-black text-yellow/60 mb-1 tracking-tighter">Victories</p>
-                     <p className="text-xl font-black text-yellow leading-none">
-                        {userStats[selectedUser._id]?.totalWins || 0}
-                     </p>
-                  </div>
-               </div>
-
-               {/* Detailed Information */}
-               <div className="space-y-4">
-                  <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-medium text-text/40">Registered Email</p>
-                     <div className="flex items-center gap-2 p-3 bg-base2/30 rounded-xl border border-base2/50 opacity-60">
-                        <Mail size={14} className="text-primary/60" />
-                        <span className="text-xs font-medium truncate">{maskEmail(selectedUser.email)}</span>
-                     </div>
-                  </div>
-                  <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-medium text-text/40">Mobile Contact</p>
-                     <div className="flex items-center gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
-                        <Phone size={13} className="text-primary/60 ml-2" />
-                        <input 
-                           type="text"
-                           value={editData?.phone || ''}
-                           onChange={(e) => setEditData({...editData, phone: e.target.value})}
-                           className="bg-transparent border-none focus:ring-0 outline-none text-[11px] font-medium w-full py-1"
-                           placeholder="No phone set"
-                        />
-                     </div>
-                  </div>
-                  <div className="space-y-1">
-                     <p className="text-[9px] uppercase font-medium text-text/40">Member Bio</p>
-                     <div className="flex items-start gap-2 p-1 bg-base2/30 rounded-xl border border-base2/50 focus-within:border-primary/30 transition-all">
-                        <FileText size={13} className="text-primary/60 ml-2 mt-2" />
-                        <textarea 
-                           value={editData?.bio || ''}
-                           onChange={(e) => setEditData({...editData, bio: e.target.value})}
-                           className="bg-transparent border-none focus:ring-0 outline-none text-[11px] font-medium w-full py-1 resize-none italic leading-tight"
-                           rows="2"
-                           placeholder="No bio available"
-                        />
-                     </div>
-                  </div>
-                  
-                  <div className="pt-2">
-                     <button 
-                        onClick={handleUpdateUser}
-                        disabled={updating}
-                        className="w-full py-2.5 bg-primary text-base3 rounded-xl font-medium text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-                     >
-                        {updating ? <div className="animate-spin w-3 h-3 border-2 border-base3 border-t-transparent rounded-full" /> : <Save size={14} />}
-                        Save Member Profile
-                     </button>
-                  </div>
-               </div>
-
-               {/* Role Management */}
-               <div className="space-y-2 pt-3 border-t border-base2">
-                  <p className="text-[8px] uppercase font-medium text-primary tracking-widest">Authority Control</p>
-                  <div className="grid grid-cols-2 gap-2">
-                     <button 
-                        onClick={() => handleRoleChange(selectedUser._id, 'moderator')}
-                        disabled={selectedUser.role === 'moderator' || selectedUser.role === 'admin'}
-                        className="flex items-center justify-center gap-2 px-3 py-2 bg-purple/10 text-purple border border-purple/20 rounded-xl text-[9px] font-medium uppercase hover:bg-purple/20 transition-all disabled:opacity-20"
-                     >
-                        <Shield size={12} /> Promote
-                     </button>
-                     <button 
-                        onClick={() => handleRoleChange(selectedUser._id, 'player')}
-                        disabled={selectedUser.role === 'player' || selectedUser.role === 'admin'}
-                        className="flex items-center justify-center gap-2 px-3 py-2 bg-blue/10 text-blue border border-blue/20 rounded-xl text-[9px] font-medium uppercase hover:bg-blue/20 transition-all disabled:opacity-20"
-                     >
-                        <User size={12} /> Demote
-                     </button>
-                  </div>
-               </div>
+              {/* Role Management */}
+              <div className="space-y-2 pt-3 border-t border-base2">
+                <p className="text-[8px] uppercase font-medium text-primary tracking-widest">Authority Control</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => handleRoleChange(selectedUser._id, 'moderator')}
+                    disabled={selectedUser.role === 'moderator' || selectedUser.role === 'admin'}
+                    className="flex items-center justify-center gap-2 px-3 py-2 bg-purple/10 text-purple border border-purple/20 rounded-xl text-[9px] font-medium uppercase hover:bg-purple/20 transition-all disabled:opacity-20"
+                  >
+                    <Shield size={12} /> Promote
+                  </button>
+                  <button
+                    onClick={() => handleRoleChange(selectedUser._id, 'player')}
+                    disabled={selectedUser.role === 'player' || selectedUser.role === 'admin'}
+                    className="flex items-center justify-center gap-2 px-3 py-2 bg-blue/10 text-blue border border-blue/20 rounded-xl text-[9px] font-medium uppercase hover:bg-blue/20 transition-all disabled:opacity-20"
+                  >
+                    <User size={12} /> Demote
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="p-3 bg-base2/30 border-t border-base2">
-               <button 
-                  onClick={() => { navigate(`/admin/logs?search=${selectedUser.fullName}`); }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-base3 border border-base2 rounded-xl text-[9px] font-medium uppercase hover:bg-primary/10 hover:text-primary transition-all group"
-               >
-                  <History size={14} className="group-hover:animate-spin-slow" /> View Audit Trail
-               </button>
+              <button
+                onClick={() => { navigate(`/admin/logs?search=${selectedUser.fullName}`); }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-base3 border border-base2 rounded-xl text-[9px] font-medium uppercase hover:bg-primary/10 hover:text-primary transition-all group"
+              >
+                <History size={14} className="group-hover:animate-spin-slow" /> View Audit Trail
+              </button>
             </div>
           </div>
         )}
@@ -632,113 +630,113 @@ const AdminUsers = () => {
       {showAddModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-base3/80 backdrop-blur-sm animate-fade-in">
           <div className="w-full max-w-lg bg-base2 border border-base2 rounded-2xl shadow-2xl animate-reveal-up overflow-hidden">
-              <div className="p-4 border-b border-base2/30 flex items-center justify-between bg-base2/50">
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="relative w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center cursor-pointer group/addpic overflow-hidden"
-                    onClick={() => newUserFileRef.current.click()}
-                  >
-                    {newUser.profilePhoto ? (
-                      <img src={newUser.profilePhoto} className="w-full h-full object-cover" />
-                    ) : (
-                      <Camera size={20} />
-                    )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/addpic:opacity-100 flex items-center justify-center transition-all">
-                       <Camera size={14} className="text-text-emphasis" />
-                    </div>
-                    <input 
-                      type="file" 
-                      ref={newUserFileRef} 
-                      onChange={(e) => handlePhotoUpload(e, 'new')} 
-                      accept="image/*" 
-                      className="hidden" 
-                    />
+            <div className="p-4 border-b border-base2/30 flex items-center justify-between bg-base2/50">
+              <div className="flex items-center gap-4">
+                <div
+                  className="relative w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center cursor-pointer group/addpic overflow-hidden"
+                  onClick={() => newUserFileRef.current.click()}
+                >
+                  {newUser.profilePhoto ? (
+                    <img src={newUser.profilePhoto} className="w-full h-full object-cover" />
+                  ) : (
+                    <Camera size={20} />
+                  )}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/addpic:opacity-100 flex items-center justify-center transition-all">
+                    <Camera size={14} className="text-text-emphasis" />
                   </div>
-                  <div>
-                    <h3 className="font-medium uppercase text-sm tracking-widest text-text-emphasis">New Member Onboarding</h3>
-                    <p className="text-[10px] text-text/40 font-medium uppercase tracking-tight">Register a new system authority</p>
+                  <input
+                    type="file"
+                    ref={newUserFileRef}
+                    onChange={(e) => handlePhotoUpload(e, 'new')}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium uppercase text-sm tracking-widest text-text-emphasis">New Member Onboarding</h3>
+                  <p className="text-[10px] text-text/40 font-medium uppercase tracking-tight">Register a new system authority</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-base3 rounded-xl transition-all text-text/40 hover:text-red">
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Full Identity</label>
+                  <input
+                    type="text"
+                    required
+                    value={newUser.fullName}
+                    onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
+                    placeholder="Full name of member"
+                    className="w-full px-5 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all placeholder:text-text/20"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Access Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    placeholder="member@cuearena.com"
+                    className="w-full px-5 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all placeholder:text-text/20"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Authority Role</label>
+                    <select
+                      value={newUser.role}
+                      onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                      className="w-full px-4 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all"
+                    >
+                      <option value="player">Player</option>
+                      <option value="moderator">Moderator</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Initial Key</label>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        required
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                        placeholder="Password"
+                        className="w-full pl-5 pr-10 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all placeholder:text-text/20"
+                      />
+                      <Key className="absolute right-4 top-1/2 -translate-y-1/2 text-text/20" size={16} />
+                    </div>
                   </div>
                 </div>
-                <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-base3 rounded-xl transition-all text-text/40 hover:text-red">
-                   <X size={20} />
-                </button>
               </div>
 
-             <form onSubmit={handleCreateUser} className="p-6 space-y-4">
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Full Identity</label>
-                    <input 
-                      type="text"
-                      required
-                      value={newUser.fullName}
-                      onChange={(e) => setNewUser({...newUser, fullName: e.target.value})}
-                      placeholder="Full name of member"
-                      className="w-full px-5 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all placeholder:text-text/20"
-                    />
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Access Email</label>
-                    <input 
-                      type="email"
-                      required
-                      value={newUser.email}
-                      onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                      placeholder="member@cuearena.com"
-                      className="w-full px-5 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all placeholder:text-text/20"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Authority Role</label>
-                      <select 
-                        value={newUser.role}
-                        onChange={(e) => setNewUser({...newUser, role: e.target.value})}
-                        className="w-full px-4 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all"
-                      >
-                        <option value="player">Player</option>
-                        <option value="moderator">Moderator</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
-                    
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-text/40 uppercase tracking-widest px-1">Initial Key</label>
-                      <div className="relative">
-                        <input 
-                          type="password"
-                          required
-                          value={newUser.password}
-                          onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                          placeholder="Password"
-                          className="w-full pl-5 pr-10 py-3.5 bg-base3 border border-base2 rounded-2xl focus:ring-2 focus:ring-primary/20 outline-none text-sm font-bold transition-all placeholder:text-text/20"
-                        />
-                        <Key className="absolute right-4 top-1/2 -translate-y-1/2 text-text/20" size={16} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button 
-                    type="submit"
-                    disabled={creating}
-                    className="w-full py-4 bg-primary text-base3 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 shadow-xl shadow-primary/30 flex items-center justify-center gap-3 group"
-                  >
-                    {creating ? (
-                      <div className="animate-spin w-5 h-5 border-3 border-base3 border-t-transparent rounded-full" />
-                    ) : (
-                      <>
-                        Deploy Member Account
-                        <ExternalLink size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                      </>
-                    )}
-                  </button>
-                  <p className="text-center text-[9px] text-text/30 font-bold uppercase tracking-widest mt-4">Manual registration bypasses standard email verification</p>
-                </div>
-             </form>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="w-full py-4 bg-primary text-base3 rounded-2xl font-black uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 shadow-xl shadow-primary/30 flex items-center justify-center gap-3 group"
+                >
+                  {creating ? (
+                    <div className="animate-spin w-5 h-5 border-3 border-base3 border-t-transparent rounded-full" />
+                  ) : (
+                    <>
+                      Deploy Member Account
+                      <ExternalLink size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+                <p className="text-center text-[9px] text-text/30 font-bold uppercase tracking-widest mt-4">Manual registration bypasses standard email verification</p>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -750,7 +748,7 @@ const AdminUsers = () => {
 const UserStatsValue = ({ userId, field }) => {
   const [val, setVal] = useState('...');
   useEffect(() => {
-    api.get(`/users/${userId}/stats`).then(({data}) => setVal(data[field]));
+    api.get(`/users/${userId}/stats`).then(({ data }) => setVal(data[field]));
   }, [userId, field]);
   return val;
 };

@@ -17,12 +17,12 @@ const TopBar = ({ title }) => {
   // Fetch live points from backend
   useEffect(() => {
     if (!user) return;
-    
+
     const fetchPoints = async () => {
       try {
         const { data } = await api.get('/auth/me');
         setLivePoints(data.points || 0);
-        
+
         // Fetch wallet balance for all roles
         const walletRes = await api.get('/wallet');
         setLiveBalance(walletRes.data.wallet?.balance || 0);
@@ -107,7 +107,7 @@ const TopBar = ({ title }) => {
               </span>
             </div>
           )}
-          
+
           {user?.role === 'player' && (
             <div className="hidden sm:flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-full px-2 py-1 shadow-[0_0_10px_rgba(38,139,210,0.1)]">
               <Star size={12} className="fill-primary/20" />
@@ -119,11 +119,10 @@ const TopBar = ({ title }) => {
         </div>
 
         <div className="relative" ref={dropdownRef}>
-          <button 
+          <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`relative p-2 transition-all rounded-xl ${
-              isDropdownOpen ? 'bg-primary/10 text-primary' : 'text-text hover:text-primary hover:bg-base2/40'
-            }`}
+            className={`relative p-2 transition-all rounded-xl ${isDropdownOpen ? 'bg-primary/10 text-primary' : 'text-text hover:text-primary hover:bg-base2/40'
+              }`}
           >
             <Bell size={20} />
             {unreadCount > 0 && (
@@ -146,7 +145,7 @@ const TopBar = ({ title }) => {
                   )}
                 </div>
                 {unreadCount > 0 && (
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       markAllAsRead();
@@ -161,11 +160,11 @@ const TopBar = ({ title }) => {
               <div className="max-h-[400px] overflow-y-auto thin-scrollbar">
                 {notifications.length > 0 ? (
                   notifications.slice(0, 10).map((n) => (
-                    <div 
+                    <div
                       key={n._id}
                       onClick={() => {
                         if (!n.isRead) markAsRead(n._id);
-                        
+
                         // Direct Navigation Logic
                         const rolePath = user?.role === 'moderator' ? '/moderator' : '/dashboard';
                         const isCompleted = n.message?.toLowerCase().includes('completed') || n.title?.toLowerCase().includes('completed');
@@ -183,19 +182,17 @@ const TopBar = ({ title }) => {
                         } else {
                           navigate('/notifications');
                         }
-                        
+
                         setIsDropdownOpen(false);
                       }}
-                      className={`p-4 border-b border-base2/50 flex gap-3 cursor-pointer hover:bg-base2/20 transition-all group last:border-0 ${
-                        !n.isRead ? 'bg-primary/5' : ''
-                      }`}
+                      className={`p-4 border-b border-base2/50 flex gap-3 cursor-pointer hover:bg-base2/20 transition-all group last:border-0 ${!n.isRead ? 'bg-primary/5' : ''
+                        }`}
                     >
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${
-                        !n.isRead ? 'bg-primary/10 text-primary' : 'bg-base2 text-text/40'
-                      }`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${!n.isRead ? 'bg-primary/10 text-primary' : 'bg-base2 text-text/40'
+                        }`}>
                         {getIcon(n.type)}
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-0.5 mt-0.5">
                           <p className={`text-xs font-black truncate pr-2 tracking-tight ${!n.isRead ? 'text-text-emphasis' : 'text-text/60'}`}>

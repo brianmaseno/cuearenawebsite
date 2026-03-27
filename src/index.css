@@ -9,7 +9,7 @@
   --color-base0: #839496;
   --color-base1: #93a1a1;
   --color-base2: #eee8d5;
-  --color-base3: #fdf6e3;
+  --color-base3: #fcf9f1;
   --color-yellow: #b58900;
   --color-orange: #cb4b16;
   --color-red: #dc322f;
@@ -24,15 +24,16 @@
   --color-aura-violet: #6c71c4;
   --color-aura-gold: #b58900;
   --color-aura-crimson: #dc322f;
-  
+
   --color-primary: #268bd2;
   --color-primary-dark: #2075b0;
-  --color-surface: #fdf6e3;
-  --color-background: #eee8d5;
+  --color-surface: #fcf9f1;
+  --color-background: #fcf9f1;
   --color-text: #586e75;
   --color-text-emphasis: #073642;
-  --color-text-light: #f1f5f9; /* Non-pure off-white for contrast */
-  
+  --color-text-light: #f1f5f9;
+  /* Non-pure off-white for contrast */
+
   /* Additional Vibrant Colors for Luminous Feel */
   --color-special-red: #ef4444;
   --color-indigo-500: #6366f1;
@@ -44,10 +45,16 @@
     background-color: var(--color-background);
     color: var(--color-text);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    -webkit-tap-highlight-color: transparent; /* Clean mobile taps */
+    -webkit-tap-highlight-color: transparent;
+    /* Clean mobile taps */
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: var(--color-text-emphasis);
     letter-spacing: -0.02em;
   }
@@ -55,10 +62,13 @@
 
 /* Luminous Aura Keyframes */
 @keyframes aura-breathe {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 10px rgba(38, 139, 210, 0.1), 0 0 20px rgba(38, 139, 210, 0.05);
     border-color: rgba(38, 139, 210, 0.2);
   }
+
   50% {
     box-shadow: 0 0 25px rgba(38, 139, 210, 0.3), 0 0 40px rgba(108, 113, 196, 0.2);
     border-color: rgba(108, 113, 196, 0.5);
@@ -66,17 +76,27 @@
 }
 
 @keyframes text-glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     text-shadow: 0 0 5px rgba(38, 139, 210, 0.1);
   }
+
   50% {
     text-shadow: 0 0 15px rgba(38, 139, 210, 0.4);
   }
 }
 
 @keyframes background-pulse {
-  0%, 100% { background-color: rgba(253, 246, 227, 0.4); }
-  50% { background-color: rgba(238, 232, 213, 0.6); }
+
+  0%,
+  100% {
+    background-color: rgba(253, 246, 227, 0.4);
+  }
+
+  50% {
+    background-color: rgba(238, 232, 213, 0.6);
+  }
 }
 
 .glass {
@@ -103,7 +123,8 @@
   border: 1px solid var(--color-base2);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 1.5rem; /* More modern rounded corners */
+  border-radius: 1.5rem;
+  /* More modern rounded corners */
 }
 
 .card-premium:hover {
@@ -113,11 +134,22 @@
 
 /* Mobile-Specific Utilities */
 @layer utilities {
-  .safe-top { padding-top: env(safe-area-inset-top); }
-  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-  
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
   /* Responsive Grid Helpers */
   .grid-dashboard {
@@ -125,10 +157,23 @@
   }
 
   /* Thin Scrollbar */
-  .thin-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-  .thin-scrollbar::-webkit-scrollbar-track { background: transparent; }
-  .thin-scrollbar::-webkit-scrollbar-thumb { background: var(--color-base2); border-radius: 10px; }
-  .thin-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-base1); }
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-base2);
+    border-radius: 10px;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-base1);
+  }
 
   .text-aura {
     animation: text-glow-pulse 4s ease-in-out infinite;
@@ -136,10 +181,13 @@
 }
 
 @keyframes breathe-blue-red {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
     filter: drop-shadow(0 0 4px rgba(38, 139, 210, 0.2));
   }
+
   50% {
     background-position: 100% 50%;
     filter: drop-shadow(0 0 10px rgba(220, 50, 47, 0.4));
@@ -160,8 +208,15 @@
 
 /* Premium Navigation Active State Animation */
 @keyframes nav-active {
-  0% { transform: scale(0.9); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .nav-item-active::after {
@@ -248,8 +303,13 @@
 
 /* Premium Animations */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .animate-shimmer {
@@ -259,8 +319,15 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  50% { transform: translateY(-10px) rotate(1deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
 }
 
 .animate-float {
@@ -268,9 +335,22 @@
 }
 
 @keyframes blob {
-  0%, 100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; transform: translate3d(0, 0, 0) rotate(0); }
-  34% { border-radius: 70% 30% 46% 54% / 30% 29% 71% 70%; transform: translate3d(50px, 20px, 0) rotate(90deg); }
-  67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; transform: translate3d(-20px, 50px, 0) rotate(180deg); }
+
+  0%,
+  100% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: translate3d(0, 0, 0) rotate(0);
+  }
+
+  34% {
+    border-radius: 70% 30% 46% 54% / 30% 29% 71% 70%;
+    transform: translate3d(50px, 20px, 0) rotate(90deg);
+  }
+
+  67% {
+    border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+    transform: translate3d(-20px, 50px, 0) rotate(180deg);
+  }
 }
 
 .animate-blob {
@@ -299,6 +379,14 @@
   --color-base3-rgb: 253, 246, 227;
 }
 
-.perspective-1000 { perspective: 1000px; }
-.preserve-3d { transform-style: preserve-3d; }
-.backface-hidden { backface-visibility: hidden; }
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}

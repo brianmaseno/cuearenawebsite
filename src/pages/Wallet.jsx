@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Wallet as WalletIcon, 
-  ArrowUpRight, 
-  ArrowDownLeft, 
-  History, 
-  Plus, 
+import {
+  Wallet as WalletIcon,
+  ArrowUpRight,
+  ArrowDownLeft,
+  History,
+  Plus,
   Minus,
   AlertCircle,
   CheckCircle2,
@@ -98,10 +98,10 @@ const WalletPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-      case 'pending': return 'bg-amber-50 text-amber-700 border-amber-100';
-      case 'failed': return 'bg-red/5 text-red border-red/10';
-      default: return 'bg-base2/50 text-text/40 border-base2';
+      case 'completed': return 'bg-emerald-500/10 text-emerald-700 border-emerald-500/20';
+      case 'pending': return 'bg-amber-500/10 text-amber-700 border-amber-500/20';
+      case 'failed': return 'bg-red/10 text-red border-red/20';
+      default: return 'bg-base2/20 text-text/40 border-base2/30';
     }
   };
 
@@ -119,8 +119,8 @@ const WalletPage = () => {
           <div>
             <h1 className="text-2xl font-black text-text-emphasis tracking-tight">Digital Wallet</h1>
             <p className="text-sm font-bold text-text/60 mt-1">
-              {userInfo?.role === 'moderator' 
-                ? 'Track your event commissions and manage earnings' 
+              {userInfo?.role === 'moderator'
+                ? 'Track your event commissions and manage earnings'
                 : userInfo?.role === 'admin'
                   ? 'Monitor platform revenue and manage withdrawals'
                   : 'Manage your funds and track your tournament winnings'}
@@ -128,14 +128,14 @@ const WalletPage = () => {
           </div>
           <div className="flex gap-2">
             {userInfo?.role === 'player' && (
-              <button 
+              <button
                 onClick={() => { setShowDeposit(true); setShowWithdraw(false); }}
                 className="aura-btn px-6 py-2 text-xs"
               >
                 <Plus size={16} /> Deposit
               </button>
             )}
-            <button 
+            <button
               onClick={() => { setShowWithdraw(true); setShowDeposit(false); }}
               className="flex items-center gap-2 px-6 py-2 bg-base3 text-text-emphasis border border-base2 rounded-xl hover:bg-base2/20 transition-all shadow-sm text-xs font-black uppercase tracking-widest"
             >
@@ -145,10 +145,10 @@ const WalletPage = () => {
         </div>
 
         {successMsg && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }} 
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3"
+            className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 rounded-2xl flex items-center gap-3"
           >
             <CheckCircle2 size={20} className="shrink-0" />
             {successMsg}
@@ -156,10 +156,10 @@ const WalletPage = () => {
         )}
 
         {error && (
-          <motion.div 
-            initial={{ opacity: 0, y: -10 }} 
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl flex items-center gap-3"
+            className="p-4 bg-red/10 border border-red/20 text-red-800 rounded-2xl flex items-center gap-3"
           >
             <AlertCircle size={20} className="shrink-0" />
             {error}
@@ -170,7 +170,7 @@ const WalletPage = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 items-start">
           {/* Physical Card Style */}
           <div className="col-span-2 lg:col-span-2 space-y-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#073642] p-5 md:p-8 text-text-light shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-base3/10 group aura-card"
@@ -178,7 +178,7 @@ const WalletPage = () => {
             >
               {/* Glossy Overlay */}
               <div className="absolute inset-0 bg-gradient-to-tr from-base3/20 to-transparent opacity-20 group-hover:opacity-40 transition-opacity"></div>
-              
+
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
                   <div className="space-y-4">
@@ -215,7 +215,7 @@ const WalletPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="absolute -right-16 -top-16 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] pointer-events-none grayscale"></div>
             </motion.div>
@@ -223,7 +223,7 @@ const WalletPage = () => {
             {/* Action Panel - Moved here to open below balance card */}
             <AnimatePresence mode="wait">
               {showDeposit ? (
-                <motion.div 
+                <motion.div
                   key="deposit"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -239,8 +239,8 @@ const WalletPage = () => {
                   <form onSubmit={handleDeposit} className="space-y-6">
                     <div>
                       <label className="text-[10px] text-base3/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Enter amount"
@@ -252,7 +252,7 @@ const WalletPage = () => {
                       <p className="flex items-center gap-2"><CheckCircle2 size={14} /> Instant verification via M-Pesa</p>
                       <p className="flex items-center gap-2"><CheckCircle2 size={14} /> No hidden transaction fees</p>
                     </div>
-                    <button 
+                    <button
                       disabled={submitting}
                       className="w-full py-4 aura-btn flex items-center justify-center gap-2 text-sm"
                     >
@@ -261,7 +261,7 @@ const WalletPage = () => {
                   </form>
                 </motion.div>
               ) : showWithdraw ? (
-                <motion.div 
+                <motion.div
                   key="withdraw"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -277,8 +277,8 @@ const WalletPage = () => {
                   <form onSubmit={handleWithdraw} className="space-y-6">
                     <div>
                       <label className="text-[10px] text-text/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Min. KES 100"
@@ -290,7 +290,7 @@ const WalletPage = () => {
                       <span className="uppercase tracking-widest text-[9px]">Available</span>
                       <span className="text-text-emphasis font-black tabular-nums">KES {wallet?.balance?.toLocaleString()}</span>
                     </div>
-                    <button 
+                    <button
                       disabled={submitting || Number(amount) > wallet?.balance}
                       className="w-full py-4 bg-text-emphasis hover:bg-base03 disabled:opacity-50 text-base3 font-black rounded-2xl transition-all shadow-xl shadow-base02/20 flex items-center justify-center gap-2 text-sm uppercase tracking-widest"
                     >
@@ -304,35 +304,35 @@ const WalletPage = () => {
 
           {/* Individual Stats Blocks */}
           <div className="col-span-1 lg:col-span-1">
-            <motion.div 
+            <motion.div
               whileHover={{ y: -3, scale: 1.01 }}
               className="aura-card p-4 md:p-6 flex flex-col justify-between border-none relative overflow-hidden h-full"
             >
               <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shadow-inner border border-amber-100">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-500/10 text-amber-600 rounded-xl flex items-center justify-center shadow-inner border border-amber-500/20">
                   <Clock size={20} />
                 </div>
-                <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full border border-amber-100 italic">ESCROW</span>
+                <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 italic">ESCROW</span>
               </div>
               <div className="relative z-10 mt-auto">
                 <p className="text-[10px] font-black text-text/40 uppercase mb-1 tracking-widest">Active Stakes</p>
                 <div className="flex items-baseline gap-1.5">
-                   <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {wallet?.lockedBalance?.toLocaleString()}</span>
+                  <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {wallet?.lockedBalance?.toLocaleString()}</span>
                 </div>
               </div>
             </motion.div>
           </div>
 
           <div className="col-span-1 lg:col-span-1">
-            <motion.div 
+            <motion.div
               whileHover={{ y: -3, scale: 1.01 }}
               className="aura-card p-4 md:p-6 flex flex-col justify-between border-none relative overflow-hidden h-full"
             >
               <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner border border-emerald-100">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner border border-emerald-500/20">
                   <TrendingUp size={20} />
                 </div>
-                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 italic">
+                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 italic">
                   {userInfo?.role === 'moderator' ? 'EARNINGS' : 'YIELD'}
                 </span>
               </div>
@@ -341,7 +341,7 @@ const WalletPage = () => {
                   {userInfo?.role === 'moderator' ? 'Total Commission' : 'Net Returns'}
                 </p>
                 <div className="flex items-baseline gap-1.5">
-                   <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {transactions?.filter(t => t.type === (userInfo?.role === 'moderator' ? 'moderation_fee' : 'prize_payout')).reduce((acc, t) => acc + t.amount, 0).toLocaleString()}</span>
+                  <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {transactions?.filter(t => t.type === (userInfo?.role === 'moderator' ? 'moderation_fee' : 'prize_payout')).reduce((acc, t) => acc + t.amount, 0).toLocaleString()}</span>
                 </div>
               </div>
             </motion.div>
@@ -354,7 +354,7 @@ const WalletPage = () => {
             <div className="flex items-center justify-between px-0">
               <h2 className="text-xl font-black text-text-emphasis tracking-tight flex items-center gap-3">
                 <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                   <History size={20} />
+                  <History size={20} />
                 </div>
                 Recent Activity
               </h2>
@@ -376,11 +376,10 @@ const WalletPage = () => {
                   transactions.map((tx) => (
                     <div key={tx._id} className="p-3 md:px-6 hover:bg-base2/10 transition-colors flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 md:items-center group">
                       <div className="md:col-span-5 flex items-center gap-3 overflow-hidden">
-                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
-                          tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee' 
-                             ? 'bg-emerald-50 border-emerald-100' 
-                             : tx.type === 'withdrawal' ? 'bg-rose-50 border-rose-100' : 'bg-base2/30 border-base2/50'
-                        }`}>
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee'
+                            ? 'bg-emerald-500/10 border-emerald-500/20'
+                            : tx.type === 'withdrawal' ? 'bg-red/10 border-red/20' : 'bg-base2/20 border-base2/30'
+                          }`}>
                           {getTransactionIcon(tx.type)}
                         </div>
                         <div className="min-w-0">
@@ -400,9 +399,8 @@ const WalletPage = () => {
 
                       <div className="md:col-span-2 flex md:justify-end items-center gap-3">
                         <span className="md:hidden text-[9px] font-black text-text/20 uppercase tracking-[0.2em]">Amount</span>
-                        <p className={`font-black tracking-tighter text-sm md:text-base ${
-                          ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-text-emphasis'
-                        }`}>
+                        <p className={`font-black tracking-tighter text-sm md:text-base ${['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-text-emphasis'
+                          }`}>
                           {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
                         </p>
                       </div>
@@ -427,11 +425,11 @@ const WalletPage = () => {
                     <p className="text-text/40 text-xs font-bold mt-2">No transaction signals recorded yet.</p>
                   </div>
                 )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </DashboardLayout>
   );
 };

@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { 
-  Trophy, 
-  LayoutDashboard, 
-  Calendar, 
-  Users, 
-  Bell, 
-  LogOut, 
+import {
+  Trophy,
+  LayoutDashboard,
+  Calendar,
+  Users,
+  Bell,
+  LogOut,
   MessageSquare,
   Shield,
   User,
@@ -53,8 +53,8 @@ const Sidebar = () => {
     navigate('/login');
   };
 
-  const dashboardPath = user?.role === 'admin' ? '/admin' : 
-                        user?.role === 'moderator' ? '/moderator' : '/dashboard';
+  const dashboardPath = user?.role === 'admin' ? '/admin' :
+    user?.role === 'moderator' ? '/moderator' : '/dashboard';
 
   const getLinks = () => {
     if (user.role === 'admin') {
@@ -92,14 +92,13 @@ const Sidebar = () => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className={`hidden md:flex bg-base3 border-r border-base2 flex-col h-screen sticky top-0 transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-64'
-      }`}>
+      <aside className={`hidden md:flex bg-base3 border-r border-base2 flex-col h-screen sticky top-0 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'
+        }`}>
         <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
           <Link to={dashboardPath} className="flex items-center gap-3" onClick={() => navigate(dashboardPath)}>
             {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter text-aura">Cue-Arena</span>}
           </Link>
-          <button 
+          <button
             onClick={toggleSidebar}
             className={`hover:text-primary transition-all p-2 rounded-xl bg-base2 text-text/40 hover:bg-primary/5 ${isCollapsed ? 'w-10 h-10 flex items-center justify-center' : ''}`}
             title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
@@ -116,22 +115,20 @@ const Sidebar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all group relative ${
-                  isActive 
-                    ? 'bg-primary/10 text-primary shadow-sm' 
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all group relative ${isActive
+                    ? 'bg-primary/10 text-primary shadow-sm'
                     : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
-                } ${isCollapsed ? 'justify-center px-0' : ''}`}
+                  } ${isCollapsed ? 'justify-center px-0' : ''}`}
                 title={isCollapsed ? link.label : ''}
               >
-                <Icon 
-                  size={20} 
-                  className={`shrink-0 transition-colors ${
-                    isActive 
-                      ? 'text-primary' 
+                <Icon
+                  size={20}
+                  className={`shrink-0 transition-colors ${isActive
+                      ? 'text-primary'
                       : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables' || link.label === 'Settings' || link.label === 'Sign Out'
                         ? 'text-red group-hover:text-red-500'
                         : 'text-primary group-hover:text-primary-dark'
-                  }`} 
+                    }`}
                 />
                 {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
                 {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
@@ -155,9 +152,8 @@ const Sidebar = () => {
         <div className="p-4 border-t border-base2 space-y-1">
           <Link
             to="/support"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${
-              isCollapsed ? 'justify-center px-0' : ''
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${isCollapsed ? 'justify-center px-0' : ''
+              }`}
             title={isCollapsed ? 'Support' : ''}
           >
             <HelpCircle size={20} className="shrink-0 text-primary group-hover:scale-110 transition-transform" />
@@ -166,20 +162,18 @@ const Sidebar = () => {
 
           <Link
             to="/profile"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${
-              isCollapsed ? 'justify-center px-0' : ''
-            }`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${isCollapsed ? 'justify-center px-0' : ''
+              }`}
             title={isCollapsed ? 'Profile Settings' : ''}
           >
             <Settings size={20} className="shrink-0 text-red group-hover:scale-110 transition-transform" />
             {!isCollapsed && <span className="truncate">Settings</span>}
           </Link>
-          
+
           <button
             onClick={handleLogout}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red hover:bg-red/5 transition-all group ${
-              isCollapsed ? 'justify-center px-0' : ''
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red hover:bg-red/5 transition-all group ${isCollapsed ? 'justify-center px-0' : ''
+              }`}
             title={isCollapsed ? 'Sign Out' : ''}
           >
             <LogOut size={20} className="shrink-0 text-red group-hover:translate-x-1 transition-transform" />
@@ -197,20 +191,19 @@ const Sidebar = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${
-                isActive ? 'text-primary' : 'text-text/40'
-              }`}
+              className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${isActive ? 'text-primary' : 'text-text/40'
+                }`}
             >
               <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-primary/10' : 'group-hover:bg-base2'}`}>
-                <Icon 
-                  size={20} 
+                <Icon
+                  size={20}
                   className={
-                    isActive 
-                      ? 'text-primary' 
+                    isActive
+                      ? 'text-primary'
                       : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables'
                         ? 'text-red/60'
                         : 'text-primary/60'
-                  } 
+                  }
                 />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tighter ${isActive ? 'opacity-100' : 'opacity-0'}`}>
@@ -223,9 +216,8 @@ const Sidebar = () => {
         {/* Mobile Profile Link */}
         <Link
           to="/profile"
-          className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${
-            location.pathname === '/profile' ? 'text-primary' : 'text-text/40'
-          }`}
+          className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${location.pathname === '/profile' ? 'text-primary' : 'text-text/40'
+            }`}
         >
           <div className={`p-2 rounded-xl transition-all ${location.pathname === '/profile' ? 'bg-primary/10' : 'group-hover:bg-base3'}`}>
             <User size={20} className={location.pathname === '/profile' ? 'text-primary' : 'text-primary/60'} />

@@ -219,34 +219,36 @@ const OngoingActivities = () => {
 
   return (
     <DashboardLayout title="Active Activities">
-      <div className="space-y-4 md:space-y-6 pb-20">
+      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        {/* Header Section */}
+        <div className="pt-8">
+          <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight mb-2">
+            Active <span className="text-blue-500">Activities</span>
+          </h1>
+          <p className="text-slate-500 font-medium">Manage and moderate ongoing games in real-time.</p>
+        </div>
+        
         <QuickStatsBar />
         {/* Tabs */}
-        <div className="flex bg-base3 p-1 rounded-2xl border border-base2 w-full sm:w-fit overflow-x-auto hide-scrollbar">
-          <button
-            onClick={() => setActiveTab('matches')}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'matches' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
+        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+          {[
+            { id: 'matches', label: 'Matches', count: data.matches.length, icon: Target },
+            { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy },
+            { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 md:flex-none px-8 py-3.5 text-[12px] font-black uppercase tracking-[0.15em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${
+                activeTab === tab.id 
+                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]' 
+                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
               }`}
-          >
-            <Target size={18} />
-            Matches ({data.matches.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('tournaments')}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'tournaments' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
-              }`}
-          >
-            <Trophy size={18} />
-            Tournaments ({data.tournaments.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('battles')}
-            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${activeTab === 'battles' ? 'bg-primary text-base3 shadow-lg' : 'text-text hover:bg-base2/50'
-              }`}
-          >
-            <Shield size={18} />
-            Battles ({data.battles.length})
-          </button>
+            >
+              <tab.icon size={16} />
+              {tab.label} ({tab.count})
+            </button>
+          ))}
         </div>
 
         {activeTab === 'matches' ? (
