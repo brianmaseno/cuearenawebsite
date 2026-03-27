@@ -163,7 +163,7 @@ const PlayerDashboard = () => {
         )}
 
         {/* Tabs */}
-        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
           {[
             { id: 'matches', label: 'Matches', count: data.matches.length + (data.tournamentMatches?.length || 0), icon: Target },
             { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield },

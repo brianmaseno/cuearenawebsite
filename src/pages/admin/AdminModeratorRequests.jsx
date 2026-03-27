@@ -106,7 +106,7 @@ const AdminModeratorRequests = () => {
     <DashboardLayout title="Moderator Applications">
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-br from-base3/40 to-base2/20 p-6 rounded-[24px] border border-base2/50 backdrop-blur-md shadow-inner">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-br from-base3/40 to-base2/20 p-6 rounded-[24px] border-2 border-primary/20 backdrop-blur-md shadow-inner">
         <div>
           <h1 className="text-2xl font-black text-text-emphasis mb-1 flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-xl border border-primary/20 shadow-sm">

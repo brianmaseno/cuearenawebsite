@@ -82,7 +82,7 @@ const AdminAnalytics = () => {
             <p className="text-text/60 mt-2 font-medium">Real-time financial performance and operational health metrics.</p>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-base3/60 p-1.5 rounded-2xl border border-white/5 backdrop-blur-xl shadow-inner">
+          <div className="flex items-center gap-1.5 bg-base3/60 p-1.5 rounded-2xl border-2 border-primary/20 backdrop-blur-xl shadow-inner">
             {[
               { id: '30d', label: '30 Days' },
               { id: '90d', label: '90 Days' },

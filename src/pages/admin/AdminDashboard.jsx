@@ -3,6 +3,8 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Users, Trophy, Target, Activity, ShieldAlert, CheckCircle, Zap, Shield, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
+import AuraCard from '../../components/AuraCard';
+import { motion } from 'framer-motion';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -118,8 +120,9 @@ const AdminDashboard = () => {
         
         {/* Strategic Hero Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-blue/10 to-transparent border-blue/20 hover:border-blue/40 shadow-xl shadow-blue/5 transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue/5 rounded-full blur-3xl group-hover:bg-blue/10 transition-colors" />
+          {/* Platform Reach */}
+          <AuraCard className="relative group overflow-hidden border-2 border-blue/20 bg-blue/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue/10 rounded-full blur-3xl group-hover:bg-blue/20 transition-colors" />
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div className="w-12 h-12 bg-blue text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-blue/20 group-hover:rotate-6 transition-transform">
                 <Users size={24} />
@@ -129,15 +132,23 @@ const AdminDashboard = () => {
                 {parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}{stats.platformGrowth}%
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Reach</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalUsers}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-               <span className="text-blue font-black">{stats.newMembersToday}</span> registrations today
+            <div>
+              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Reach</div>
+              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalUsers}</h4>
+              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+                 <span className="text-blue font-black">{stats.newMembersToday}</span> registrations today
+              </div>
             </div>
-          </div>
+            <motion.div
+              className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue opacity-[0.05] blur-[50px] pointer-events-none"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </AuraCard>
 
-          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-violet/10 to-transparent border-violet/20 hover:border-violet/40 shadow-xl shadow-violet/5 transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-violet/5 rounded-full blur-3xl group-hover:bg-violet/10 transition-colors" />
+          {/* Live Pulse */}
+          <AuraCard className="relative group overflow-hidden border-2 border-violet/20 bg-violet/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-violet/10 rounded-full blur-3xl group-hover:bg-violet/20 transition-colors" />
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div className="w-12 h-12 bg-violet text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-violet/20 group-hover:rotate-6 transition-transform">
                 <Zap size={24} />
@@ -146,15 +157,23 @@ const AdminDashboard = () => {
                  LIVE PULSE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Live Pulse</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.activeNow}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic relative z-10">
-               Engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
+            <div>
+              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Live Pulse</div>
+              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.activeNow}</h4>
+              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic relative z-10">
+                 Engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
+              </div>
             </div>
-          </div>
+            <motion.div
+              className="absolute -bottom-10 -right-10 w-32 h-32 bg-violet opacity-[0.05] blur-[50px] pointer-events-none"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+          </AuraCard>
 
-          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-green/10 to-transparent border-green/20 hover:border-green/40 shadow-xl shadow-green/5 transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-green/5 rounded-full blur-3xl group-hover:bg-green/10 transition-colors" />
+          {/* Event Velocity */}
+          <AuraCard className="relative group overflow-hidden border-2 border-green/20 bg-green/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-green/10 rounded-full blur-3xl group-hover:bg-green/20 transition-colors" />
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div className="w-12 h-12 bg-green text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-green/20 group-hover:rotate-6 transition-transform">
                 <Target size={24} />
@@ -163,15 +182,23 @@ const AdminDashboard = () => {
                 {stats.ongoingCount} ACTIVE
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Event Velocity</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalActivities}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-               <span className="text-green font-black">{stats.completedCount}</span> successfully archived
+            <div>
+              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Event Velocity</div>
+              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalActivities}</h4>
+              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+                 <span className="text-green font-black">{stats.completedCount}</span> successfully archived
+              </div>
             </div>
-          </div>
+            <motion.div
+              className="absolute -bottom-10 -right-10 w-32 h-32 bg-green opacity-[0.05] blur-[50px] pointer-events-none"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            />
+          </AuraCard>
 
-          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-primary/10 to-transparent border-primary/20 hover:border-primary/40 shadow-xl shadow-primary/5 transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
+          {/* Moderator Fleet */}
+          <AuraCard className="relative group overflow-hidden border-2 border-primary/20 bg-primary/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors" />
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div className="w-12 h-12 bg-primary text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
                 <Shield size={24} />
@@ -180,15 +207,23 @@ const AdminDashboard = () => {
                 STRICT
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Fleet</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderatorCount}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-               System coverage <span className="text-primary font-black">{stats.moderationCoverage}%</span>
+            <div>
+              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Fleet</div>
+              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderatorCount}</h4>
+              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+                 System coverage <span className="text-primary font-black">{stats.moderationCoverage}%</span>
+              </div>
             </div>
-          </div>
+            <motion.div
+              className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary opacity-[0.05] blur-[50px] pointer-events-none"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+            />
+          </AuraCard>
 
-          <div className="card-premium p-6 rounded-[28px] bg-gradient-to-br from-orange/10 to-transparent border-orange/20 hover:border-orange/40 shadow-xl shadow-orange/5 transition-all group overflow-hidden relative">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange/5 rounded-full blur-3xl group-hover:bg-orange/10 transition-colors" />
+          {/* Audit Pulse */}
+          <AuraCard className="relative group overflow-hidden border-2 border-orange/20 bg-orange/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange/10 rounded-full blur-3xl group-hover:bg-orange/20 transition-colors" />
             <div className="flex justify-between items-start mb-4 relative z-10">
               <div className="w-12 h-12 bg-orange text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-orange/20 group-hover:rotate-6 transition-transform">
                 <Activity size={24} />
@@ -197,12 +232,19 @@ const AdminDashboard = () => {
                 AUDIT
               </div>
             </div>
-            <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Audit Pulse</div>
-            <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalLogs}</h4>
-            <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-               <span className="text-orange font-black">{stats.logsToday}</span> system events today
+            <div>
+              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Audit Pulse</div>
+              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalLogs}</h4>
+              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+                 <span className="text-orange font-black">{stats.logsToday}</span> system events today
+              </div>
             </div>
-          </div>
+            <motion.div
+              className="absolute -bottom-10 -right-10 w-32 h-32 bg-orange opacity-[0.05] blur-[50px] pointer-events-none"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            />
+          </AuraCard>
         </div>
 
         {/* Global Strategy Matrix */}
@@ -210,7 +252,7 @@ const AdminDashboard = () => {
           
           {/* Main Activity Matrix */}
           <div className="lg:col-span-2 space-y-6">
-            <section className="card-premium rounded-3xl overflow-hidden border-base2 bg-base3/10 shadow-2xl backdrop-blur-md">
+            <section className="card-premium rounded-3xl overflow-hidden border-2 border-primary/20 bg-base3/10 shadow-2xl backdrop-blur-md">
               <div className="p-6 border-b border-base2/50 bg-base3/40 flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-black text-text-emphasis tracking-tight uppercase flex items-center gap-2">
@@ -273,7 +315,7 @@ const AdminDashboard = () => {
           <div className="space-y-6">
 
             {/* Moderator Pulse Stream */}
-            <section className="card-premium rounded-3xl overflow-hidden border-base2 bg-base3/10 shadow-xl backdrop-blur-md">
+            <section className="card-premium rounded-3xl overflow-hidden border-2 border-primary/20 bg-base3/10 shadow-xl backdrop-blur-md">
               <div className="p-4 border-b border-base2/50 bg-base3/40">
                 <h3 className="text-[11px] font-black text-text-emphasis uppercase tracking-widest flex items-center gap-2">
                    <Shield size={14} className="text-primary" /> Platform Pulse

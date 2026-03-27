@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
-import { motion } from 'framer-motion';
 import { 
   Loader2, 
   Target, 
   Trophy, 
   Activity, 
-  Star, 
   Shield, 
   Users, 
   ClipboardList, 
   Clock,
   Wallet
 } from 'lucide-react';
+import AuraCard from './AuraCard';
 
 const icons = {
   Target,
   Trophy,
   Activity,
-  Star,
   Shield,
   Users,
   ClipboardList,
@@ -62,22 +60,43 @@ const QuickStatsBar = () => {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {metrics.stats.map((stat, idx) => {
           const Icon = icons[stat.icon] || Activity;
+          const color = stat.color || 'primary';
+          
+          // Map standard colors to Aura/System Intelligence tokens
+          const colorMap = {
+            'blue': 'primary',
+            'purple': 'aura-violet',
+            'green': 'emerald-500',
+            'orange': 'amber-500',
+            'red': 'aura-crimson',
+            'primary': 'primary'
+          };
+          
+          const themeColor = colorMap[color] || color;
+
           return (
-            <motion.div 
+            <AuraCard 
               key={idx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className={`card-premium p-4 rounded-2xl flex items-center justify-between group cursor-default border-none ring-1 ring-base2 shadow-sm hover:shadow-md hover:ring-primary/20 ${
-                idx >= 2 ? 'hidden md:flex' : 'flex'
-              }`}
+              className={`p-5 flex flex-col justify-between group cursor-default relative overflow-hidden transition-all duration-300 ${
+                idx >= 4 ? 'hidden xl:flex' : idx >= 2 ? 'hidden md:flex' : 'flex'
+              } border-2 border-${themeColor}/20 bg-${themeColor}/[0.04] min-h-[140px]`}
             >
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-wider text-text/40 mb-1 group-hover:text-primary transition-colors">
+              <div className={`absolute inset-0 bg-${themeColor}/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+              
+              {/* Top Row: Icon */}
+              <div className="flex justify-between items-start mb-4 relative z-10 w-full">
+                <div className={`p-2.5 rounded-xl bg-${themeColor}/10 text-${themeColor} group-hover:scale-110 group-hover:rotate-3 transition-all shadow-inner border border-${themeColor}/20 relative z-10`}>
+                  <Icon size={20} />
+                </div>
+              </div>
+
+              {/* Content Area */}
+              <div className="min-w-0 relative z-10">
+                <p className={`text-[10px] font-black uppercase tracking-widest text-${themeColor}/60 mb-1.5 group-hover:text-${themeColor} transition-colors`}>
                   {stat.label}
                 </p>
                 {stat.value && (
-                  <p className="text-xl font-black text-text-emphasis leading-none tabular-nums tracking-tighter">
+                  <p className="text-3xl font-black text-text-emphasis leading-none tabular-nums tracking-tighter">
                     {stat.value}
                   </p>
                 )}
@@ -96,10 +115,9 @@ const QuickStatsBar = () => {
                   </div>
                 )}
               </div>
-              <div className={`p-2.5 rounded-xl bg-${stat.color || 'primary'}/10 text-${stat.color || 'primary'} group-hover:scale-110 transition-transform shadow-inner`}>
-                <Icon size={20} />
-              </div>
-            </motion.div>
+
+              <div className={`absolute -right-4 -bottom-4 w-12 h-12 bg-${themeColor}/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700`} />
+            </AuraCard>
           );
         })}
       </div>

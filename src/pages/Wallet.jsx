@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../components/DashboardLayout';
 import api from '../api/axios';
+import AuraCard from '../components/AuraCard';
 
 const WalletPage = () => {
   const [wallet, setWallet] = useState(null);
@@ -304,32 +305,33 @@ const WalletPage = () => {
 
           {/* Individual Stats Blocks */}
           <div className="col-span-1 lg:col-span-1">
-            <motion.div
-              whileHover={{ y: -3, scale: 1.01 }}
-              className="aura-card p-4 md:p-6 flex flex-col justify-between border-none relative overflow-hidden h-full"
+            <AuraCard
+              className="p-5 flex flex-col justify-between border-2 border-amber-500/20 bg-amber-500/[0.04] relative overflow-hidden h-full group"
             >
+              <div className="absolute inset-0 bg-amber-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-500/10 text-amber-600 rounded-xl flex items-center justify-center shadow-inner border border-amber-500/20">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner border border-amber-500/20">
                   <Clock size={20} />
                 </div>
                 <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 italic">ESCROW</span>
               </div>
               <div className="relative z-10 mt-auto">
-                <p className="text-[10px] font-black text-text/40 uppercase mb-1 tracking-widest">Active Stakes</p>
+                <p className="text-[10px] font-black text-amber-600/60 uppercase mb-1 tracking-widest">Active Stakes</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {wallet?.lockedBalance?.toLocaleString()}</span>
                 </div>
               </div>
-            </motion.div>
+              <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
+            </AuraCard>
           </div>
 
           <div className="col-span-1 lg:col-span-1">
-            <motion.div
-              whileHover={{ y: -3, scale: 1.01 }}
-              className="aura-card p-4 md:p-6 flex flex-col justify-between border-none relative overflow-hidden h-full"
+            <AuraCard
+              className="p-5 flex flex-col justify-between border-2 border-emerald-500/20 bg-emerald-500/[0.04] relative overflow-hidden h-full group"
             >
+              <div className="absolute inset-0 bg-emerald-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner border border-emerald-500/20">
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner border border-emerald-500/20">
                   <TrendingUp size={20} />
                 </div>
                 <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 italic">
@@ -337,14 +339,15 @@ const WalletPage = () => {
                 </span>
               </div>
               <div className="relative z-10 mt-auto">
-                <p className="text-[10px] font-black text-text/40 uppercase mb-1 tracking-widest">
-                  {userInfo?.role === 'moderator' ? 'Total Commission' : 'Net Returns'}
+                <p className="text-[10px] font-black text-emerald-600/60 uppercase mb-1 tracking-widest">
+                   {userInfo?.role === 'moderator' ? 'Total Commission' : 'Net Returns'}
                 </p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {transactions?.filter(t => t.type === (userInfo?.role === 'moderator' ? 'moderation_fee' : 'prize_payout')).reduce((acc, t) => acc + t.amount, 0).toLocaleString()}</span>
                 </div>
               </div>
-            </motion.div>
+              <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
+            </AuraCard>
           </div>
         </div>
 

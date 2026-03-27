@@ -145,7 +145,7 @@ const AdminLogs = () => {
         </div>
 
         {/* High-Density Logs Table */}
-        <div className="bg-base3 border border-base2 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-base3 border-2 border-primary/20 rounded-2xl overflow-hidden shadow-sm">
           {loading ? (
             <div className="p-16 text-center">
               <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -227,7 +227,7 @@ const AdminLogs = () => {
         </div>
 
         {/* Audit Disclaimer */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-xl border border-primary/10">
+        <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-xl border-2 border-primary/20">
           <Shield size={16} className="text-primary" />
           <p className="text-xs text-text italic">
             Tamper-proof audit logs. This trail is retained for 90 days for compliance and oversight.

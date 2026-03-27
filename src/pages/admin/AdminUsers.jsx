@@ -257,31 +257,37 @@ const AdminUsers = () => {
         <div className={`flex-1 transition-all duration-300 space-y-6 flex flex-col min-h-0 ${selectedUser ? 'hidden xl:flex' : 'flex'}`}>
           {/* Statistics Summary */}
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 animate-reveal perspective-1000">
-            <AuraCard className="p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
-              <p className="text-[9px] text-aura-crimson uppercase font-black tracking-widest leading-none mb-1">Admins</p>
-              <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'admin').length}</p>
+            <AuraCard className="p-3 border-2 border-aura-crimson/20 bg-aura-crimson/[0.04] flex flex-col justify-center min-h-[70px] text-center group relative overflow-hidden">
+              <div className="absolute inset-0 bg-aura-crimson/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <p className="text-[9px] text-aura-crimson/60 uppercase font-black tracking-widest leading-none mb-1 relative z-10">Admins</p>
+              <p className="text-xl font-black text-text-emphasis leading-none relative z-10">{users.filter(u => u.role === 'admin').length}</p>
             </AuraCard>
-            <AuraCard className="p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
-              <p className="text-[9px] text-aura-violet uppercase font-black tracking-widest leading-none mb-1">Moderators</p>
-              <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'moderator').length}</p>
+            <AuraCard className="p-3 border-2 border-aura-violet/20 bg-aura-violet/[0.04] flex flex-col justify-center min-h-[70px] text-center group relative overflow-hidden">
+              <div className="absolute inset-0 bg-aura-violet/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <p className="text-[9px] text-aura-violet/60 uppercase font-black tracking-widest leading-none mb-1 relative z-10">Moderators</p>
+              <p className="text-xl font-black text-text-emphasis leading-none relative z-10">{users.filter(u => u.role === 'moderator').length}</p>
             </AuraCard>
-            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
-              <p className="text-[9px] text-primary uppercase font-black tracking-widest leading-none mb-1">Players</p>
-              <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'player').length}</p>
+            <AuraCard className="hidden md:flex p-3 border-2 border-primary/20 bg-primary/[0.04] flex-col justify-center min-h-[70px] text-center group relative overflow-hidden">
+              <div className="absolute inset-0 bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <p className="text-[9px] text-primary/60 uppercase font-black tracking-widest leading-none mb-1 relative z-10">Players</p>
+              <p className="text-xl font-black text-text-emphasis leading-none relative z-10">{users.filter(u => u.role === 'player').length}</p>
             </AuraCard>
-            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
-              <p className="text-[9px] text-emerald-500 uppercase font-black tracking-widest leading-none mb-1">Logged In</p>
-              <p className="text-xl font-black text-emerald-500 leading-none">
+            <AuraCard className="hidden md:flex p-3 border-2 border-emerald-500/20 bg-emerald-500/[0.04] flex-col justify-center min-h-[70px] text-center group relative overflow-hidden">
+              <div className="absolute inset-0 bg-emerald-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <p className="text-[9px] text-emerald-600/60 uppercase font-black tracking-widest leading-none mb-1 relative z-10">Logged In</p>
+              <p className="text-xl font-black text-emerald-600 leading-none relative z-10">
                 {users.filter(u => (new Date() - new Date(u.lastActive)) <= 600000).length}
               </p>
             </AuraCard>
-            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
-              <p className="text-[9px] text-aura-gold uppercase font-black tracking-widest leading-none mb-1">Suspended</p>
-              <p className="text-xl font-black text-aura-gold leading-none">{users.filter(u => u.status === 'suspended').length}</p>
+            <AuraCard className="hidden md:flex p-3 border-2 border-aura-gold/20 bg-aura-gold/[0.04] flex-col justify-center min-h-[70px] text-center group relative overflow-hidden">
+              <div className="absolute inset-0 bg-aura-gold/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <p className="text-[9px] text-aura-gold/60 uppercase font-black tracking-widest leading-none mb-1 relative z-10">Suspended</p>
+              <p className="text-xl font-black text-aura-gold leading-none relative z-10">{users.filter(u => u.status === 'suspended').length}</p>
             </AuraCard>
-            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
-              <p className="text-[9px] text-aura-crimson uppercase font-black tracking-widest leading-none mb-1">Blocked</p>
-              <p className="text-xl font-black text-aura-crimson leading-none">{users.filter(u => u.status === 'blocked').length}</p>
+            <AuraCard className="hidden md:flex p-3 border-2 border-aura-crimson/20 bg-aura-crimson/[0.04] flex-col justify-center min-h-[70px] text-center group relative overflow-hidden">
+              <div className="absolute inset-0 bg-aura-crimson/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <p className="text-[9px] text-aura-crimson/60 uppercase font-black tracking-widest leading-none mb-1 relative z-10">Blocked</p>
+              <p className="text-xl font-black text-aura-crimson leading-none relative z-10">{users.filter(u => u.status === 'blocked').length}</p>
             </AuraCard>
           </div>
 

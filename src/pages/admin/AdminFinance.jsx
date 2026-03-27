@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/axios';
 import DashboardLayout from '../../components/DashboardLayout';
+import AuraCard from '../../components/AuraCard';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -56,49 +57,57 @@ const AdminFinance = () => {
         
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
-            <div className="p-3 bg-indigo-50/50 text-indigo-600 rounded-full shrink-0">
+          <AuraCard className="p-5 flex items-center gap-4 border-2 border-aura-violet/20 bg-aura-violet/[0.04] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-aura-violet/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="p-3 bg-aura-violet/10 text-aura-violet rounded-2xl shrink-0 shadow-inner border border-aura-violet/20">
               <ShieldCheck size={20} />
             </div>
-            <div>
-              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Total Escrow</span>
+            <div className="relative z-10">
+              <span className="text-[10px] font-black text-aura-violet/60 uppercase tracking-widest block mb-0.5">Total Escrow</span>
               <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalEscrow.toLocaleString()}</p>
             </div>
-          </div>
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-aura-violet/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          </AuraCard>
 
-          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
-            <div className="p-3 bg-emerald-50/50 text-emerald-600 rounded-full shrink-0">
+          <AuraCard className="p-5 flex items-center gap-4 border-2 border-emerald-500/20 bg-emerald-500/[0.04] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-emerald-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="p-3 bg-emerald-500/10 text-emerald-600 rounded-2xl shrink-0 shadow-inner border border-emerald-500/20">
               <TrendingUp size={20} />
             </div>
-            <div>
-              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Revenue</span>
+            <div className="relative z-10">
+              <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest block mb-0.5">Revenue</span>
               <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalRevenue.toLocaleString()}</p>
             </div>
-          </div>
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          </AuraCard>
 
-          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
-            <div className="p-3 bg-amber-50/50 text-amber-600 rounded-full shrink-0">
+          <AuraCard className="p-5 flex items-center gap-4 border-2 border-amber-500/20 bg-amber-500/[0.04] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-amber-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="p-3 bg-amber-500/10 text-amber-600 rounded-2xl shrink-0 shadow-inner border border-amber-500/20">
               <ArrowUpRight size={20} />
             </div>
-            <div>
-              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Deposits</span>
+            <div className="relative z-10">
+              <span className="text-[10px] font-black text-amber-600/60 uppercase tracking-widest block mb-0.5">Deposits</span>
               <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalDeposits.toLocaleString()}</p>
             </div>
-          </div>
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          </AuraCard>
 
-          <div className="card-premium p-4 flex items-center gap-4 rounded-full">
-            <div className="p-3 bg-rose-50/50 text-rose-600 rounded-full shrink-0">
+          <AuraCard className="p-5 flex items-center gap-4 border-2 border-rose-500/20 bg-rose-500/[0.04] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-rose-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="p-3 bg-rose-500/10 text-rose-600 rounded-2xl shrink-0 shadow-inner border border-rose-500/20">
               <ArrowDownLeft size={20} />
             </div>
-            <div>
-              <span className="text-[10px] font-black text-text/40 uppercase tracking-widest block mb-0.5">Withdrawals</span>
+            <div className="relative z-10">
+              <span className="text-[10px] font-black text-rose-600/60 uppercase tracking-widest block mb-0.5">Withdrawals</span>
               <p className="text-xl font-black text-text-emphasis tracking-tight">KES {stats.totalWithdrawals.toLocaleString()}</p>
             </div>
-          </div>
+            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-rose-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
+          </AuraCard>
         </div>
 
         {/* Filters & Search */}
-        <div className="bg-base3 p-3 rounded-2xl border border-base2/50 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+        <div className="bg-base3 p-3 rounded-2xl border-2 border-primary/20 flex flex-wrap items-center justify-between gap-4 shadow-sm">
           <div className="flex gap-2 flex-wrap">
             {['all', 'deposit', 'withdrawal', 'platform_fee', 'moderation_fee', 'prize_payout', 'stake_lock', 'stake_refund'].map(f => (
               <button

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award, X, Shield, Play, MapPin } from 'lucide-react';
+import { Trophy, Target, Clock, Users, ChevronRight, Loader2, CheckCircle2, Trash2, Award, X, Shield, Play, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AuraCard from '../../components/AuraCard';
 import StatusBadge from '../../components/StatusBadge';
@@ -230,7 +230,7 @@ const OngoingActivities = () => {
         
         <QuickStatsBar />
         {/* Tabs */}
-        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
           {[
             { id: 'matches', label: 'Matches', count: data.matches.length, icon: Target },
             { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy },
@@ -276,7 +276,7 @@ const OngoingActivities = () => {
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
-                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none perspective-1000">
+                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-2 border-primary/20 transition-all perspective-1000 bg-white/[0.02]">
                     <div className="bg-base2/10 p-3 flex justify-between items-center border-b border-base2 preserve-3d">
                       <div className="flex items-center gap-2">
                         {match.isTournamentMatch ? (
@@ -557,7 +557,7 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md perspective-1000">
+                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-2 border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                       <Trophy size={16} />
@@ -606,7 +606,7 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.battles.map((battle) => (
-                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md perspective-1000">
+                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-2 border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                       <Shield size={16} />

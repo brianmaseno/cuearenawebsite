@@ -77,7 +77,7 @@ const Leaderboard = () => {
             <p className="text-slate-500 font-medium">The world's most elite cue masters.</p>
           </div>
           
-          <div className="flex items-center gap-4 bg-[#f5f1e4]/50 backdrop-blur-xl px-6 py-4 rounded-[28px] border border-slate-200/50 shadow-inner group transition-all hover:border-blue-500/20">
+          <div className="flex items-center gap-4 bg-[#f5f1e4]/50 backdrop-blur-xl px-6 py-4 rounded-[28px] border-2 border-primary/20 shadow-inner group transition-all hover:border-blue-500/20">
             <div className="w-10 h-10 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-500">
               <TrendingUp size={20} />
             </div>

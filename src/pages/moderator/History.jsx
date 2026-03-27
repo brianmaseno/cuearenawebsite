@@ -93,7 +93,7 @@ const History = () => {
           <p className="text-slate-500 font-medium">Review and manage past tournaments, matches, and battles.</p>
         </div>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+          <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
             {[
               { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon },
               { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon },
@@ -115,7 +115,7 @@ const History = () => {
           </div>
 
           {/* Sub-Filters */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border border-slate-200/40 w-full sm:w-fit">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border-2 border-primary/20 w-full sm:w-fit">
             {[
               { id: 'all', label: 'All', icon: TargetIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },

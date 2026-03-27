@@ -17,9 +17,7 @@ import {
    Trash2,
    Search,
    X,
-   Send,
-   Minus,
-   Layout
+   Send
 } from 'lucide-react';
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from '../../components/StatusBadge';
@@ -256,8 +254,8 @@ const TournamentManage = () => {
                </div>
 
                <div className="flex items-center gap-3">
-                  {(tournament?.status === 'draft' || tournament?.status === 'open_for_players' || tournament?.status === 'full') && (
-                     <div className="flex items-center gap-2 bg-[#f5f1e4]/80 backdrop-blur-sm px-4 py-2 rounded-[20px] border border-slate-200/50 shadow-sm">
+                  {tournament?.status !== 'ongoing' && tournament?.status !== 'completed' && (
+                     <div className="flex items-center gap-2 bg-[#f5f1e4]/80 backdrop-blur-sm px-4 py-2 rounded-[20px] border-2 border-primary/20 shadow-sm">
                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Sets/Match</span>
                         <select
                            value={tournament?.matchSetsCount || 1}
@@ -304,7 +302,7 @@ const TournamentManage = () => {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+            <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
                <button
                   onClick={() => setActiveTab('overview')}
                   className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'overview'

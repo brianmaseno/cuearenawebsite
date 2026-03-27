@@ -173,7 +173,7 @@ const TournamentDetails = () => {
             )}
 
         {/* Tab Navigation */}
-        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border border-slate-200/50 shadow-inner w-full sm:w-fit overflow-hidden">
+        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
           <button
             onClick={() => setActiveTab('info')}
             className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'info'
