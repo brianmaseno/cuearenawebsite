@@ -132,7 +132,7 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
         <div className="p-8 bg-gradient-to-br from-slate-900 to-indigo-950 text-text-emphasis relative">
           <button 
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-full transition-colors"
+            className="absolute top-6 right-6 p-2 hover:bg-base3/10 rounded-full transition-colors"
           >
             <X size={20} />
           </button>
@@ -143,22 +143,22 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
             </div>
             <div>
               <h2 className="text-2xl font-black tracking-tight uppercase italic line-clamp-1">Distribute Prizes</h2>
-              <p className="text-white/50 text-sm font-medium">{tournament.name}</p>
+              <p className="text-text-emphasis/50 text-sm font-medium">{tournament.name}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/10">
             <div>
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Total Pot</p>
+              <p className="text-[10px] font-black text-text-emphasis/40 uppercase tracking-widest mb-1">Total Pot</p>
               <p className="text-lg font-bold">KES {totalPot.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Net Prize Pool</p>
+              <p className="text-[10px] font-black text-text-emphasis/40 uppercase tracking-widest mb-1">Net Prize Pool</p>
               <p className="text-lg font-bold text-amber-400">KES {availablePrizePool.toLocaleString()}</p>
             </div>
             <div>
-              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Fee (15%)</p>
-              <p className="text-lg font-bold text-white/60">KES {(platformFee + moderationFee).toLocaleString()}</p>
+              <p className="text-[10px] font-black text-text-emphasis/40 uppercase tracking-widest mb-1">Fee (15%)</p>
+              <p className="text-lg font-bold text-text-emphasis/60">KES {(platformFee + moderationFee).toLocaleString()}</p>
             </div>
           </div>
         </div>

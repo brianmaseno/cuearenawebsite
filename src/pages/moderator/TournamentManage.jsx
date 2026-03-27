@@ -595,7 +595,7 @@ const TournamentManage = () => {
                      </div>
                      <button
                         onClick={() => setSelectedMatchForSets(null)}
-                        className="w-10 h-10 rounded-full bg-base2 flex items-center justify-center text-text hover:bg-red hover:text-white transition-all font-bold"
+                        className="w-10 h-10 rounded-full bg-base2 flex items-center justify-center text-text hover:bg-red hover:text-text-emphasis transition-all font-bold"
                      >
                         ✕
                      </button>

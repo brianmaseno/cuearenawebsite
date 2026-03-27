@@ -55,7 +55,7 @@ const FloatingActionButton = () => {
                 }}
                 className={`${action.color} text-base3 px-5 py-3 rounded-2xl shadow-xl hover:scale-105 transition-all active:scale-95 font-bold text-sm whitespace-nowrap flex items-center gap-3 border border-white/10`}
               >
-                <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center">
+                <div className="w-6 h-6 rounded-lg bg-base3/20 flex items-center justify-center">
                    <action.icon size={14} />
                 </div>
                 {action.label}

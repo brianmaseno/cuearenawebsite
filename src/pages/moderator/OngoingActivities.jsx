@@ -775,7 +775,7 @@ const OngoingActivities = () => {
                         }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedTableId === table.tableId ? 'bg-emerald-500 text-white' : 'bg-base2 text-text/40'}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedTableId === table.tableId ? 'bg-emerald-500 text-text-emphasis' : 'bg-base2 text-text/40'}`}>
                           <MapPin size={16} />
                         </div>
                         <div className="text-left">

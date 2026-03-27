@@ -96,7 +96,7 @@ const InactivityTimer = () => {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700"
+          className="bg-base3 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-base2"
         >
           <div className="p-6">
             <div className="flex items-center gap-4 mb-4">
@@ -104,7 +104,7 @@ const InactivityTimer = () => {
                 <AlertCircle size={32} />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">Inactivity Warning</h3>
+                <h3 className="text-xl font-bold text-text-emphasis">Inactivity Warning</h3>
                 <p className="text-slate-500 dark:text-slate-400">You've been idle for a while.</p>
               </div>
             </div>
@@ -129,7 +129,7 @@ const InactivityTimer = () => {
               </button>
               <button
                 onClick={resetTimer}
-                className="px-4 py-3 rounded-xl bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-colors"
+                className="px-4 py-3 rounded-xl bg-primary text-text-emphasis font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-colors"
               >
                 Stay Logged In
               </button>

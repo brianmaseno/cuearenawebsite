@@ -60,7 +60,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
 
             {match.rankLabel && (
                <div className={`absolute -top-3 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1.5 z-40 whitespace-nowrap
-                  ${match.matchType === 'third_place_playoff' ? 'bg-violet text-white shadow-violet/30' : 'bg-base2 text-text shadow-base1/30'}
+                  ${match.matchType === 'third_place_playoff' ? 'bg-violet text-text-emphasis shadow-violet/30' : 'bg-base2 text-text shadow-base1/30'}
                `}>
                   {match.rankLabel}
                </div>

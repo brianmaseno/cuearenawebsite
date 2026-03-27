@@ -167,7 +167,7 @@ const ModeratorTables = () => {
                               <button
                                  onClick={() => handleToggleMaintenance(table._id)}
                                  className={`p-2 rounded-lg transition-all active:scale-95 ${
-                                    table.status === 'maintenance' ? 'bg-red text-white shadow-sm' : 'text-text/40 hover:text-red hover:bg-red/5'
+                                    table.status === 'maintenance' ? 'bg-red text-text-emphasis shadow-sm' : 'text-text/40 hover:text-red hover:bg-red/5'
                                  }`}
                                  title={table.status === 'maintenance' ? 'Restore Table' : 'Mark for Maintenance'}
                               >

@@ -232,7 +232,7 @@ const WalletPage = () => {
                 >
                   <div className="flex items-center justify-between mb-8">
                     <h3 className="text-xl font-black uppercase tracking-tight">Deposit Funds</h3>
-                    <button onClick={() => setShowDeposit(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red/20 hover:text-red transition-all">
+                    <button onClick={() => setShowDeposit(false)} className="w-10 h-10 rounded-full bg-base3/10 flex items-center justify-center hover:bg-red/20 hover:text-red transition-all">
                       <X size={18} />
                     </button>
                   </div>

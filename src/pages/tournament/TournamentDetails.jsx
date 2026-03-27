@@ -65,7 +65,7 @@ const TournamentDetails = () => {
                            toast.dismiss(t.id);
                            navigate('/wallet');
                         }}
-                        className="mt-1 bg-white text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
+                        className="mt-1 bg-base3 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
                      >
                         Go to Wallet <ArrowRight size={12} />
                      </button>
