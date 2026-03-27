@@ -230,7 +230,7 @@ const OngoingActivities = () => {
         
         <QuickStatsBar />
         {/* Tabs */}
-        <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
+        <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
           {[
             { id: 'matches', label: 'Matches', count: data.matches.length, icon: Target, color: 'bg-blue-500', shadow: 'shadow-blue-500/40' },
             { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy, color: 'bg-amber-500', shadow: 'shadow-amber-500/40' },
@@ -276,7 +276,7 @@ const OngoingActivities = () => {
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
-                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-2 border-primary/20 transition-all perspective-1000 bg-white/[0.02]">
+                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-[3px] border-primary/20 transition-all perspective-1000 bg-white/[0.02]">
                     <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 preserve-3d overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
@@ -286,26 +286,26 @@ const OngoingActivities = () => {
                         ) : (
                           <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 shrink-0 drop-shadow-sm" />
                         )}
-                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0 drop-shadow-sm">
                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Cue Tournament'}
                         </h3>
                       </div>
                       <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 justify-end shrink-0">
                         {match.stakeAmount > 0 && !match.isTournamentMatch && (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap drop-shadow-sm">
                             <Award size={10} className="text-emerald-500" />
                             PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
                           </span>
                         )}
                         {match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0 && (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap drop-shadow-sm">
                             <Award size={10} className="text-emerald-500" />
                             PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
                           </span>
                         )}
                         <div className="flex items-center gap-1 shrink-0">
                           {match.status === 'cancelled' && match.declinedBy ? (
-                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red px-1.5 py-0.5 bg-red/10 rounded-md border border-red/20 animate-pulse truncate max-w-[120px] sm:max-w-[200px] shrink-0">
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red px-1.5 py-0.5 bg-red/10 rounded-md border-[1.5px] border-red/20 animate-pulse truncate max-w-[120px] sm:max-w-[200px] shrink-0 drop-shadow-sm">
                               {match.declinedBy.fullName} Declined
                             </span>
                           ) : (
@@ -351,7 +351,7 @@ const OngoingActivities = () => {
                                 </div>
                               </>
                             ) : (
-                              <div className="w-14 h-14 rounded-2xl bg-base2/50 flex items-center justify-center border-2 border-dashed border-base2 text-text/20">
+                              <div className="w-14 h-14 rounded-2xl bg-base2/50 flex items-center justify-center border-[3px] border-dashed border-base2 text-text/20">
                                 <Users size={24} />
                               </div>
                             )}
@@ -406,7 +406,7 @@ const OngoingActivities = () => {
                                 </div>
                               </>
                             ) : (
-                              <div className="w-14 h-14 rounded-2xl bg-base2/50 flex items-center justify-center border-2 border-dashed border-base2 text-text/20">
+                              <div className="w-14 h-14 rounded-2xl bg-base2/50 flex items-center justify-center border-[3px] border-dashed border-base2 text-text/20">
                                 <Users size={24} />
                               </div>
                             )}
@@ -557,7 +557,7 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-2 border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
+                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
@@ -609,7 +609,7 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.battles.map((battle) => (
-                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-2 border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
+                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
                       <Shield size={16} />

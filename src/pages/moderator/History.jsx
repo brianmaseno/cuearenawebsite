@@ -93,7 +93,7 @@ const History = () => {
           <p className="text-slate-500 font-medium">Review and manage past tournaments, matches, and battles.</p>
         </div>
         <div className="flex flex-col gap-6">
-          <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
             {[
               { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon, color: 'bg-blue-500', shadow: 'shadow-blue-500/40' },
               { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon, color: 'bg-amber-500', shadow: 'shadow-amber-500/40' },
@@ -115,7 +115,7 @@ const History = () => {
           </div>
 
           {/* Sub-Filters */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[20px] sm:rounded-[24px] border-2 border-primary/20 w-full sm:w-fit gap-1 overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[20px] sm:rounded-[24px] border-[3px] border-primary/20 w-full sm:w-fit gap-1 overflow-x-auto no-scrollbar scroll-smooth">
             {[
               { id: 'all', label: 'All', icon: TargetIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },
@@ -164,34 +164,34 @@ const History = () => {
                 const winnerName = match.winnerId?.fullName || (isP1Winner ? match.player1Id?.fullName : isP2Winner ? match.player2Id?.fullName : null);
 
                 return (
-                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group transition-all border-2 border-primary/20 bg-base3/10 shadow-sm hover:shadow-md">
+                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group transition-all border-[3px] border-primary/20 bg-base3/10 shadow-sm hover:shadow-md">
                     <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 md:w-6 md:h-6 shrink-0 drop-shadow-sm" />
-                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0 drop-shadow-sm">
                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
                         </h3>
                       </div>
                       <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 justify-end shrink-0">
                         {match.isTournamentMatch ? (
                           match.tournamentId?.stakePerPlayer > 0 && (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap drop-shadow-sm">
                             <AwardIcon size={10} className="text-emerald-500" />
                             PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
                           </span>
                         )
                       ) : (
                         match.stakeAmount > 0 && (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap">
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap drop-shadow-sm">
                             <AwardIcon size={10} className="text-emerald-500" />
                             PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
                           </span>
                         )
                       )}
                         {isCancelled ? (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded-md tracking-widest border border-red/10 whitespace-nowrap shrink-0">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded-md tracking-widest border-[1.5px] border-red/10 whitespace-nowrap shrink-0 drop-shadow-sm">Cancelled</span>
                         ) : (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-green bg-green/10 px-1.5 py-0.5 rounded-md tracking-widest border border-green/10 whitespace-nowrap shrink-0">Completed</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-green bg-green/10 px-1.5 py-0.5 rounded-md tracking-widest border-[1.5px] border-green/10 whitespace-nowrap shrink-0 drop-shadow-sm">Completed</span>
                         )}
                       </div>
                     </div>
@@ -315,7 +315,7 @@ const History = () => {
                 filteredData.map((battle) => {
                   const isCancelled = battle.status === 'cancelled';
                   return (
-                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col transition-all shadow-sm hover:shadow-md border-2 border-primary/20 bg-base3/10">
+                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col transition-all shadow-sm hover:shadow-md border-[3px] border-primary/20 bg-base3/10">
                       <div className="bg-base2/5 p-4 flex flex-wrap md:flex-nowrap gap-3 justify-between items-center border-b border-base2/50 overflow-hidden">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                            <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
@@ -429,7 +429,7 @@ const History = () => {
               filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
-                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group transition-all shadow-sm hover:shadow-md h-full border-2 border-primary/20 bg-base3/10">
+                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group transition-all shadow-sm hover:shadow-md h-full border-[3px] border-primary/20 bg-base3/10">
                     <div className="bg-base2/5 p-4 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 shrink-0 drop-shadow-sm" />

@@ -83,7 +83,7 @@ const PlayerHistory = () => {
         </div>
         <div className="flex flex-col gap-6">
           {/* Main Tabs - Single Row Horizontal Scroll */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
             {[
               { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon, color: 'blue' },
               { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon, color: 'amber' },
@@ -113,7 +113,7 @@ const PlayerHistory = () => {
           </div>
 
           {/* Sub-Filters - Single Row Horizontal Scroll with Fixed Spilling */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border-2 border-primary/20 w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border-[3px] border-primary/20 w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
             {[
               { id: 'all', label: 'All', icon: ArrowIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },
@@ -166,7 +166,7 @@ const PlayerHistory = () => {
                 const winLossColor = myWon ? 'text-green' : 'text-red';
 
                 return (
-                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
+                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-[3px] border-primary/25">
                     <div className="bg-base2/10 p-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-2 border-b border-base2 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
@@ -176,7 +176,7 @@ const PlayerHistory = () => {
                         ) : (
                            <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 drop-shadow-sm shrink-0" />
                         )}
-                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0">
+                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0 drop-shadow-sm">
                            {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
                         </h3>
                       </div>
@@ -184,10 +184,10 @@ const PlayerHistory = () => {
                       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         {(match.stakeAmount > 0 || (match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0)) && (
                           <>
-                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 whitespace-nowrap shrink-0">
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 whitespace-nowrap shrink-0 drop-shadow-sm">
                               STAKE: KES {(match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}
                             </span>
-                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-blue bg-blue/5 px-1.5 py-0.5 rounded-md border border-blue/10 flex items-center gap-1 whitespace-nowrap shrink-0">
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-blue bg-blue/5 px-1.5 py-0.5 rounded-md border-[1.5px] border-blue/10 flex items-center gap-1 whitespace-nowrap shrink-0 drop-shadow-sm">
                               <AwardIcon size={10} />
                               PRIZE: KES {match.isTournamentMatch 
                                 ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
@@ -197,7 +197,7 @@ const PlayerHistory = () => {
                           </>
                         )}
                         {isCancelled ? (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap shrink-0">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded border-[1.5px] border-red/20 tracking-widest whitespace-nowrap shrink-0 drop-shadow-sm">Cancelled</span>
                         ) : (
                           <StatusBadge status={match.status} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
                         )}
@@ -352,7 +352,7 @@ const PlayerHistory = () => {
                   const isCancelled = battle.status === 'cancelled';
                   const myWon = battle.winnerId?._id === userId;
                   return (
-                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
+                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md">
                       <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
                            <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
@@ -362,7 +362,7 @@ const PlayerHistory = () => {
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {isCancelled ? (
-                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap">Cancelled</span>
+                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded border-[1.5px] border-red/20 tracking-widest whitespace-nowrap drop-shadow-sm">Cancelled</span>
                           ) : (
                             <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
                           )}
@@ -476,7 +476,7 @@ const PlayerHistory = () => {
               filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
-                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full">
+                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md h-full">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm shrink-0" />
@@ -491,7 +491,7 @@ const PlayerHistory = () => {
                       </div>
                       <div className="shrink-0">
                         {isCancelled ? (
-                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded tracking-widest whitespace-nowrap">Cancelled</span>
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded border-[1.5px] border-red/20 tracking-widest whitespace-nowrap drop-shadow-sm">Cancelled</span>
                         ) : (
                           <StatusBadge status={t.status} className="text-[clamp(7.5px,0.85vw,9.5px)]" />
                         )}
