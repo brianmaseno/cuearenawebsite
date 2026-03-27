@@ -173,11 +173,11 @@ const WalletPage = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#073642] p-5 md:p-8 text-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-white/10 group aura-card"
+              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#073642] p-5 md:p-8 text-text-light shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-base3/10 group aura-card"
               style={{ animation: 'aura-breathe 8s ease-in-out infinite' }}
             >
               {/* Glossy Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-base3/20 to-transparent opacity-20 group-hover:opacity-40 transition-opacity"></div>
               
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
@@ -187,30 +187,30 @@ const WalletPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
-                    <p className="text-[12px] font-black text-white/50 tracking-[0.3em] uppercase leading-none italic font-mono">CUE MASTERS</p>
+                    <p className="text-[12px] font-black text-base3/50 tracking-[0.3em] uppercase leading-none italic font-mono">CUE MASTERS</p>
                   </div>
                 </div>
 
                 <div className="space-y-0.5">
-                  <p className="text-[10px] md:text-xs font-black text-white/40 uppercase tracking-[0.2em] leading-none mb-2">Available Balance</p>
+                  <p className="text-[10px] md:text-xs font-black text-base3/40 uppercase tracking-[0.2em] leading-none mb-2">Available Balance</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl md:text-6xl font-black tracking-tighter tabular-nums drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-white/70 pr-1">
+                    <span className="text-3xl md:text-6xl font-black tracking-tighter tabular-nums drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-base3 to-base3/70 pr-1">
                       {wallet?.balance?.toLocaleString()}
                     </span>
-                    <span className="text-sm md:text-xl font-bold text-white/30 uppercase tracking-widest">KES</span>
+                    <span className="text-sm md:text-xl font-bold text-base3/30 uppercase tracking-widest">KES</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-end pt-2">
                   <div className="flex flex-col gap-1.5">
-                    <p className="text-[9px] font-black uppercase text-white/30 tracking-[0.2em] leading-none">Account Holder</p>
-                    <p className="text-xs md:text-base font-black text-white tracking-[0.15em] uppercase drop-shadow-sm">
+                    <p className="text-[9px] font-black uppercase text-base3/30 tracking-[0.2em] leading-none">Account Holder</p>
+                    <p className="text-xs md:text-base font-black text-text-light tracking-[0.15em] uppercase drop-shadow-sm">
                       {userInfo?.fullName || 'PREMIUM PLAYER'}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-md shadow-xl transition-transform group-hover:scale-110">
-                      <ShieldCheck size={20} className="text-white/80" />
+                    <div className="w-10 h-10 rounded-2xl bg-base3/10 border border-base3/20 flex items-center justify-center backdrop-blur-md shadow-xl transition-transform group-hover:scale-110">
+                      <ShieldCheck size={20} className="text-text-light/80" />
                     </div>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ const WalletPage = () => {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="bg-text-emphasis p-8 rounded-[2.5rem] text-base3 shadow-2xl border border-white/5"
+                  className="bg-text-emphasis p-8 rounded-[2.5rem] text-text-light shadow-2xl border border-base3/5"
                 >
                   <div className="flex items-center justify-between mb-8">
                     <h3 className="text-xl font-black uppercase tracking-tight">Deposit Funds</h3>
@@ -238,13 +238,13 @@ const WalletPage = () => {
                   </div>
                   <form onSubmit={handleDeposit} className="space-y-6">
                     <div>
-                      <label className="text-[10px] text-white/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
+                      <label className="text-[10px] text-base3/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
                       <input 
                         type="number" 
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Enter amount"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white text-lg font-black placeholder:text-white/20 focus:ring-2 focus:ring-primary outline-none transition-all"
+                        className="w-full bg-base3/5 border border-base3/10 rounded-2xl px-6 py-4 text-text-light text-lg font-black placeholder:text-base3/20 focus:ring-2 focus:ring-primary outline-none transition-all"
                         required
                       />
                     </div>

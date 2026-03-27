@@ -18,8 +18,8 @@ export const NotificationProvider = ({ children }) => {
     try {
       setLoading(true);
       const { data } = await api.get('/notifications/my');
-      setNotifications(data);
-      setUnreadCount(data.filter(n => !n.isRead).length);
+      setNotifications(data || []);
+      setUnreadCount((data || []).filter(n => !n.isRead).length);
     } catch (err) {
       console.error('Error fetching notifications:', err.message);
     } finally {

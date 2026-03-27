@@ -84,9 +84,9 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full relative group h-14 bg-primary hover:bg-primary-dark disabled:opacity-70 text-white font-black text-lg rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
+              className="w-full relative group h-14 bg-primary hover:bg-primary-dark disabled:opacity-70 text-text-light font-black text-lg rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-base3/0 via-base3/10 to-base3/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
               <div className="flex items-center justify-center gap-3">
                 {isLoading ? (
                   <>

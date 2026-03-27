@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../api/axios';
-import DashboardLayout from '../../components/DashboardLayout';
-import AuraCard from '../../components/AuraCard';
+import api from '../api/axios';
+import DashboardLayout from '../components/DashboardLayout';
+import AuraCard from '../components/AuraCard';
 import { 
   MessageSquare, 
   Send, 
@@ -68,7 +68,7 @@ const Support = () => {
       <div className="max-w-4xl mx-auto space-y-8 pb-20">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Support Center</h2>
+            <h2 className="text-2xl font-black text-text-emphasis uppercase tracking-tighter">Support Center</h2>
             <p className="text-gray-500 text-sm">Need help? We're here for you 24/7.</p>
           </div>
           <button 
@@ -82,7 +82,7 @@ const Support = () => {
 
         {showNewTicket ? (
           <AuraCard className="p-8 border-none">
-            <h3 className="text-lg font-black text-white uppercase tracking-tighter mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-black text-text-emphasis uppercase tracking-tighter mb-6 flex items-center gap-2">
               <Send size={20} className="text-primary" />
               Open New Support Request
             </h3>
@@ -145,7 +145,7 @@ const Support = () => {
         ) : (
           <div className="space-y-4">
             {tickets.length === 0 ? (
-              <div className="text-center py-20 bg-dark-lighter rounded-3xl border-2 border-dashed border-white/5">
+              <div className="text-center py-20 bg-dark-lighter rounded-3xl border-2 border-dashed border-base3/10">
                 <MessageSquare size={48} className="mx-auto text-gray-700 mb-4 opacity-20" />
                 <p className="text-gray-500 font-bold italic">No active support tickets.</p>
               </div>
@@ -162,7 +162,7 @@ const Support = () => {
                       </div>
                       <span className="text-[10px] font-black text-gray-600">{new Date(ticket.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <h4 className="text-lg font-black text-white uppercase tracking-tighter mb-2">{ticket.title}</h4>
+                    <h4 className="text-lg font-black text-text-emphasis uppercase tracking-tighter mb-2">{ticket.title}</h4>
                     <p className="text-gray-400 text-sm line-clamp-2 italic">"{ticket.description}"</p>
                   </div>
                   
@@ -172,7 +172,7 @@ const Support = () => {
                         <Shield size={14} className="text-primary" />
                         <span className="text-[10px] font-black uppercase text-primary">Admin Response</span>
                       </div>
-                      <p className="text-sm font-bold text-white border-l-2 border-primary/40 pl-4 py-1">
+                      <p className="text-sm font-bold text-text-emphasis border-l-2 border-primary/40 pl-4 py-1">
                         {ticket.responses[ticket.responses.length - 1].message}
                       </p>
                     </div>

@@ -103,8 +103,8 @@ const Profile = () => {
                   />
                 </div>
                 <div className="absolute inset-0 bg-primary/20 backdrop-blur-[2px] rounded-[32px] opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-all duration-500">
-                  <Camera className="text-white mb-1 drop-shadow-lg" size={24} strokeWidth={1.5} />
-                  <span className="text-[10px] text-white font-medium uppercase tracking-widest">Update</span>
+                  <Camera className="text-text-light mb-1 drop-shadow-lg" size={24} strokeWidth={1.5} />
+                  <span className="text-[10px] text-text-light font-medium uppercase tracking-widest">Update</span>
                 </div>
                 <input 
                   type="file" 
@@ -224,7 +224,7 @@ const Profile = () => {
                       </div>
                     </div>
                     <div className={`w-10 h-5 rounded-full transition-all relative ${formData.notifications.email ? 'bg-primary' : 'bg-base2'}`}>
-                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${formData.notifications.email ? 'left-5.5' : 'left-0.5'}`} />
+                      <div className={`absolute top-0.5 w-4 h-4 bg-base3 rounded-full transition-all ${formData.notifications.email ? 'left-5.5' : 'left-0.5'}`} />
                       <input 
                         type="checkbox" 
                         name="notif_email" 
@@ -245,7 +245,7 @@ const Profile = () => {
                       </div>
                     </div>
                     <div className={`w-10 h-5 rounded-full transition-all relative ${formData.notifications.push ? 'bg-primary' : 'bg-base2'}`}>
-                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${formData.notifications.push ? 'left-5.5' : 'left-0.5'}`} />
+                      <div className={`absolute top-0.5 w-4 h-4 bg-base3 rounded-full transition-all ${formData.notifications.push ? 'left-5.5' : 'left-0.5'}`} />
                       <input 
                         type="checkbox" 
                         name="notif_push" 

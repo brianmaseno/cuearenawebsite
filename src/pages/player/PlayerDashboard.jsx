@@ -83,7 +83,7 @@ const PlayerDashboard = () => {
                   toast.dismiss(t.id);
                   navigate('/wallet');
                 }}
-                className="mt-1 bg-white text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
+                className="mt-1 bg-base3 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-2 hover:bg-rose-50 transition-colors"
               >
                 Go to Wallet <ArrowRight size={12} />
               </button>
@@ -138,14 +138,14 @@ const PlayerDashboard = () => {
                   <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full group-hover:bg-primary/10 transition-all"></div>
                   <div className="relative z-10 flex items-center gap-3">
                     <div className={`p-2 rounded-xl bg-opacity-10 ${
-                      ua.achievementId.rarity === 'legendary' ? 'bg-yellow-500 text-yellow-500' :
-                      ua.achievementId.rarity === 'epic' ? 'bg-purple-500 text-purple-500' :
-                      ua.achievementId.rarity === 'rare' ? 'bg-blue-500 text-blue-500' : 'bg-gray-400 text-gray-400'
+                      ua.achievementId?.rarity === 'legendary' ? 'bg-yellow-500 text-yellow-500' :
+                      ua.achievementId?.rarity === 'epic' ? 'bg-purple-500 text-purple-500' :
+                      ua.achievementId?.rarity === 'rare' ? 'bg-blue-500 text-blue-500' : 'bg-gray-400 text-gray-400'
                     }`}>
                       <Award size={20} />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-white uppercase truncate tracking-tight">{ua.achievementId.name}</h4>
+                      <h4 className="text-xs font-black text-text-emphasis uppercase truncate tracking-tight">{ua.achievementId?.name}</h4>
                       <p className="text-[10px] text-gray-500 leading-tight">{new Date(ua.earnedAt).toLocaleDateString()}</p>
                     </div>
                   </div>

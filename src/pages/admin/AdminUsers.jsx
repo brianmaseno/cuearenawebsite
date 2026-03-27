@@ -502,8 +502,8 @@ const AdminUsers = () => {
                       className="w-20 h-20 rounded-[28px] object-cover ring-2 ring-base2 shadow-lg group-hover:scale-[1.02] transition-all"
                     />
                     <div className="absolute inset-0 bg-black/40 rounded-[28px] opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all">
-                      <Camera className="text-white mb-0.5" size={16} />
-                      <span className="text-[7px] text-white font-medium uppercase tracking-widest">Change</span>
+                      <Camera className="text-text-emphasis mb-0.5" size={16} />
+                      <span className="text-[7px] text-text-emphasis font-medium uppercase tracking-widest">Change</span>
                     </div>
                     <input 
                       type="file" 
@@ -644,7 +644,7 @@ const AdminUsers = () => {
                       <Camera size={20} />
                     )}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/addpic:opacity-100 flex items-center justify-center transition-all">
-                       <Camera size={14} className="text-white" />
+                       <Camera size={14} className="text-text-emphasis" />
                     </div>
                     <input 
                       type="file" 

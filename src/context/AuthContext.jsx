@@ -9,16 +9,19 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const verifyUser = async () => {
-      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
-      if (userInfo && userInfo.token) {
+      const userStr = sessionStorage.getItem('userInfo');
+      if (userStr && userStr !== 'undefined' && userStr !== 'null') {
         try {
-          // Set authorization header for the verification call
-          api.defaults.headers.common['Authorization'] = `Bearer ${userInfo.token}`;
-          const { data } = await api.get('/auth/me');
-          // Update user info including latest status from server
-          const updatedUser = { ...userInfo, ...data };
-          sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
-          setUser(updatedUser);
+          const userInfo = JSON.parse(userStr);
+          if (userInfo && userInfo.token) {
+            // Set authorization header for the verification call
+            api.defaults.headers.common['Authorization'] = `Bearer ${userInfo.token}`;
+            const { data } = await api.get('/auth/me');
+            // Update user info including latest status from server
+            const updatedUser = { ...userInfo, ...data };
+            sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
+            setUser(updatedUser);
+          }
         } catch (err) {
           console.error('Token verification failed:', err);
           sessionStorage.removeItem('userInfo');

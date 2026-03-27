@@ -274,7 +274,7 @@ const TournamentManage = () => {
                   {tournament?.status === 'completed' && (
                      <button
                         onClick={() => setIsPayoutModalOpen(true)}
-                        className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+                        className="bg-amber-500 hover:bg-amber-600 text-text-emphasis px-6 py-3 rounded-2xl font-black shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
                      >
                         <Award size={20} />
                         Distribute Prizes
@@ -294,7 +294,7 @@ const TournamentManage = () => {
                      <button
                         onClick={handleCancelTournament}
                         disabled={actionLoading}
-                        className="bg-red/10 hover:bg-red text-red hover:text-white px-4 py-3 rounded-2xl font-black border border-red/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                        className="bg-red/10 hover:bg-red text-red hover:text-text-emphasis px-4 py-3 rounded-2xl font-black border border-red/20 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                         title="Cancel Tournament"
                      >
                         <Trash2 size={20} />

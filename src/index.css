@@ -31,6 +31,7 @@
   --color-background: #eee8d5;
   --color-text: #586e75;
   --color-text-emphasis: #073642;
+  --color-text-light: #f1f5f9; /* Non-pure off-white for contrast */
   
   /* Additional Vibrant Colors for Luminous Feel */
   --color-special-red: #ef4444;
@@ -178,7 +179,7 @@
 
 .btn-primary {
   background-color: var(--color-primary);
-  color: var(--color-base3);
+  color: var(--color-text-light);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -192,7 +193,7 @@
 }
 
 .aura-btn {
-  @apply relative overflow-hidden transition-all duration-500 bg-primary text-base3 font-black rounded-2xl;
+  @apply relative overflow-hidden transition-all duration-500 bg-primary text-text-light font-black rounded-2xl;
   box-shadow: 0 0 10px rgba(38, 139, 210, 0.2);
 }
 
@@ -301,4 +302,3 @@
 .perspective-1000 { perspective: 1000px; }
 .preserve-3d { transform-style: preserve-3d; }
 .backface-hidden { backface-visibility: hidden; }
-

@@ -197,7 +197,7 @@ const Landing = () => {
         {isMobileMenuOpen && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileMenuOpen(false)} className="fixed inset-0 bg-background/5 backdrop-blur-[1px] z-[100] md:hidden" />
-            <motion.div initial={{ x: 20, y: -20, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 20, y: -20, opacity: 0 }} className="fixed top-0 right-0 w-[200px] bg-transparent backdrop-blur-md border-l border-b border-white/10 z-[110] md:hidden p-5 rounded-bl-[32px] flex flex-col items-center pt-8">
+            <motion.div initial={{ x: 20, y: -20, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 20, y: -20, opacity: 0 }} className="fixed top-0 right-0 w-[200px] bg-transparent backdrop-blur-md border-l border-b border-base3/10 z-[110] md:hidden p-5 rounded-bl-[32px] flex flex-col items-center pt-8">
               <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-4 right-4 p-2 text-text/40 hover:text-text transition-colors"><X size={16} /></button>
               <div className="w-full space-y-2 mt-2">
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-base2/50 text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-base2 transition-all active:scale-95 shadow-md">Login <LogIn size={16} /></Link>
@@ -266,7 +266,7 @@ const Landing = () => {
               <div className="absolute -inset-6 bg-gradient-to-r from-special-red/30 via-primary/30 to-indigo-500/30 rounded-[48px] blur-3xl opacity-40 group-hover:opacity-100 transition-opacity duration-1000" />
               <motion.div 
                 whileHover={{ rotateY: 10, rotateX: 5, z: 20 }}
-                className="relative rounded-[32px] overflow-hidden border border-white/20 shadow-2xl transition-all duration-700"
+                className="relative rounded-[32px] overflow-hidden border border-base3/20 shadow-2xl transition-all duration-700"
               >
                 <img src="/images/old_way.png" alt="Traditional way" className="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-opacity duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8 text-left">
@@ -458,7 +458,7 @@ const Landing = () => {
           <div className="mb-16"><h2 className="text-3xl font-black text-text-emphasis tracking-tight">Diverse game formats</h2><p className="text-text/60 font-medium">Tournament-ready for every discipline.</p></div>
           <div className="flex flex-wrap justify-center gap-8">
             {[ { name: "8-Ball", color: "bg-black" }, { name: "9-Ball", color: "bg-yellow" }, { name: "10-Ball", color: "bg-blue" }, { name: "Straight Pool", color: "bg-red" } ].map((game, i) => (
-              <motion.div key={i} whileHover={{ y: -5 }} className="flex flex-col items-center gap-4 bg-base3 p-6 rounded-3xl border border-base2 shadow-sm min-w-[140px]"><div className={`w-12 h-12 rounded-full ${game.color} shadow-lg flex items-center justify-center text-white font-black italic`}>{game.name.charAt(0)}</div><span className="font-black text-sm text-text-emphasis">{game.name}</span></motion.div>
+              <motion.div key={i} whileHover={{ y: -5 }} className="flex flex-col items-center gap-4 bg-base3 p-6 rounded-3xl border border-base2 shadow-sm min-w-[140px]"><div className={`w-12 h-12 rounded-full ${game.color} shadow-lg flex items-center justify-center text-base3 font-black italic`}>{game.name.charAt(0)}</div><span className="font-black text-sm text-text-emphasis">{game.name}</span></motion.div>
             ))}
           </div>
         </div>
@@ -498,7 +498,7 @@ const Landing = () => {
               <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] rounded-full" />
               <div className="relative rounded-[40px] overflow-hidden shadow-2xl skew-y-1">
                 <img src="/images/players_win.png" alt="Winner" className="w-full h-auto object-cover" />
-                <div className="absolute top-6 right-6 px-4 py-2 rounded-2xl bg-white/90 backdrop-blur-md shadow-xl border border-white/20 flex items-center gap-3 animate-float text-left">
+                <div className="absolute top-6 right-6 px-4 py-2 rounded-2xl bg-base3/90 backdrop-blur-md shadow-xl border border-base3/20 flex items-center gap-3 animate-float text-left">
                   <div className="w-8 h-8 rounded-full bg-emerald-500 text-base3 flex items-center justify-center text-left"><Trophy size={16} /></div>
                   <div className="text-left"><p className="text-[10px] font-black text-text-emphasis uppercase leading-none text-left">+ $1,200.00</p><p className="text-[8px] font-bold text-text/50 leading-none text-left">Instant payout</p></div>
                 </div>
@@ -510,7 +510,7 @@ const Landing = () => {
 
       {/* Final CTA */}
       <section className="py-24 relative overflow-hidden text-left" style={{ perspective: 1500 }}>
-        <ParallaxIcon icon={Star} color="text-white" size={32} top="10%" left="5%" delay={0} speed={0.4} />
+        <ParallaxIcon icon={Star} color="text-text-light" size={32} top="10%" left="5%" delay={0} speed={0.4} />
         <ParallaxIcon icon={Trophy} color="text-yellow" size={24} top="70%" left="92%" delay={0.3} speed={0.6} />
         
         <div className="container mx-auto px-6">
@@ -519,8 +519,8 @@ const Landing = () => {
             className="p-16 rounded-[48px] bg-gradient-to-br from-primary via-primary-dark to-special-red relative overflow-hidden shadow-3xl text-center group"
             style={{ transformStyle: 'preserve-3d' }}
           >
-            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 animate-shimmer" />
-            <motion.h2 style={{ translateZ: 50 }} className="text-5xl lg:text-7xl font-black text-base3 mb-8 leading-[0.9] tracking-tighter text-center">Ready to claim <br />your title?</motion.h2>
+            <div className="absolute inset-0 bg-base3/5 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 animate-shimmer" />
+            <motion.h2 style={{ translateZ: 50 }} className="text-5xl lg:text-7xl font-black text-text-light mb-8 leading-[0.9] tracking-tighter text-center">Ready to claim <br />your title?</motion.h2>
             <motion.div style={{ translateZ: 30 }} className="flex justify-center gap-6"><Link to="/register" className="px-12 py-5 rounded-2xl bg-base2 text-primary font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-xl group/btn overflow-hidden relative"><div className="absolute inset-0 bg-primary/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" /><span className="relative">Join elite now</span></Link></motion.div>
           </motion.div>
         </div>

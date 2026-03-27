@@ -25,7 +25,7 @@ const TopBar = ({ title }) => {
         
         // Fetch wallet balance for all roles
         const walletRes = await api.get('/wallet');
-        setLiveBalance(walletRes.data.wallet.balance || 0);
+        setLiveBalance(walletRes.data.wallet?.balance || 0);
       } catch (err) {
         console.error('Failed to fetch live data:', err);
       }
@@ -127,7 +127,7 @@ const TopBar = ({ title }) => {
           >
             <Bell size={20} />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] bg-red text-white text-[9px] font-black rounded-full border-2 border-base3 flex items-center justify-center">
+              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] bg-red text-text-light text-[9px] font-black rounded-full border-2 border-base3 flex items-center justify-center">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}

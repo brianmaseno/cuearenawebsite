@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 import { 
   Trophy, 
   LayoutDashboard, 
   Calendar, 
   Users, 
   Bell, 
-  Settings, 
   LogOut, 
   MessageSquare,
   Shield,
@@ -18,7 +18,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Wallet,
-  TrendingUp
+  TrendingUp,
+  HelpCircle,
+  Settings
 } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
 
@@ -133,7 +135,7 @@ const Sidebar = () => {
                 />
                 {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
                 {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
-                  <span className="bg-red text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
+                  <span className="bg-red text-text-light text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
                     {modRequestCount}
                   </span>
                 )}
