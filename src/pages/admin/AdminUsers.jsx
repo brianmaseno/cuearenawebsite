@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
+import AuraCard from '../../components/AuraCard';
+import toast from 'react-hot-toast';
 import { 
   Users as UsersIcon, 
   Search, 
@@ -26,7 +28,6 @@ import {
   CheckCircle2,
   FileText
 } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { maskEmail } from '../../utils/emailHelper';
 
 // No longer needed separately as we'll fetch stats for all users once or include in user object
@@ -255,33 +256,33 @@ const AdminUsers = () => {
         {/* Main Pillar */}
         <div className={`flex-1 transition-all duration-300 space-y-6 flex flex-col min-h-0 ${selectedUser ? 'hidden xl:flex' : 'flex'}`}>
           {/* Statistics Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 animate-reveal">
-            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 animate-reveal perspective-1000">
+            <AuraCard className="p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
               <p className="text-[9px] text-aura-crimson uppercase font-black tracking-widest leading-none mb-1">Admins</p>
               <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'admin').length}</p>
-            </div>
-            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+            </AuraCard>
+            <AuraCard className="p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
               <p className="text-[9px] text-aura-violet uppercase font-black tracking-widest leading-none mb-1">Moderators</p>
               <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'moderator').length}</p>
-            </div>
-            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+            </AuraCard>
+            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
               <p className="text-[9px] text-primary uppercase font-black tracking-widest leading-none mb-1">Players</p>
               <p className="text-xl font-black text-text-emphasis leading-none">{users.filter(u => u.role === 'player').length}</p>
-            </div>
-            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+            </AuraCard>
+            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
               <p className="text-[9px] text-emerald-500 uppercase font-black tracking-widest leading-none mb-1">Logged In</p>
               <p className="text-xl font-black text-emerald-500 leading-none">
                 {users.filter(u => (new Date() - new Date(u.lastActive)) <= 600000).length}
               </p>
-            </div>
-            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+            </AuraCard>
+            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
               <p className="text-[9px] text-aura-gold uppercase font-black tracking-widest leading-none mb-1">Suspended</p>
               <p className="text-xl font-black text-aura-gold leading-none">{users.filter(u => u.status === 'suspended').length}</p>
-            </div>
-            <div className="aura-card p-3 border-none flex flex-col justify-center min-h-[70px] text-center">
+            </AuraCard>
+            <AuraCard className="hidden md:flex p-3 border-none flex-col justify-center min-h-[70px] text-center">
               <p className="text-[9px] text-aura-crimson uppercase font-black tracking-widest leading-none mb-1">Blocked</p>
               <p className="text-xl font-black text-aura-crimson leading-none">{users.filter(u => u.status === 'blocked').length}</p>
-            </div>
+            </AuraCard>
           </div>
 
           {/* Filters & Actions Bar */}

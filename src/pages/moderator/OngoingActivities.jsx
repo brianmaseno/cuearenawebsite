@@ -3,6 +3,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Trophy, Target, Clock, Users, ChevronRight, Loader2, AlertCircle, CheckCircle2, XCircle, Trash2, Award, X, Shield, Play, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AuraCard from '../../components/AuraCard';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
@@ -273,8 +274,8 @@ const OngoingActivities = () => {
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
-                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                    <div className="bg-base2/10 p-3 flex justify-between items-center border-b border-base2">
+                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none perspective-1000">
+                    <div className="bg-base2/10 p-3 flex justify-between items-center border-b border-base2 preserve-3d">
                       <div className="flex items-center gap-2">
                         {match.isTournamentMatch ? (
                           <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm">
@@ -541,7 +542,7 @@ const OngoingActivities = () => {
                          </Link>
                        )}
                     </div>
-                  </div>
+                  </AuraCard>
                 );
               })
             )}
@@ -554,8 +555,8 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
-                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md perspective-1000">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                       <Trophy size={16} />
                     </div>
@@ -590,8 +591,8 @@ const OngoingActivities = () => {
                         <ChevronRight size={16} />
                       </Link>
                     </div>
-                  </div>
-                </div>
+                    </div>
+                  </AuraCard>
               ))
             )}
           </div>
@@ -603,8 +604,8 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.battles.map((battle) => (
-                <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
-                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md perspective-1000">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                       <Shield size={16} />
                     </div>
@@ -732,7 +733,7 @@ const OngoingActivities = () => {
                       </div>
                     )}
                   </div>
-                </div>
+                </AuraCard>
               ))
             )}
           </div>
@@ -824,3 +825,4 @@ const OngoingActivities = () => {
 };
 
 export default OngoingActivities;
+

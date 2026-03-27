@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
+import AuraCard from '../components/AuraCard';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Phone, FileText, Camera, Save, Key, Loader2, Bell, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -87,7 +88,7 @@ const Profile = () => {
       <div className="max-w-3xl mx-auto space-y-6 pb-20 pt-2">
         
         {/* Profile Card */}
-        <div className="aura-card p-6 border-none shadow-xl relative overflow-hidden group">
+        <AuraCard className="p-6 border-none shadow-xl relative overflow-hidden group perspective-1000">
           <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -mr-24 -mt-24 blur-[80px] group-hover:bg-primary/10 transition-all duration-700"></div>
           
           <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
@@ -345,7 +346,7 @@ const Profile = () => {
               </div>
             </form>
           </div>
-        </div>
+        </AuraCard>
       </div>
     </DashboardLayout>
   );

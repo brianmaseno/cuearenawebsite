@@ -117,7 +117,16 @@ const Sidebar = () => {
                 } ${isCollapsed ? 'justify-center px-0' : ''}`}
                 title={isCollapsed ? link.label : ''}
               >
-                <Icon size={20} className="shrink-0" />
+                <Icon 
+                  size={20} 
+                  className={`shrink-0 transition-colors ${
+                    isActive 
+                      ? 'text-primary' 
+                      : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables' || link.label === 'Settings' || link.label === 'Sign Out'
+                        ? 'text-red group-hover:text-red-500'
+                        : 'text-primary group-hover:text-primary-dark'
+                  }`} 
+                />
                 {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
                 {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
                   <span className="bg-red text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
@@ -145,7 +154,7 @@ const Sidebar = () => {
             }`}
             title={isCollapsed ? 'Profile Settings' : ''}
           >
-            <Settings size={20} className="shrink-0" />
+            <Settings size={20} className="shrink-0 text-red group-hover:scale-110 transition-transform" />
             {!isCollapsed && <span className="truncate">Settings</span>}
           </Link>
           
@@ -156,7 +165,7 @@ const Sidebar = () => {
             }`}
             title={isCollapsed ? 'Sign Out' : ''}
           >
-            <LogOut size={20} className="shrink-0" />
+            <LogOut size={20} className="shrink-0 text-red group-hover:translate-x-1 transition-transform" />
             {!isCollapsed && <span className="truncate">Sign Out</span>}
           </button>
         </div>
@@ -176,7 +185,16 @@ const Sidebar = () => {
               }`}
             >
               <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-primary/10' : 'group-hover:bg-base2'}`}>
-                <Icon size={20} />
+                <Icon 
+                  size={20} 
+                  className={
+                    isActive 
+                      ? 'text-primary' 
+                      : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables'
+                        ? 'text-red/60'
+                        : 'text-primary/60'
+                  } 
+                />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tighter ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                 {link.label.split(' ')[0]}
@@ -192,8 +210,8 @@ const Sidebar = () => {
             location.pathname === '/profile' ? 'text-primary' : 'text-text/40'
           }`}
         >
-          <div className={`p-2 rounded-xl transition-all ${location.pathname === '/profile' ? 'bg-primary/10' : 'group-hover:bg-base2'}`}>
-            <User size={20} />
+          <div className={`p-2 rounded-xl transition-all ${location.pathname === '/profile' ? 'bg-primary/10' : 'group-hover:bg-base3'}`}>
+            <User size={20} className={location.pathname === '/profile' ? 'text-primary' : 'text-primary/60'} />
           </div>
           <span className={`text-[9px] font-black uppercase tracking-tighter ${location.pathname === '/profile' ? 'opacity-100' : 'opacity-0'}`}>
             Me

@@ -9,8 +9,8 @@ const FloatingActionButton = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Only show for moderators and admins
-  if (!user || (user.role !== 'moderator' && user.role !== 'admin')) return null;
+  // Only show for moderators (Admins have their own full panels)
+  if (!user || user.role !== 'moderator') return null;
 
   const actions = [
     {

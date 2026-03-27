@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
+import AuraCard from '../../components/AuraCard';
 import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode, Clock, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -71,7 +72,7 @@ const ModeratorTables = () => {
    return (
       <DashboardLayout title="Tables">
          <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <div className="aura-card p-8 border-none">
+            <AuraCard className="p-8 border-none perspective-1000">
                <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis mb-6">
                   <Plus size={20} className="text-primary" />
                   Register New Physical Table
@@ -110,7 +111,7 @@ const ModeratorTables = () => {
                <p className="mt-4 text-[10px] text-text/40 font-bold italic">
                   * Unique ID will be generated as: {newTable.location || 'Location'}/{newTable.number || '00'}
                </p>
-            </div>
+            </AuraCard>
 
             <div className="space-y-4">
                <h3 className="text-sm font-black uppercase tracking-widest text-primary ml-2">Your Physical Infrastructure</h3>

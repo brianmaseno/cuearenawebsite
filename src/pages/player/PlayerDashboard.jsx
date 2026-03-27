@@ -3,6 +3,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Trophy, Target, Clock, Users, ChevronRight, Loader2, Target as TargetIcon, Trophy as TrophyIcon, ArrowRight, Bell, MessageSquare, XCircle, CheckCircle2, Award, Wallet as WalletIcon, Shield, MapPin } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuraCard from '../../components/AuraCard';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
@@ -175,8 +176,8 @@ const PlayerDashboard = () => {
                 const isMatchFinished = match.status === 'completed';
 
                 return (
-                <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none">
-                  <div className="bg-base2/10 px-4 py-2.5 flex items-center justify-between border-b border-base2">
+                <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-none perspective-1000">
+                  <div className="bg-base2/10 px-4 py-2.5 flex items-center justify-between border-b border-base2 preserve-3d">
                     <div className="flex items-center gap-2.5 min-w-0">
                       {match.type === 'tournament' ? (
                         <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
@@ -425,7 +426,7 @@ const PlayerDashboard = () => {
                         </div>
                      )}
                   </div>
-                </div>
+                </AuraCard>
                 );
               })
             )}
@@ -438,8 +439,8 @@ const PlayerDashboard = () => {
               </div>
             ) : (
                 data.battles.map((battle) => (
-                  <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md perspective-1000">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm">
                            <Shield size={16} />
@@ -550,7 +551,7 @@ const PlayerDashboard = () => {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </AuraCard>
                 ))
             )}
           </div>
@@ -562,10 +563,10 @@ const PlayerDashboard = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full relative">
+                <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-none shadow-sm transition-all hover:shadow-md h-full relative perspective-1000">
                   {/* Status Badge Watermark */}
                   {t.myStatus === 'accepted' && (
-                    <div className="absolute top-[45%] right-4 -translate-y-1/2 pointer-events-none z-10">
+                    <div className="absolute top-[45%] right-4 -translate-y-1/2 pointer-events-none z-10 preserve-3d">
                       <div className="bg-primary/20 border border-primary/40 rounded-lg px-1.5 py-0.5 text-primary text-[8px] font-black uppercase tracking-[0.1em] text-center select-none shadow-md">
                         {t.confirmedPlayers?.length < t.maxPlayers ? (
                           <>Accepted<br/>Waiting for players</>
@@ -573,14 +574,14 @@ const PlayerDashboard = () => {
                       </div>
                     </div>
                   )}
-                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2">
+                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg">
                        <TrophyIcon size={16} />
                     </div>
                      <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} />
                   </div>
                   
-                  <div className="p-5 flex-1">
+                  <div className="p-5 flex-1 preserve-3d">
                     <h3 className="text-base font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
                     <div className="flex items-center gap-3 text-xs text-text/70 mb-4">
                       <div className="flex items-center gap-1.5 font-bold">
@@ -602,7 +603,7 @@ const PlayerDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="p-3 border-t border-base2 mt-auto">
+                  <div className="p-3 border-t border-base2 mt-auto preserve-3d">
                     {t.myStatus === 'pending' ? (
                        <div className="flex gap-2">
                           <button
@@ -638,7 +639,7 @@ const PlayerDashboard = () => {
                         </Link>
                      )}
                   </div>
-                </div>
+                </AuraCard>
               ))
             )}
           </div>

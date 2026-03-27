@@ -68,7 +68,9 @@ const QuickStatsBar = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="card-premium p-4 rounded-2xl flex items-center justify-between group cursor-default border-none ring-1 ring-base2 shadow-sm hover:shadow-md hover:ring-primary/20"
+              className={`card-premium p-4 rounded-2xl flex items-center justify-between group cursor-default border-none ring-1 ring-base2 shadow-sm hover:shadow-md hover:ring-primary/20 ${
+                idx >= 2 ? 'hidden md:flex' : 'flex'
+              }`}
             >
               <div className="min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-wider text-text/40 mb-1 group-hover:text-primary transition-colors">
