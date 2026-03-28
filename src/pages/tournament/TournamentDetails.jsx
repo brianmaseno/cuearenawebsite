@@ -112,30 +112,30 @@ const TournamentDetails = () => {
 
    return (
     <DashboardLayout title={tournament.name}>
-      <div className="max-w-[1600px] mx-auto space-y-10 pb-20 px-4 md:px-8 bg-[#fcf9f1] min-h-screen animate-in fade-in duration-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      <div className="max-w-[1600px] mx-auto space-y-10 pb-20 px-4 md:px-8 bg-background min-h-screen animate-in fade-in duration-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
         {/* Header Section */}
         <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/50 pb-8">
           <div>
             <div className="flex items-center gap-4 mb-3">
               <button 
                 onClick={() => navigate(-1)} 
-                className="w-10 h-10 rounded-full bg-[#fcf9f1] border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+                className="w-10 h-10 rounded-full bg-surface border border-base2 flex items-center justify-center text-text/40 hover:text-primary hover:border-primary/50 transition-all shadow-sm"
               >
                 <ArrowLeft size={18} />
               </button>
               <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight">{tournament.name}</h1>
+            <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight">{tournament.name}</h1>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="bg-[#f5f1e4]/80 backdrop-blur-sm px-6 py-3 rounded-[24px] border border-slate-200 shadow-sm text-center">
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-0.5">Entry Type</p>
-              <p className="font-black text-blue-600 text-sm">{tournament.entryType?.replace('_', ' ')}</p>
+            <div className="bg-base2/80 backdrop-blur-sm px-6 py-3 rounded-[24px] border border-base2 shadow-sm text-center">
+              <p className="text-[10px] font-black uppercase text-text/40 tracking-widest mb-0.5">Entry Type</p>
+              <p className="font-black text-primary text-sm">{tournament.entryType?.replace('_', ' ')}</p>
             </div>
             {tournament.stakePerPlayer > 0 && (
-              <div className="bg-blue-600 px-6 py-3 rounded-[24px] shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] text-center text-white">
-                <p className="text-[10px] font-black uppercase text-white/70 tracking-widest mb-0.5">Stake</p>
+              <div className="bg-primary px-6 py-3 rounded-[24px] shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] text-center text-base3">
+                <p className="text-[10px] font-black uppercase text-base3/70 tracking-widest mb-0.5">Stake</p>
                 <p className="font-black text-sm uppercase">KES {tournament.stakePerPlayer.toLocaleString()}</p>
               </div>
             )}
@@ -177,8 +177,8 @@ const TournamentDetails = () => {
           <button
             onClick={() => setActiveTab('info')}
             className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'info'
-                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
-                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                ? 'bg-primary text-base3 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                : 'text-text/60 hover:text-primary hover:bg-base2/50'
               }`}
           >
             <Info size={16} />
@@ -187,8 +187,8 @@ const TournamentDetails = () => {
           <button
             onClick={() => setActiveTab('brackets')}
             className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'brackets'
-                ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
-                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                ? 'bg-primary text-base3 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                : 'text-text/60 hover:text-primary hover:bg-base2/50'
               }`}
           >
             <Target size={16} />

@@ -21,7 +21,7 @@ const Register = () => {
     try {
       const user = await register(formData);
       toast.success(`Account created! Welcome, ${user.fullName}`);
-      
+
       if (user.role === 'moderator') navigate('/moderator');
       else navigate('/dashboard');
     } catch (err) {

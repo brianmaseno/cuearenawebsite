@@ -139,7 +139,7 @@ const ModeratorTables = () => {
                      </div>
                   ) : (
                      tables.map(table => (
-                        <AuraCard key={table._id} className="p-5 flex items-center justify-between group border-2 border-primary/20 transition-all bg-white/[0.02] shadow-sm hover:shadow-md">
+                        <AuraCard key={table._id} className="p-5 flex items-center justify-between group border-2 border-primary/20 transition-all bg-base3/20 shadow-sm hover:shadow-md">
                            <div className="flex items-center gap-4">
                               <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary border border-primary/10">
                                  <MapPin size={24} />

@@ -138,7 +138,7 @@ const WalletPage = () => {
             )}
             <button
               onClick={() => { setShowWithdraw(true); setShowDeposit(false); }}
-              className="aura-btn-rose flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-2 text-white shadow-sm text-sm sm:text-xs font-black uppercase tracking-widest flex-1 sm:flex-none"
+              className="aura-btn-rose flex items-center justify-center gap-2 px-8 py-4 sm:px-6 sm:py-2 text-base3 shadow-sm text-sm sm:text-xs font-black uppercase tracking-widest flex-1 sm:flex-none"
             >
               <Minus size={18} className="sm:w-4 sm:h-4" /> Withdraw
             </button>

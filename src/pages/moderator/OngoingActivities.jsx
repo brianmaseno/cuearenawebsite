@@ -219,13 +219,13 @@ const OngoingActivities = () => {
 
   return (
     <DashboardLayout title="Active Activities">
-      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-background min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
         {/* Header Section */}
         <div className="pt-8">
-          <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight mb-2">
-            Active <span className="text-blue-500">Activities</span>
+          <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight mb-2">
+            Active <span className="text-primary">Activities</span>
           </h1>
-          <p className="text-slate-500 font-medium">Manage and moderate ongoing games in real-time.</p>
+          <p className="text-text/60 font-medium">Manage and moderate ongoing games in real-time.</p>
         </div>
         
         <QuickStatsBar />
@@ -241,8 +241,8 @@ const OngoingActivities = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 md:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider md:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap ${
                 activeTab === tab.id 
-                ? `${tab.color} text-white shadow-lg ${tab.shadow} scale-[1.02]` 
-                : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                ? `${tab.color} text-base3 shadow-lg ${tab.shadow} scale-[1.02]` 
+                : 'text-text/60 hover:text-primary hover:bg-base2/50'
               }`}
             >
               <tab.icon size={14} className="sm:w-4 sm:h-4" />
@@ -276,7 +276,7 @@ const OngoingActivities = () => {
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
-                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-[3px] border-primary/20 transition-all perspective-1000 bg-white/[0.02]">
+                  <AuraCard key={match._id} className="p-0 rounded-2xl overflow-hidden group border-[3px] border-primary/20 transition-all perspective-1000 bg-base3/20">
                     <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 preserve-3d overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
@@ -557,7 +557,7 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
+                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
@@ -609,7 +609,7 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.battles.map((battle) => (
-                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-white/[0.02]">
+                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
                       <Shield size={16} />

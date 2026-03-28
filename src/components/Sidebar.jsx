@@ -116,18 +116,18 @@ const Sidebar = () => {
                 key={link.path}
                 to={link.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all group relative ${isActive
-                    ? 'bg-primary/10 text-primary shadow-sm'
-                    : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
+                  ? 'bg-primary/10 text-primary shadow-sm'
+                  : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
                   } ${isCollapsed ? 'justify-center px-0' : ''}`}
                 title={isCollapsed ? link.label : ''}
               >
                 <Icon
                   size={20}
                   className={`shrink-0 transition-colors ${isActive
-                      ? 'text-primary'
-                      : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables' || link.label === 'Settings' || link.label === 'Sign Out'
-                        ? 'text-red group-hover:text-red-500'
-                        : 'text-primary group-hover:text-primary-dark'
+                    ? 'text-primary'
+                    : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables' || link.label === 'Settings' || link.label === 'Sign Out'
+                      ? 'text-red group-hover:text-red-500'
+                      : 'text-primary group-hover:text-primary-dark'
                     }`}
                 />
                 {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}

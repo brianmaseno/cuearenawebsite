@@ -67,14 +67,14 @@ const Leaderboard = () => {
 
   return (
     <DashboardLayout title="Leaderboard">
-      <div className="max-w-5xl mx-auto pb-10 px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      <div className="max-w-5xl mx-auto pb-10 px-4 md:px-8 bg-background min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between py-8 gap-6">
           <div className="space-y-1">
-            <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight">
-              Global <span className="text-blue-500">Hall of Fame</span>
+            <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight">
+              Global <span className="text-primary">Hall of Fame</span>
             </h1>
-            <p className="text-slate-500 font-medium">The world's most elite cue masters.</p>
+            <p className="text-text/60 font-medium">The world's most elite cue masters.</p>
           </div>
           
           <div className="flex items-center gap-4 bg-[#f5f1e4]/50 backdrop-blur-xl px-6 py-4 rounded-[28px] border-2 border-primary/20 shadow-inner group transition-all hover:border-blue-500/20">
@@ -82,8 +82,8 @@ const Leaderboard = () => {
               <TrendingUp size={20} />
             </div>
             <div>
-              <div className="text-[10px] text-slate-400 uppercase tracking-[0.2em] font-black leading-none mb-1">Active Field</div>
-              <div className="text-xl font-black text-[#1a1a1b] leading-none">{players.length}+ Ranked Masters</div>
+              <div className="text-[10px] text-text/40 uppercase tracking-[0.2em] font-black leading-none mb-1">Active Field</div>
+              <div className="text-xl font-black text-text-emphasis leading-none">{players.length}+ Ranked Masters</div>
             </div>
           </div>
         </div>

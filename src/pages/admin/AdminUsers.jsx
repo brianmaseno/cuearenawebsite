@@ -265,7 +265,7 @@ const AdminUsers = () => {
   return (
     <DashboardLayout title="Member Management">
       <div
-        className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)] aura-card p-1 border-none"
+        className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-160px)] aura-card p-1 border-none bg-background/50"
         style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
       >
         {/* Main Pillar */}
@@ -315,7 +315,7 @@ const AdminUsers = () => {
                 placeholder="Lookup member by name or unique email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-base3 border border-base2 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm transition-all"
+                className="w-full pl-11 pr-4 py-2.5 bg-surface border border-base2 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm transition-all text-text-emphasis"
               />
             </div>
             <div className="flex gap-2">
@@ -489,7 +489,7 @@ const AdminUsers = () => {
                                 <button
                                   onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id); }}
                                   disabled={u.role === 'admin'}
-                                  className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-red hover:bg-red hover:text-white transition-all border border-red/20 flex items-center gap-1 shadow-sm"
+                                  className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-red hover:bg-red hover:text-base3 transition-all border border-red/20 flex items-center gap-1 shadow-sm"
                                 >
                                   <UserX size={12} /> Terminate
                                 </button>

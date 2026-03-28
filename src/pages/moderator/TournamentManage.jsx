@@ -233,20 +233,20 @@ const TournamentManage = () => {
 
    return (
       <DashboardLayout title="Manage Tournament">
-         <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+         <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-background min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
             {/* Header Section */}
             <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/50 pb-8">
                <div>
                   <div className="flex items-center gap-3 mb-2">
                      <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
-                     <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest">
+                     <div className="flex items-center gap-2 text-text/40 text-xs font-black uppercase tracking-widest">
                         <Calendar size={14} />
                         Created {tournament?.createdAt ? new Date(tournament.createdAt).toLocaleDateString() : 'N/A'}
                      </div>
                   </div>
-                  <h1 className="text-4xl font-black text-[#1a1a1b] tracking-tight">{tournament?.name}</h1>
+                  <h1 className="text-4xl font-black text-text-emphasis tracking-tight">{tournament?.name}</h1>
                   {tournament?.status === 'full' && (
-                     <div className="mt-3 flex items-center gap-2 text-blue-600 font-bold bg-blue-50 px-4 py-2 rounded-xl border border-blue-100 w-fit animate-pulse">
+                     <div className="mt-3 flex items-center gap-2 text-primary font-bold bg-primary/5 px-4 py-2 rounded-xl border border-primary/10 w-fit animate-pulse">
                         <Zap size={16} fill="currentColor" />
                         <span className="text-sm">Tournament full • Starts {new Date(tournament.startDate).toLocaleDateString()} at {new Date(tournament.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                      </div>
@@ -255,16 +255,16 @@ const TournamentManage = () => {
 
                <div className="flex items-center gap-3">
                   {tournament?.status !== 'ongoing' && tournament?.status !== 'completed' && (
-                     <div className="flex items-center gap-2 bg-[#f5f1e4]/80 backdrop-blur-sm px-4 py-2 rounded-[20px] border-2 border-primary/20 shadow-sm">
-                        <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Sets/Match</span>
+                     <div className="flex items-center gap-2 bg-base2/80 backdrop-blur-sm px-4 py-2 rounded-[20px] border-2 border-primary/20 shadow-sm">
+                        <span className="text-[10px] font-black uppercase text-text/40 tracking-widest">Sets/Match</span>
                         <select
                            value={tournament?.matchSetsCount || 1}
                            disabled={actionLoading}
                            onChange={(e) => handleUpdateSettings('matchSetsCount', parseInt(e.target.value))}
-                           className="bg-transparent text-sm font-black text-blue-600 outline-none cursor-pointer"
+                           className="bg-transparent text-sm font-black text-primary outline-none cursor-pointer"
                         >
                            {[1, 3, 5, 7, 9, 11].map(num => (
-                              <option key={num} value={num} className="bg-[#fcf9f1] text-slate-900">Best of {num}</option>
+                              <option key={num} value={num} className="bg-surface text-text-emphasis">Best of {num}</option>
                            ))}
                         </select>
                      </div>

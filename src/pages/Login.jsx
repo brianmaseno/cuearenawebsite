@@ -17,7 +17,7 @@ const Login = () => {
     try {
       const user = await login(email, password);
       toast.success(`Welcome back, ${user.fullName}!`);
-      
+
       // Redirect based on role
       if (user.role === 'admin') navigate('/admin');
       else if (user.role === 'moderator') navigate('/moderator/ongoing');

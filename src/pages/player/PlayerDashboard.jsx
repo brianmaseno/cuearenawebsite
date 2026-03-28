@@ -116,13 +116,13 @@ const PlayerDashboard = () => {
 
   return (
     <DashboardLayout title="Active Activities">
-      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-background min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
         {/* Header Section */}
         <div className="pt-8">
-          <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight mb-2">
-            Active <span className="text-blue-500">Activities</span>
+          <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight mb-2">
+            Active <span className="text-primary">Activities</span>
           </h1>
-          <p className="text-slate-500 font-medium">Manage your ongoing matches, battles, and tournaments.</p>
+          <p className="text-text/60 font-medium">Manage your ongoing matches, battles, and tournaments.</p>
         </div>
         
 
@@ -141,7 +141,7 @@ const PlayerDashboard = () => {
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
               {data.achievements.map((ua) => (
-                <div key={ua._id} className="min-w-[200px] bg-dark-lighter p-4 rounded-2xl border border-white/5 relative group shrink-0 overflow-hidden">
+                <div key={ua._id} className="min-w-[200px] bg-base2/20 p-4 rounded-2xl border border-base2/10 relative group shrink-0 overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full group-hover:bg-primary/10 transition-all"></div>
                   <div className="relative z-10 flex items-center gap-3">
                     <div className={`p-2 rounded-xl bg-opacity-10 ${
@@ -181,8 +181,8 @@ const PlayerDashboard = () => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 sm:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider sm:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap min-w-fit ${
                   isActive 
-                  ? `${activeColorClass} text-white scale-[1.02]` 
-                  : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                  ? `${activeColorClass} text-base3 scale-[1.02]` 
+                  : 'text-text/60 hover:text-primary hover:bg-base2/50'
                 }`}
               >
                 <tab.icon size={16} />

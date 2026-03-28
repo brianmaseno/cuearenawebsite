@@ -249,7 +249,7 @@ const Landing = () => {
       </header>
 
       {/* Evolution Section */}
-      <section className="py-24 bg-base2/20 relative overflow-hidden" style={{ perspective: 1500 }}>
+      <section className="py-24 bg-base3/40 relative overflow-hidden" style={{ perspective: 1500 }}>
         <ParallaxIcon icon={Shield} color="text-primary" size={24} top="20%" left="5%" delay={0.5} speed={0.5} />
         <ParallaxIcon icon={Zap} color="text-indigo-500" size={20} top="80%" left="90%" delay={0.7} speed={0.7} />
 
@@ -355,7 +355,7 @@ const Landing = () => {
       </section>
 
       {/* How it Works */}
-      <section className="py-24 bg-base2/20 border-y border-base2/50 text-left">
+      <section className="py-24 bg-base3/50 border-y border-base2/50 text-left">
         <div className="container mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="w-full lg:w-1/3 text-left">
@@ -453,7 +453,7 @@ const Landing = () => {
       </section>
 
       {/* Formats */}
-      <section className="py-24 bg-base2/10 text-left">
+      <section className="py-24 bg-base3/30 text-left">
         <div className="container mx-auto px-6 text-center">
           <div className="mb-16"><h2 className="text-3xl font-black text-text-emphasis tracking-tight">Diverse game formats</h2><p className="text-text/60 font-medium">Tournament-ready for every discipline.</p></div>
           <div className="flex flex-wrap justify-center gap-8">

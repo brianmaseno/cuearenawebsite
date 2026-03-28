@@ -73,17 +73,17 @@ const PlayerHistory = () => {
 
   return (
     <DashboardLayout title="Activity History">
-      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-[#fcf9f1] min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
+      <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-background min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
         {/* Header Section */}
         <div className="pt-8">
-          <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1b] tracking-tight mb-2">
-            Activity <span className="text-blue-500">History</span>
+          <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight mb-2">
+            Activity <span className="text-primary">History</span>
           </h1>
-          <p className="text-slate-500 font-medium">Your complete journey through tournaments, matches, and battles.</p>
+          <p className="text-text/60 font-medium">Your complete journey through tournaments, matches, and battles.</p>
         </div>
         <div className="flex flex-col gap-6">
           {/* Main Tabs - Single Row Horizontal Scroll */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex items-center p-1 bg-base2/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
             {[
               { id: 'matches', label: 'Matches', count: data.matches.length, icon: TargetIcon, color: 'blue' },
               { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: TrophyIcon, color: 'amber' },
@@ -101,8 +101,8 @@ const PlayerHistory = () => {
                   onClick={() => { setActiveTab(tab.id); setSubFilter('all'); }}
                   className={`flex-1 sm:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider sm:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap min-w-fit ${
                     isActive 
-                    ? `${activeColorClass} text-white scale-[1.02]` 
-                    : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                    ? `${activeColorClass} text-base3 scale-[1.02]` 
+                    : 'text-text/60 hover:text-primary hover:bg-base2/50'
                   }`}
                 >
                 <tab.icon size={16} />
@@ -113,7 +113,7 @@ const PlayerHistory = () => {
           </div>
 
           {/* Sub-Filters - Single Row Horizontal Scroll with Fixed Spilling */}
-          <div className="flex items-center p-1 bg-[#f5f1e4]/30 rounded-[24px] border-[3px] border-primary/20 w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex items-center p-1 bg-base2/30 rounded-[24px] border-[3px] border-primary/20 w-full sm:w-fit overflow-x-auto no-scrollbar scroll-smooth">
             {[
               { id: 'all', label: 'All', icon: ArrowIcon },
               { id: 'completed', label: 'Completed', icon: CheckIcon },
@@ -126,14 +126,14 @@ const PlayerHistory = () => {
                 <button
                   key={f.id}
                   onClick={() => setSubFilter(f.id)}
-                  className={`flex-1 sm:flex-none px-3 sm:px-6 py-2.5 rounded-[18px] text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap min-w-fit ${subFilter === f.id
-                      ? 'bg-[#fcf9f1] text-blue-600 shadow-sm border border-slate-200'
-                      : 'text-slate-400 hover:text-slate-600'
+                  className={`flex-1 sm:flex-none px-3 sm:px-6 py-2.5 rounded-[18px] text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap ${subFilter === f.id
+                      ? 'bg-surface text-primary shadow-sm border border-base2'
+                      : 'text-text/40 hover:text-text/60'
                     }`}
                 >
                   <f.icon size={12} />
                   {f.label}
-                  <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[9px] ${subFilter === f.id ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-400'
+                  <span className={`ml-1 px-1.5 py-0.5 rounded-md text-[9px] ${subFilter === f.id ? 'bg-primary/10 text-primary' : 'bg-base2 text-text/40'
                     }`}>
                     {count}
                   </span>
