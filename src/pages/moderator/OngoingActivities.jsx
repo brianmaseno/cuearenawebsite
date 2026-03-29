@@ -7,6 +7,8 @@ import AuraCard from '../../components/AuraCard';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
+import { useSocket } from '../../context/SocketContext';
+
 
 const OngoingActivities = () => {
   const [data, setData] = useState({ tournaments: [], matches: [], battles: [] });
@@ -20,6 +22,8 @@ const OngoingActivities = () => {
   const [showTableModal, setShowTableModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null); // { id, type }
   const [selectedTableId, setSelectedTableId] = useState('');
+  const { socket, joinMatchRoom, leaveMatchRoom, joinTournamentRoom, leaveTournamentRoom } = useSocket();
+
 
   const fetchOngoing = async () => {
     try {
@@ -49,6 +53,48 @@ const OngoingActivities = () => {
     fetchOngoing();
     fetchTables();
   }, []);
+
+
+  // Real-time updates with room joining
+  useEffect(() => {
+    if (!socket || !data.matches.length) return;
+
+    // Join rooms for all matches and tournaments
+    data.matches.forEach(match => {
+      joinMatchRoom(match._id);
+      if (match.tournamentId) {
+        joinTournamentRoom(match.tournamentId._id || match.tournamentId);
+      }
+    });
+
+    const handleMatchUpdate = (update) => {
+      console.log('Real-time MATCH_UPDATE:', update);
+      // Refresh all data to ensure enriched status fields are correct
+      fetchOngoing();
+    };
+
+    const handleTournamentUpdate = (update) => {
+      console.log('Real-time TOURNAMENT_UPDATE:', update);
+      fetchOngoing();
+    };
+
+    socket.on('MATCH_UPDATE', handleMatchUpdate);
+    socket.on('TOURNAMENT_UPDATE', handleTournamentUpdate);
+    socket.on('ONGOING_UPDATES', fetchOngoing); 
+
+    return () => {
+      data.matches.forEach(match => {
+        leaveMatchRoom(match._id);
+        if (match.tournamentId) {
+          leaveTournamentRoom(match.tournamentId._id || match.tournamentId);
+        }
+      });
+      socket.off('MATCH_UPDATE', handleMatchUpdate);
+      socket.off('TOURNAMENT_UPDATE', handleTournamentUpdate);
+      socket.off('ONGOING_UPDATES', fetchOngoing);
+    };
+  }, [socket, data.matches.length, data.tournaments.length]); 
+
 
   const handleSetWinner = async (matchId, player) => {
     if (!window.confirm(`Set ${player.fullName} as the winner? This will complete the match and move it to history.`)) return;
@@ -495,14 +541,16 @@ const OngoingActivities = () => {
                           </div>
                         )}
 
-                        {/* Pending Acceptance Message */}
-                        {['pending', 'pending_invites', 'awaiting_players'].includes(match.status) && (
-                          <div className="absolute inset-x-0 bottom-0 top-[0px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-40 rounded-xl border border-dashed border-base2">
+                        {/* Pending Acceptance Message - Hide if match is already confirmed or both players accepted */}
+                        {['pending', 'pending_invites', 'awaiting_players'].includes(match.status) && 
+                         !(match.player1Status === 'accepted' && match.player2Status === 'accepted') && (
+                          <div className="absolute inset-x-0 bottom-0 top-[0px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-40 rounded-xl border border-dashed border-base2 pointer-events-none">
                             <p className="text-[10px] font-black uppercase tracking-widest text-text-emphasis animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-lg border border-base2 translate-y-[-2px]">
                               Awaiting Players
                             </p>
                           </div>
                         )}
+
                       </div>
 
                       {isMatchFinished ? (

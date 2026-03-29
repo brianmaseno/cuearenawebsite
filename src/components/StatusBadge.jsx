@@ -31,8 +31,10 @@ const StatusBadge = ({ status, entryType, registrationDeadline, startDate, class
       case 'draft':
         return 'bg-yellow/10 text-yellow border-yellow/20';
       case 'pending_invites':
+      case 'awaiting_players':
         return 'bg-orange/10 text-orange border-orange/20';
       case 'confirmed':
+
         return 'bg-cyan/10 text-cyan border-cyan/20';
       case 'cancelled':
         return 'bg-red/10 text-red border-red/20';
