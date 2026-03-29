@@ -70,6 +70,7 @@ const OngoingActivities = () => {
 
     setActionLoading(true);
     try {
+      console.log('Cancelling match:', matchId);
       await api.put(`/direct-matches/${matchId}/cancel`);
       toast.success('Match cancelled.');
       fetchOngoing();
@@ -132,27 +133,10 @@ const OngoingActivities = () => {
   };
 
   const handleStartMatch = async (match, isTournament = false) => {
-    if (tables.length > 0) {
-      setSelectedActivity({ id: match._id, type: isTournament ? 'tournament_match' : 'match' });
-      setShowTableModal(true);
-      return;
-    }
-
-    if (!window.confirm('Start this match?')) return;
-    setActionLoading(true);
-    try {
-      const endpoint = isTournament
-        ? `/tournaments/matches/${match._id}/start`
-        : `/direct-matches/${match._id}/start`;
-
-      await api.put(endpoint);
-      toast.success('Match started!');
-      fetchOngoing();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to start match');
-    } finally {
-      setActionLoading(false);
-    }
+    console.log('handleStartMatch triggered for:', match._id, 'isTournament:', isTournament);
+    setSelectedActivity({ id: match._id, type: isTournament ? 'tournament_match' : 'match' });
+    setShowTableModal(true);
+    return;
   };
 
   const confirmStartWithTable = async () => {
@@ -317,7 +301,7 @@ const OngoingActivities = () => {
                           <button
                             disabled={actionLoading}
                             onClick={() => handleCancelMatch(match._id)}
-                            className="p-1.5 text-red hover:bg-red/10 rounded-lg transition-colors"
+                            className="p-1.5 text-red hover:bg-red/10 rounded-lg transition-colors relative z-50 overflow-visible"
                             title="Cancel Match"
                           >
                             <Trash2 size={14} />
@@ -512,7 +496,7 @@ const OngoingActivities = () => {
                         )}
 
                         {/* Pending Acceptance Message */}
-                        {match.status === 'pending' && (
+                        {['pending', 'pending_invites', 'awaiting_players'].includes(match.status) && (
                           <div className="absolute inset-x-0 bottom-0 top-[0px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-40 rounded-xl border border-dashed border-base2">
                             <p className="text-[10px] font-black uppercase tracking-widest text-text-emphasis animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-lg border border-base2 translate-y-[-2px]">
                               Awaiting Players
@@ -528,7 +512,7 @@ const OngoingActivities = () => {
                       ) : (isConfirmed || (match.player1Status === 'accepted' && match.player2Status === 'accepted' && !isOngoing)) ? (
                         <button
                           onClick={() => handleStartMatch(match, match.isTournamentMatch)}
-                          className="w-full bg-emerald-600 text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20"
+                          className="w-full bg-emerald-600 text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20 relative z-50 pointer-events-auto"
                         >
                           <Play size={14} fill="white" />
                           START MATCH

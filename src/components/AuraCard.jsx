@@ -40,7 +40,7 @@ const AuraCard = ({ children, className = '', tiltIntensity = 15 }) => {
       whileHover={{ scale: 1.02 }}
       className={`aura-card relative ${className}`}
     >
-      <div style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
+      <div className="pointer-events-auto" style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
         {children}
       </div>
     </motion.div>
