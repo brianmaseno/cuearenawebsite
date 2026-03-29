@@ -205,10 +205,10 @@ const TournamentManage = () => {
    };
 
    const handleStartTournamentMatch = async () => {
-      if (!selectedTableId || !selectedMatchForSets?._id) return;
+      if (!selectedMatchForSets?._id) return;
       setActionLoading(true);
       try {
-         await api.put(`/tournaments/matches/${selectedMatchForSets._id}/start`, { poolTableId: selectedTableId });
+         await api.put(`/tournaments/matches/${selectedMatchForSets._id}/start`, { poolTableId: selectedTableId || undefined });
          toast.success('Match started! Table Unlocked successfully 🎱', { icon: '🔓', duration: 4000 });
          setShowTableModal(false);
          setSelectedTableId('');
@@ -306,8 +306,8 @@ const TournamentManage = () => {
                <button
                   onClick={() => setActiveTab('overview')}
                   className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'overview'
-                        ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
-                        : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                     ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                     : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
                      }`}
                >
                   <Users size={16} />
@@ -316,8 +316,8 @@ const TournamentManage = () => {
                <button
                   onClick={() => setActiveTab('brackets')}
                   className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'brackets'
-                        ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
-                        : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
+                     ? 'bg-blue-500 text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                     : 'text-slate-500 hover:text-blue-500 hover:bg-[#f5f1e4]/50'
                      }`}
                >
                   <Target size={16} />
@@ -350,8 +350,8 @@ const TournamentManage = () => {
                               return (
                                  <div key={p._id} className="group relative flex items-center gap-3 p-3 bg-base3/50 backdrop-blur-sm border border-base2/50 rounded-2xl hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5">
                                     <div className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-sm transition-colors ${isInvited
-                                          ? 'bg-violet/10 text-violet border border-violet/20 group-hover:bg-violet/20'
-                                          : 'bg-blue/10 text-blue border border-blue/20 group-hover:bg-blue/20'
+                                       ? 'bg-violet/10 text-violet border border-violet/20 group-hover:bg-violet/20'
+                                       : 'bg-blue/10 text-blue border border-blue/20 group-hover:bg-blue/20'
                                        }`}>
                                        {isInvited ? 'Invited' : 'Joined'}
                                     </div>
@@ -423,8 +423,8 @@ const TournamentManage = () => {
                                                    <button
                                                       onClick={() => togglePlayerSelection(p)}
                                                       className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${selectedPlayers.some(sp => sp._id === p._id)
-                                                            ? 'bg-red text-base3 shadow-lg shadow-red/20 rotate-45'
-                                                            : 'bg-primary text-base3 shadow-lg shadow-primary/20'
+                                                         ? 'bg-red text-base3 shadow-lg shadow-red/20 rotate-45'
+                                                         : 'bg-primary text-base3 shadow-lg shadow-primary/20'
                                                          }`}
                                                       type="button"
                                                    >
@@ -483,7 +483,7 @@ const TournamentManage = () => {
                                              <p className="text-xs text-text/40 font-medium">{inv.status}</p>
                                           </div>
                                           <span className={`text-xs font-black uppercase tracking-widest px-1.5 py-0.5 rounded shrink-0 ${inv.status === 'pending' ? 'bg-orange/10 text-orange border border-orange/20' :
-                                                inv.status === 'declined' ? 'bg-red/10 text-red border border-red/20' : 'bg-base2 text-text/40'
+                                             inv.status === 'declined' ? 'bg-red/10 text-red border border-red/20' : 'bg-base2 text-text/40'
                                              }`}>
                                              {inv.status}
                                           </span>
@@ -537,8 +537,8 @@ const TournamentManage = () => {
                               key={table._id}
                               onClick={() => setSelectedTableId(table.tableId)}
                               className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all group ${selectedTableId === table.tableId
-                                    ? 'bg-primary/5 border-primary shadow-inner'
-                                    : 'bg-base2/10 border-transparent hover:border-base2'
+                                 ? 'bg-primary/5 border-primary shadow-inner'
+                                 : 'bg-base2/10 border-transparent hover:border-base2'
                                  }`}
                            >
                               <div className="flex items-center gap-4">
@@ -556,6 +556,27 @@ const TournamentManage = () => {
                            </button>
                         ))
                      )}
+
+                     <button
+                        onClick={() => setSelectedTableId('')}
+                        className={`w-full p-4 rounded-2xl border-2 border-dashed flex items-center justify-between transition-all group ${selectedTableId === ''
+                           ? 'bg-primary/5 border-primary shadow-inner'
+                           : 'bg-base2/5 border-base2 hover:border-primary/30'
+                           }`}
+                     >
+                        <div className="flex items-center gap-4">
+                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedTableId === '' ? 'bg-primary text-base3' : 'bg-base2/50 text-text/20'}`}>
+                              <Target size={18} />
+                           </div>
+                           <div className="text-left">
+                              <p className="font-black text-text-emphasis leading-none mb-1">Manual Unlock (No IoT)</p>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-text/40">Proceed without automated trigger</p>
+                           </div>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedTableId === '' ? 'border-primary bg-primary text-base3' : 'border-base2'}`}>
+                           {selectedTableId === '' && <div className="w-2 h-2 bg-base3 rounded-full" />}
+                        </div>
+                     </button>
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-base2 space-y-4">
@@ -566,7 +587,7 @@ const TournamentManage = () => {
                         </p>
                      </div>
                      <button
-                        disabled={!selectedTableId || actionLoading}
+                        disabled={actionLoading}
                         onClick={handleStartTournamentMatch}
                         className="w-full py-4 bg-primary text-base3 rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm flex items-center justify-center gap-3 disabled:opacity-50"
                      >

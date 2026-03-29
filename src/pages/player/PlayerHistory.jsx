@@ -54,7 +54,7 @@ const PlayerHistory = () => {
     } else {
       list = data.tournaments || [];
     }
-    
+
     if (subFilter === 'all') return list;
     return list.filter(item => item.status === (subFilter === 'completed' ? 'completed' : 'cancelled'));
   };
@@ -90,24 +90,23 @@ const PlayerHistory = () => {
               { id: 'battles', label: 'Battles', count: data.battles.length, icon: Shield, color: 'emerald' }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
-              const activeColorClass = 
+              const activeColorClass =
                 tab.color === 'blue' ? 'bg-blue-500 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)]' :
-                tab.color === 'emerald' ? 'bg-emerald-500 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)]' :
-                'bg-amber-500 shadow-[0_10px_25_px_-5px_rgba(245,158,11,0.4)]';
+                  tab.color === 'emerald' ? 'bg-emerald-500 shadow-[0_10px_25px_-5px_rgba(16,185,129,0.4)]' :
+                    'bg-amber-500 shadow-[0_10px_25_px_-5px_rgba(245,158,11,0.4)]';
 
               return (
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(tab.id); setSubFilter('all'); }}
-                  className={`flex-1 sm:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider sm:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap min-w-fit ${
-                    isActive 
-                    ? `${activeColorClass} text-base3 scale-[1.02]` 
-                    : 'text-text/60 hover:text-primary hover:bg-base2/50'
-                  }`}
+                  className={`flex-1 sm:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider sm:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap min-w-fit ${isActive
+                      ? `${activeColorClass} text-base3 scale-[1.02]`
+                      : 'text-text/60 hover:text-primary hover:bg-base2/50'
+                    }`}
                 >
-                <tab.icon size={16} />
-                {tab.label} ({tab.count})
-              </button>
+                  <tab.icon size={16} />
+                  {tab.label} ({tab.count})
+                </button>
               );
             })}
           </div>
@@ -127,8 +126,8 @@ const PlayerHistory = () => {
                   key={f.id}
                   onClick={() => setSubFilter(f.id)}
                   className={`flex-1 sm:flex-none px-3 sm:px-6 py-2.5 rounded-[18px] text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 whitespace-nowrap ${subFilter === f.id
-                      ? 'bg-surface text-primary shadow-sm border border-base2'
-                      : 'text-text/40 hover:text-text/60'
+                    ? 'bg-surface text-primary shadow-sm border border-base2'
+                    : 'text-text/40 hover:text-text/60'
                     }`}
                 >
                   <f.icon size={12} />
@@ -160,7 +159,7 @@ const PlayerHistory = () => {
                 const isCancelled = match.status === 'cancelled';
 
                 const winnerName = match.winnerId?.fullName || (isP1Winner ? match.player1Id?.fullName : isP2Winner ? match.player2Id?.fullName : null);
-                
+
                 const myWon = winnerIdObj?.toString() === userId?.toString();
                 const winLossText = myWon ? 'You Won!' : 'You Lost!';
                 const winLossColor = myWon ? 'text-green' : 'text-red';
@@ -170,17 +169,17 @@ const PlayerHistory = () => {
                     <div className="bg-base2/10 p-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-2 border-b border-base2 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
-                           <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
-                              <TrophyIcon size={12} />
-                           </div>
+                          <div className="w-6 h-6 bg-primary/10 flex items-center justify-center text-primary rounded shadow-sm shrink-0">
+                            <TrophyIcon size={12} />
+                          </div>
                         ) : (
-                           <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 drop-shadow-sm shrink-0" />
+                          <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 drop-shadow-sm shrink-0" />
                         )}
                         <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-tighter text-text-emphasis truncate min-w-0 drop-shadow-sm">
-                           {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
+                          {match.isTournamentMatch ? (match.tournamentId?.name || 'Tournament') : 'Exhibition'}
                         </h3>
                       </div>
-                      
+
                       <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         {(match.stakeAmount > 0 || (match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0)) && (
                           <>
@@ -189,7 +188,7 @@ const PlayerHistory = () => {
                             </span>
                             <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-blue bg-blue/5 px-1.5 py-0.5 rounded-md border-[1.5px] border-blue/10 flex items-center gap-1 whitespace-nowrap shrink-0 drop-shadow-sm">
                               <AwardIcon size={10} />
-                              PRIZE: KES {match.isTournamentMatch 
+                              PRIZE: KES {match.isTournamentMatch
                                 ? ((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()
                                 : (match.stakeAmount * 2 * 0.85).toLocaleString()
                               }
@@ -238,7 +237,7 @@ const PlayerHistory = () => {
                           <div className="text-xl font-black text-primary/10 italic">VS</div>
                           <div className="flex flex-col items-center gap-0.5">
                             <p className="text-[10px] font-bold text-text/60">
-                               {match.isTournamentMatch ? 'Tournament Match' : `Org: ${match.organizerId?.fullName}`}
+                              {match.isTournamentMatch ? 'Tournament Match' : `Org: ${match.organizerId?.fullName}`}
                             </p>
                             <p className="text-[10px] font-bold text-text/60">{match.location || match.venue || 'Cue Tournament'}</p>
                           </div>
@@ -279,14 +278,14 @@ const PlayerHistory = () => {
                             match.declinedBy ? `Declined: by ${match.declinedBy.fullName}` : 'Match Cancelled'
                           ) : (winnerIdObj ? winLossText : 'No Winner Announced')}
                         </div>
-                        
+
                         {!isCancelled && (
                           <div className="mt-1">
                             {match.isTournamentMatch ? (
                               (() => {
                                 const myWonMatch = winnerIdObj?.toString() === userId?.toString();
                                 const isEliminated = myWonMatch ? !match.nextMatchId : !match.loserNextMatchId;
-                                
+
                                 if (!isEliminated) {
                                   return (
                                     <div className="text-[11px] font-black text-primary/60 uppercase tracking-tighter italic">
@@ -348,122 +347,120 @@ const PlayerHistory = () => {
                 No {subFilter !== 'all' ? subFilter : ''} battle history found.
               </div>
             ) : (
-                filteredData.map((battle) => {
-                  const isCancelled = battle.status === 'cancelled';
-                  const myWon = battle.winnerId?._id === userId;
-                  return (
-                    <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md">
-                      <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                           <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
-                              <Shield size={16} />
-                           </div>
-                           <span className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Battle Room</span>
+              filteredData.map((battle) => {
+                const isCancelled = battle.status === 'cancelled';
+                const myWon = battle.winnerId?._id === userId;
+                return (
+                  <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md">
+                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
+                          <Shield size={16} />
                         </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {isCancelled ? (
-                            <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded border-[1.5px] border-red/20 tracking-widest whitespace-nowrap drop-shadow-sm">Cancelled</span>
-                          ) : (
-                            <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
-                          )}
-                        </div>
+                        <span className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Battle Room</span>
                       </div>
-                      
-                      <div className="p-5 flex-1 flex flex-col">
-                        <h3 className="text-base font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
-                        <p className="text-[10px] text-text/60 mb-3 flex items-center gap-1">
-                          <MapPin size={10} /> {battle.venue}
-                        </p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isCancelled ? (
+                          <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-black uppercase text-red bg-red/10 px-1.5 py-0.5 rounded border-[1.5px] border-red/20 tracking-widest whitespace-nowrap drop-shadow-sm">Cancelled</span>
+                        ) : (
+                          <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
+                        )}
+                      </div>
+                    </div>
 
-                        {!isCancelled && (
-                          <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${myWon ? 'bg-green text-base3' : 'bg-base2 text-text/40'}`}>
-                                 {myWon ? <TrophyIcon size={16} /> : <TargetIcon size={16} />}
-                              </div>
-                              <div>
-                                <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Winner Result</p>
-                                <p className={`text-xs font-bold ${myWon ? 'text-green' : 'text-text-emphasis'}`}>
-                                   {myWon ? 'You Won!' : battle.winnerId?.fullName || 'No Winner'}
-                                </p>
-                              </div>
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="text-base font-bold text-text-emphasis mb-1 truncate">{battle.title}</h3>
+                      <p className="text-[10px] text-text/60 mb-3 flex items-center gap-1">
+                        <MapPin size={10} /> {battle.venue}
+                      </p>
+
+                      {!isCancelled && (
+                        <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl mb-4 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${myWon ? 'bg-green text-base3' : 'bg-base2 text-text/40'}`}>
+                              {myWon ? <TrophyIcon size={16} /> : <TargetIcon size={16} />}
                             </div>
-                            <div className="text-right">
-                              <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Prize Won</p>
-                              <p className={`text-xs font-black ${myWon ? 'text-green' : 'text-text/40'}`}>
-                                 {myWon ? `+ KES ${(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}` : 'None'}
+                            <div>
+                              <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Winner Result</p>
+                              <p className={`text-xs font-bold ${myWon ? 'text-green' : 'text-text-emphasis'}`}>
+                                {myWon ? 'You Won!' : battle.winnerId?.fullName || 'No Winner'}
                               </p>
                             </div>
                           </div>
-                        )}
-
-                        {isCancelled && (
-                          <div className="p-3 bg-red/5 border border-red/10 rounded-xl mb-4 text-center">
-                             <p className="text-xs font-bold text-red">Match Cancelled</p>
-                             <p className="text-[10px] text-red/60 italic">Rejected, Expired or Refunded</p>
+                          <div className="text-right">
+                            <p className="text-[8px] font-black uppercase text-text/40 leading-none mb-0.5">Prize Won</p>
+                            <p className={`text-xs font-black ${myWon ? 'text-green' : 'text-text/40'}`}>
+                              {myWon ? `+ KES ${(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}` : 'None'}
+                            </p>
                           </div>
-                        )}
+                        </div>
+                      )}
 
-                        {expandedBattles[battle._id] && (
-                          <div className="space-y-2 mb-4 max-h-[140px] overflow-y-auto pr-2 thin-scrollbar flex-1 opacity-60 grayscale-[0.5] animate-in slide-in-from-top-2 duration-300">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-text/40 mb-1">Final Lineup</p>
-                            {battle.participants.map((p) => {
-                              const isMe = p.userId?._id === userId;
-                              const isWinner = battle.winnerId?._id === p.userId?._id;
-                              return (
-                                <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${
-                                  isWinner ? 'bg-green/10 border-green/30' : (isMe ? 'bg-primary/5 border-primary/20' : 'bg-base2/20 border-base2')
+                      {isCancelled && (
+                        <div className="p-3 bg-red/5 border border-red/10 rounded-xl mb-4 text-center">
+                          <p className="text-xs font-bold text-red">Match Cancelled</p>
+                          <p className="text-[10px] text-red/60 italic">Rejected, Expired or Refunded</p>
+                        </div>
+                      )}
+
+                      {expandedBattles[battle._id] && (
+                        <div className="space-y-2 mb-4 max-h-[140px] overflow-y-auto pr-2 thin-scrollbar flex-1 opacity-60 grayscale-[0.5] animate-in slide-in-from-top-2 duration-300">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-text/40 mb-1">Final Lineup</p>
+                          {battle.participants.map((p) => {
+                            const isMe = p.userId?._id === userId;
+                            const isWinner = battle.winnerId?._id === p.userId?._id;
+                            return (
+                              <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : (isMe ? 'bg-primary/5 border-primary/20' : 'bg-base2/20 border-base2')
                                 }`}>
-                                  <div className="flex items-center gap-2 overflow-hidden">
-                                    <img 
-                                      src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`} 
-                                      className="w-5 h-5 rounded object-cover"
-                                      alt=""
-                                    />
-                                    <span className={`text-[10px] font-bold truncate ${isMe ? 'text-primary' : (isWinner ? 'text-green' : 'text-text-emphasis')}`}>
-                                      {p.userId?.fullName}
-                                    </span>
-                                  </div>
-                                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${
-                                    p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red/5 text-red/60 border-red/10'
-                                  }`}>
-                                    {p.status}
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                  <img
+                                    src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`}
+                                    className="w-5 h-5 rounded object-cover"
+                                    alt=""
+                                  />
+                                  <span className={`text-[10px] font-bold truncate ${isMe ? 'text-primary' : (isWinner ? 'text-green' : 'text-text-emphasis')}`}>
+                                    {p.userId?.fullName}
                                   </span>
                                 </div>
-                              );
-                            })}
-                          </div>
+                                <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red/5 text-red/60 border-red/10'
+                                  }`}>
+                                  {p.status}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <button
+                        onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
+                        className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mb-4 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
+                      >
+                        {expandedBattles[battle._id] ? (
+                          <>Hide Participants <ArrowIcon size={10} className="rotate-90" /></>
+                        ) : (
+                          <>View Participants ({battle.participants.length}) <ArrowIcon size={10} /></>
                         )}
+                      </button>
+                    </div>
 
-                        <button
-                          onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
-                          className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mb-4 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
-                        >
-                           {expandedBattles[battle._id] ? (
-                             <>Hide Participants <ArrowIcon size={10} className="rotate-90" /></>
-                           ) : (
-                             <>View Participants ({battle.participants.length}) <ArrowIcon size={10} /></>
-                           )}
-                        </button>
-                      </div>
-
-                      <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
-                        <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1.5 leading-none">
-                              <CalendarIcon size={12} />
-                              {new Date(battle.updatedAt).toLocaleDateString()}
-                            </div>
-                            <div className="flex items-center gap-1.5 leading-none">
-                              <ClockIcon size={12} />
-                              {new Date(battle.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </div>
+                    <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
+                      <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5 leading-none">
+                            <CalendarIcon size={12} />
+                            {new Date(battle.updatedAt).toLocaleDateString()}
+                          </div>
+                          <div className="flex items-center gap-1.5 leading-none">
+                            <ClockIcon size={12} />
+                            {new Date(battle.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </div>
                         </div>
                       </div>
                     </div>
-                  );
-                })
+                  </div>
+                );
+              })
             )}
           </div>
         ) : (

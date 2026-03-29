@@ -141,7 +141,11 @@ const OngoingActivities = () => {
     if (!window.confirm('Start this match?')) return;
     setActionLoading(true);
     try {
-      await api.put(`/direct-matches/${matchId}/start`);
+      const endpoint = isTournament
+        ? `/tournaments/matches/${match._id}/start`
+        : `/direct-matches/${match._id}/start`;
+
+      await api.put(endpoint);
       toast.success('Match started!');
       fetchOngoing();
     } catch (err) {
@@ -227,7 +231,7 @@ const OngoingActivities = () => {
           </h1>
           <p className="text-text/60 font-medium">Manage and moderate ongoing games in real-time.</p>
         </div>
-        
+
         <QuickStatsBar />
         {/* Tabs */}
         <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
@@ -239,11 +243,10 @@ const OngoingActivities = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 md:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider md:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap ${
-                activeTab === tab.id 
-                ? `${tab.color} text-base3 shadow-lg ${tab.shadow} scale-[1.02]` 
-                : 'text-text/60 hover:text-primary hover:bg-base2/50'
-              }`}
+              className={`flex-1 md:flex-none px-3 sm:px-8 py-3 md:py-3.5 text-[10px] sm:text-[12px] font-black uppercase tracking-wider md:tracking-[0.15em] rounded-[18px] md:rounded-[22px] transition-all duration-500 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap ${activeTab === tab.id
+                  ? `${tab.color} text-base3 shadow-lg ${tab.shadow} scale-[1.02]`
+                  : 'text-text/60 hover:text-primary hover:bg-base2/50'
+                }`}
             >
               <tab.icon size={14} className="sm:w-4 sm:h-4" />
               {tab.label} ({tab.count})
@@ -270,9 +273,9 @@ const OngoingActivities = () => {
                 }
                 const currentActiveSet = activeSetMap[match._id] !== undefined ? activeSetMap[match._id] : defaultActive;
                 const setRes = match.setsResults?.find(s => s.setIndex === currentActiveSet);
-                 const isMatchFinished = match.status === 'completed';
-                 const isOngoing = match.status === 'ongoing';
-                 const isConfirmed = match.status === 'confirmed';
+                const isMatchFinished = match.status === 'completed';
+                const isOngoing = match.status === 'ongoing';
+                const isConfirmed = match.status === 'confirmed';
                 const selectingSetIdx = selectingWinnerForSetMap[match._id];
 
                 return (
@@ -336,7 +339,7 @@ const OngoingActivities = () => {
                                   src={match.player1Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player1Id.fullName}&background=random`}
                                   alt={match.player1Id.fullName}
                                   className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${(match.winnerId?._id || match.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-green scale-105' :
-                                      ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
+                                    ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player1Id?._id || match.player1Id)?.toString() ? 'ring-primary border-4 border-primary/20' : 'ring-base3')
                                     }`}
                                 />
                                 {!isMatchFinished && setRes && (
@@ -391,7 +394,7 @@ const OngoingActivities = () => {
                                   src={match.player2Id.profilePhoto || `https://ui-avatars.com/api/?name=${match.player2Id.fullName}&background=random`}
                                   alt={match.player2Id.fullName}
                                   className={`w-14 h-14 rounded-2xl object-cover ring-2 shadow-md transition-all ${(match.winnerId?._id || match.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-green scale-105' :
-                                      ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
+                                    ((setRes?.winnerId?._id || setRes?.winnerId)?.toString() === (match.player2Id?._id || match.player2Id)?.toString() ? 'ring-violet border-4 border-violet/20' : 'ring-base3')
                                     }`}
                                 />
                                 {!isMatchFinished && setRes && (
@@ -469,8 +472,8 @@ const OngoingActivities = () => {
                                   }
                                 }}
                                 className={`w-full px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-tight transition-all border flex flex-col items-center justify-center min-h-[48px] ${isActive
-                                    ? 'bg-blue text-base3 border-blue shadow-lg shadow-blue/20 -translate-y-1 z-20'
-                                    : (sRes ? 'bg-base3/80 border-base2/50 opacity-90' : 'bg-base2/5 border-transparent text-text/10')
+                                  ? 'bg-blue text-base3 border-blue shadow-lg shadow-blue/20 -translate-y-1 z-20'
+                                  : (sRes ? 'bg-base3/80 border-base2/50 opacity-90' : 'bg-base2/5 border-transparent text-text/10')
                                   } ${(isLocked || !isOngoing) && !isMatchFinished ? 'opacity-30 cursor-not-allowed grayscale' : ''}`}
                               >
                                 <span className={`truncate max-w-full ${isWon ? 'text-sm' : ''}`}>{tabLabel}</span>
@@ -509,7 +512,7 @@ const OngoingActivities = () => {
                         )}
 
                         {/* Pending Acceptance Message */}
-                        {!isOngoing && !isMatchFinished && (
+                        {match.status === 'pending' && (
                           <div className="absolute inset-x-0 bottom-0 top-[0px] bg-base3/60 backdrop-blur-[2px] flex items-center justify-center z-40 rounded-xl border border-dashed border-base2">
                             <p className="text-[10px] font-black uppercase tracking-widest text-text-emphasis animate-pulse bg-base3 px-4 py-1.5 rounded-full shadow-lg border border-base2 translate-y-[-2px]">
                               Awaiting Players
@@ -523,26 +526,26 @@ const OngoingActivities = () => {
                           🏆 MATCH COMPLETED: {match.scorePlayer1} - {match.scorePlayer2}
                         </div>
                       ) : (isConfirmed || (match.player1Status === 'accepted' && match.player2Status === 'accepted' && !isOngoing)) ? (
-                         <button
-                           onClick={() => handleStartMatch(match, match.isTournamentMatch)}
-                           className="w-full bg-emerald-600 text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20"
-                         >
-                           <Play size={14} fill="white" />
-                           START MATCH
-                         </button>
-                       ) : isOngoing ? (
-                         <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
-                           ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{typeof match.poolTable === 'object' ? match.poolTable.tableId : match.poolTable}"</span>}
-                         </div>
-                       ) : (
-                         <Link
-                           to={match.isTournamentMatch ? `/moderator/manage-tournament/${match.tournamentId?._id || match.tournamentId}` : '#'}
-                           className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
-                         >
-                           <Trophy size={14} />
-                           {match.isTournamentMatch ? 'ENTER ROOM' : 'VIEW DETAILS'}
-                         </Link>
-                       )}
+                        <button
+                          onClick={() => handleStartMatch(match, match.isTournamentMatch)}
+                          className="w-full bg-emerald-600 text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20"
+                        >
+                          <Play size={14} fill="white" />
+                          START MATCH
+                        </button>
+                      ) : isOngoing ? (
+                        <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
+                          ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{typeof match.poolTable === 'object' ? match.poolTable.tableId : match.poolTable}"</span>}
+                        </div>
+                      ) : (
+                        <Link
+                          to={match.isTournamentMatch ? `/moderator/manage-tournament/${match.tournamentId?._id || match.tournamentId}` : '#'}
+                          className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
+                        >
+                          <Trophy size={14} />
+                          {match.isTournamentMatch ? 'ENTER ROOM' : 'VIEW DETAILS'}
+                        </Link>
+                      )}
                     </div>
                   </AuraCard>
                 );
@@ -557,16 +560,16 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.tournaments.map((t) => (
-                  <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
-                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                        <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
-                          <Trophy size={16} />
-                        </div>
-                        <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Tournament Room</h3>
+                <AuraCard key={t._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
+                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
+                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
+                        <Trophy size={16} />
                       </div>
-                      <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
+                      <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Tournament Room</h3>
                     </div>
+                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
+                  </div>
 
                   <div className="p-5">
                     <h3 className="text-base font-bold text-text-emphasis mb-2 truncate">{t.name}</h3>
@@ -609,8 +612,8 @@ const OngoingActivities = () => {
               </div>
             ) : (
               data.battles.map((battle) => (
-                  <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
-                    <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
+                <AuraCard key={battle._id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
+                  <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
                       <Shield size={16} />
                     </div>
@@ -688,7 +691,7 @@ const OngoingActivities = () => {
                                 )}
                                 {battle.status !== 'ongoing' && (
                                   <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                      p.status === 'declined' ? 'bg-red/5 text-red/60 border-red/10' : 'bg-yellow/5 text-yellow border-yellow/10'
+                                    p.status === 'declined' ? 'bg-red/5 text-red/60 border-red/10' : 'bg-yellow/5 text-yellow border-yellow/10'
                                     }`}>
                                     {p.status}
                                   </span>
@@ -717,8 +720,8 @@ const OngoingActivities = () => {
                         disabled={actionLoading || battle.participants.filter(p => p.status === 'accepted').length < 2}
                         onClick={() => handleStartBattle(battle._id)}
                         className={`w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all ${battle.participants.filter(p => p.status === 'accepted').length < 2
-                            ? 'bg-base2 text-text/40 cursor-not-allowed grayscale'
-                            : 'bg-primary text-base3 shadow-primary/20 hover:scale-[1.02]'
+                          ? 'bg-base2 text-text/40 cursor-not-allowed grayscale'
+                          : 'bg-primary text-base3 shadow-primary/20 hover:scale-[1.02]'
                           }`}
                       >
                         <Play size={14} fill="currentColor" />
@@ -769,14 +772,14 @@ const OngoingActivities = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-primary">Assigned Table Location/Number</label>
-                 <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto pr-2 thin-scrollbar">
-                   {tables.filter(t => t.status === 'available').map(table => (
+                <div className="grid grid-cols-1 gap-2 max-h-[300px] overflow-y-auto pr-2 thin-scrollbar">
+                  {tables.filter(t => t.status === 'available').map(table => (
                     <button
                       key={table._id}
                       onClick={() => setSelectedTableId(table.tableId)}
                       className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${selectedTableId === table.tableId
-                          ? 'border-emerald-500 bg-emerald-500/5 ring-4 ring-emerald-500/10'
-                          : 'border-base2 bg-base3 hover:border-primary/30'
+                        ? 'border-emerald-500 bg-emerald-500/5 ring-4 ring-emerald-500/10'
+                        : 'border-base2 bg-base3 hover:border-primary/30'
                         }`}
                     >
                       <div className="flex items-center gap-3">
@@ -795,8 +798,8 @@ const OngoingActivities = () => {
                   <button
                     onClick={() => setSelectedTableId('')}
                     className={`flex items-center justify-between p-4 rounded-xl border-2 border-dashed transition-all ${selectedTableId === ''
-                        ? 'border-primary bg-primary/5'
-                        : 'border-base2 bg-base3 hover:border-primary/30'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-base2 bg-base3 hover:border-primary/30'
                       }`}
                   >
                     <div className="flex items-center gap-3">

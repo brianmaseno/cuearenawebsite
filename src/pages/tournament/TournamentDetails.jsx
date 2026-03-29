@@ -53,14 +53,14 @@ const TournamentDetails = () => {
       } catch (err) {
          console.error("Error joining tournament:", err);
          const message = err.response?.data?.message || "";
-         
+
          if (message.toLowerCase().includes('insufficient funds')) {
             toast.error(
                (t) => (
                   <div className="flex flex-col gap-2">
                      <span className="font-bold">Insufficient Funds</span>
                      <span className="text-xs opacity-90">You need more funds in your wallet to cover the tournament stake.</span>
-                     <button 
+                     <button
                         onClick={() => {
                            toast.dismiss(t.id);
                            navigate('/wallet');
@@ -71,10 +71,10 @@ const TournamentDetails = () => {
                      </button>
                   </div>
                ),
-               { 
-                  duration: 6000, 
-                  position: 'top-center', 
-                  style: { border: '1px solid #fee2e2', background: '#fef2f2', color: '#991b1b' } 
+               {
+                  duration: 6000,
+                  position: 'top-center',
+                  style: { border: '1px solid #fee2e2', background: '#fef2f2', color: '#991b1b' }
                }
             );
          } else {
@@ -111,36 +111,36 @@ const TournamentDetails = () => {
    const isRegistrationOpen = tournament.status === 'open_for_players';
 
    return (
-    <DashboardLayout title={tournament.name}>
-      <div className="max-w-[1600px] mx-auto space-y-10 pb-20 px-4 md:px-8 bg-background min-h-screen animate-in fade-in duration-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
-        {/* Header Section */}
-        <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/50 pb-8">
-          <div>
-            <div className="flex items-center gap-4 mb-3">
-              <button 
-                onClick={() => navigate(-1)} 
-                className="w-10 h-10 rounded-full bg-surface border border-base2 flex items-center justify-center text-text/40 hover:text-primary hover:border-primary/50 transition-all shadow-sm"
-              >
-                <ArrowLeft size={18} />
-              </button>
-              <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
+      <DashboardLayout title={tournament.name}>
+         <div className="max-w-[1600px] mx-auto space-y-10 pb-20 px-4 md:px-8 bg-background min-h-screen animate-in fade-in duration-700" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            {/* Header Section */}
+            <div className="pt-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/50 pb-8">
+               <div>
+                  <div className="flex items-center gap-4 mb-3">
+                     <button
+                        onClick={() => navigate(-1)}
+                        className="w-10 h-10 rounded-full bg-surface border border-base2 flex items-center justify-center text-text/40 hover:text-primary hover:border-primary/50 transition-all shadow-sm"
+                     >
+                        <ArrowLeft size={18} />
+                     </button>
+                     <StatusBadge status={tournament?.status} entryType={tournament?.entryType} registrationDeadline={tournament?.registrationDeadline} startDate={tournament?.startDate} />
+                  </div>
+                  <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight">{tournament.name}</h1>
+               </div>
+
+               <div className="flex items-center gap-4">
+                  <div className="bg-base2/80 backdrop-blur-sm px-6 py-3 rounded-[24px] border border-base2 shadow-sm text-center">
+                     <p className="text-[10px] font-black uppercase text-text/40 tracking-widest mb-0.5">Entry Type</p>
+                     <p className="font-black text-primary text-sm">{tournament.entryType?.replace('_', ' ')}</p>
+                  </div>
+                  {tournament.stakePerPlayer > 0 && (
+                     <div className="bg-primary px-6 py-3 rounded-[24px] shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] text-center text-base3">
+                        <p className="text-[10px] font-black uppercase text-base3/70 tracking-widest mb-0.5">Stake</p>
+                        <p className="font-black text-sm uppercase">KES {tournament.stakePerPlayer.toLocaleString()}</p>
+                     </div>
+                  )}
+               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-text-emphasis tracking-tight">{tournament.name}</h1>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="bg-base2/80 backdrop-blur-sm px-6 py-3 rounded-[24px] border border-base2 shadow-sm text-center">
-              <p className="text-[10px] font-black uppercase text-text/40 tracking-widest mb-0.5">Entry Type</p>
-              <p className="font-black text-primary text-sm">{tournament.entryType?.replace('_', ' ')}</p>
-            </div>
-            {tournament.stakePerPlayer > 0 && (
-              <div className="bg-primary px-6 py-3 rounded-[24px] shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] text-center text-base3">
-                <p className="text-[10px] font-black uppercase text-base3/70 tracking-widest mb-0.5">Stake</p>
-                <p className="font-black text-sm uppercase">KES {tournament.stakePerPlayer.toLocaleString()}</p>
-              </div>
-            )}
-          </div>
-        </div>
 
             {/* Registration Banner */}
             {!isPlayerConfirmed && isRegistrationOpen && (
@@ -155,8 +155,8 @@ const TournamentDetails = () => {
                               {tournament.status === 'full' ? 'Joining Closed' : 'Registration Open!'}
                            </h4>
                            <p className="text-xs text-text/60 font-medium">
-                              {tournament.status === 'full' 
-                                 ? 'Tournament at max capacity.' 
+                              {tournament.status === 'full'
+                                 ? 'Tournament at max capacity.'
                                  : 'Join now to compete for the championship!'}
                            </p>
                         </div>
@@ -172,29 +172,29 @@ const TournamentDetails = () => {
                </div>
             )}
 
-        {/* Tab Navigation */}
-        <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
-          <button
-            onClick={() => setActiveTab('info')}
-            className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'info'
-                ? 'bg-primary text-base3 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
-                : 'text-text/60 hover:text-primary hover:bg-base2/50'
-              }`}
-          >
-            <Info size={16} />
-            Info
-          </button>
-          <button
-            onClick={() => setActiveTab('brackets')}
-            className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'brackets'
-                ? 'bg-primary text-base3 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
-                : 'text-text/60 hover:text-primary hover:bg-base2/50'
-              }`}
-          >
-            <Target size={16} />
-            Brackets
-          </button>
-        </div>
+            {/* Tab Navigation */}
+            <div className="flex items-center p-1.5 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[28px] border-2 border-primary/20 shadow-inner w-full sm:w-fit overflow-hidden">
+               <button
+                  onClick={() => setActiveTab('info')}
+                  className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'info'
+                     ? 'bg-primary text-base3 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                     : 'text-text/60 hover:text-primary hover:bg-base2/50'
+                     }`}
+               >
+                  <Info size={16} />
+                  Info
+               </button>
+               <button
+                  onClick={() => setActiveTab('brackets')}
+                  className={`flex-1 md:flex-none px-8 py-3.5 text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] transition-all duration-500 flex items-center justify-center gap-2 whitespace-nowrap ${activeTab === 'brackets'
+                     ? 'bg-primary text-base3 shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] scale-[1.02]'
+                     : 'text-text/60 hover:text-primary hover:bg-base2/50'
+                     }`}
+               >
+                  <Target size={16} />
+                  Brackets
+               </button>
+            </div>
 
             {/* Tab Content */}
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -212,10 +212,10 @@ const TournamentDetails = () => {
                                  <p className="font-bold text-text-emphasis text-sm">{(tournament.entryType || '').replace('_', ' ')}</p>
                               </div>
                               {tournament.stakePerPlayer > 0 && (
-                                <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center min-w-[120px]">
-                                   <p className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest mb-1">Stake</p>
-                                   <p className="font-bold text-emerald-700 text-sm">KES {tournament.stakePerPlayer.toLocaleString()}</p>
-                                </div>
+                                 <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center min-w-[120px]">
+                                    <p className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest mb-1">Stake</p>
+                                    <p className="font-bold text-emerald-700 text-sm">KES {tournament.stakePerPlayer.toLocaleString()}</p>
+                                 </div>
                               )}
                            </div>
                            <p className="text-base text-text leading-relaxed mb-8">
@@ -223,8 +223,8 @@ const TournamentDetails = () => {
                            </p>
                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 border-t border-base2">
                               {[{ icon: Calendar, label: 'Date', val: tournament.startDate ? new Date(tournament.startDate).toLocaleDateString() : 'N/A', color: 'blue' },
-                                { icon: MapPin, label: 'Venue', val: tournament.venue, color: 'green' },
-                                { icon: Users, label: 'Organizer', val: tournament.organizerId?.fullName, color: 'yellow' }].map((item, idx) => (
+                              { icon: MapPin, label: 'Venue', val: tournament.venue, color: 'green' },
+                              { icon: Users, label: 'Organizer', val: tournament.organizerId?.fullName, color: 'yellow' }].map((item, idx) => (
                                  <div key={idx} className="flex items-center gap-3">
                                     <div className={`w-10 h-10 rounded-xl bg-${item.color}/10 text-${item.color} flex items-center justify-center`}>
                                        <item.icon size={20} />
