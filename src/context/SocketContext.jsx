@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Only connect if user is logged in
     if (user && user.id) {
-      const socketUrl = import.meta.env.VITE_API_URL || `${window.location.origin}`;
+      const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL?.replace('/api', '') || `${window.location.origin}`;
       const newSocket = io(socketUrl, {
         transports: ['websocket', 'polling'], // WebSocket first, fallback to polling
       });
