@@ -22,7 +22,7 @@ import toast from 'react-hot-toast';
 
 const PlayerHistory = () => {
   const { user } = useAuth();
-  const userId = user?._id;
+  const userId = user?.id;
   const [data, setData] = useState({ tournaments: [], matches: [], tournamentMatches: [], battles: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
@@ -150,9 +150,9 @@ const PlayerHistory = () => {
               </div>
             ) : (
               filteredData.map((match) => {
-                const winnerIdObj = match.winnerId?._id || match.winnerId;
-                const p1IdObj = match.player1Id?._id || match.player1Id;
-                const p2IdObj = match.player2Id?._id || match.player2Id;
+                const winnerIdObj = match.winnerId?.id || match.winnerId;
+                const p1IdObj = match.player1Id?.id || match.player1Id;
+                const p2IdObj = match.player2Id?.id || match.player2Id;
 
                 const isP1Winner = winnerIdObj && winnerIdObj.toString() === p1IdObj?.toString();
                 const isP2Winner = winnerIdObj && winnerIdObj.toString() === p2IdObj?.toString();
@@ -165,7 +165,7 @@ const PlayerHistory = () => {
                 const winLossColor = myWon ? 'text-green' : 'text-red';
 
                 return (
-                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-[3px] border-primary/25">
+                  <div key={match.id} className="card-premium p-0 rounded-2xl overflow-hidden group hover:ring-2 ring-primary/20 transition-all border-[3px] border-primary/25">
                     <div className="bg-base2/10 p-3 flex flex-wrap md:flex-nowrap items-center justify-between gap-2 border-b border-base2 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
@@ -298,7 +298,7 @@ const PlayerHistory = () => {
                                       {myWonMatch ? (
                                         (() => {
                                           if (match.tournamentId?.status === 'completed' && match.tournamentId?.payouts) {
-                                            const myPayout = match.tournamentId.payouts.find(p => (p.userId?._id || p.userId || '').toString() === userId?.toString());
+                                            const myPayout = match.tournamentId.payouts.find(p => (p.userId?.id || p.userId || '').toString() === userId?.toString());
                                             if (myPayout) return `+ KES ${myPayout.amount.toLocaleString()}`;
                                           }
                                           return `+ KES ${((match.tournamentId?.stakePerPlayer || 0) * (match.tournamentId?.maxPlayers || 0) * 0.85).toLocaleString()}`;
@@ -349,9 +349,9 @@ const PlayerHistory = () => {
             ) : (
               filteredData.map((battle) => {
                 const isCancelled = battle.status === 'cancelled';
-                const myWon = battle.winnerId?._id === userId;
+                const myWon = battle.winnerId?.id === userId;
                 return (
-                  <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md">
+                  <div key={battle.id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
@@ -403,14 +403,14 @@ const PlayerHistory = () => {
                         </div>
                       )}
 
-                      {expandedBattles[battle._id] && (
+                      {expandedBattles[battle.id] && (
                         <div className="space-y-2 mb-4 max-h-[140px] overflow-y-auto pr-2 thin-scrollbar flex-1 opacity-60 grayscale-[0.5] animate-in slide-in-from-top-2 duration-300">
                           <p className="text-[10px] font-black uppercase tracking-widest text-text/40 mb-1">Final Lineup</p>
                           {battle.participants.map((p) => {
-                            const isMe = p.userId?._id === userId;
-                            const isWinner = battle.winnerId?._id === p.userId?._id;
+                            const isMe = p.userId?.id === userId;
+                            const isWinner = battle.winnerId?.id === p.userId?.id;
                             return (
-                              <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : (isMe ? 'bg-primary/5 border-primary/20' : 'bg-base2/20 border-base2')
+                              <div key={p.userId?.id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : (isMe ? 'bg-primary/5 border-primary/20' : 'bg-base2/20 border-base2')
                                 }`}>
                                 <div className="flex items-center gap-2 overflow-hidden">
                                   <img
@@ -433,10 +433,10 @@ const PlayerHistory = () => {
                       )}
 
                       <button
-                        onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
+                        onClick={() => setExpandedBattles(prev => ({ ...prev, [battle.id]: !prev[battle.id] }))}
                         className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mb-4 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
                       >
-                        {expandedBattles[battle._id] ? (
+                        {expandedBattles[battle.id] ? (
                           <>Hide Participants <ArrowIcon size={10} className="rotate-90" /></>
                         ) : (
                           <>View Participants ({battle.participants.length}) <ArrowIcon size={10} /></>
@@ -473,14 +473,14 @@ const PlayerHistory = () => {
               filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
-                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md h-full">
+                  <div key={t.id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/25 shadow-sm transition-all hover:shadow-md h-full">
                     <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 overflow-hidden">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 drop-shadow-sm shrink-0" />
                         <span className={`text-[clamp(10px,1.1vw,13px)] font-black uppercase tracking-widest truncate min-w-0 ${t.status === 'completed' ? 'text-text-emphasis' : 'text-red'
                           }`}>
                           {t.status === 'cancelled' && t.declinedBy ? (
-                            (t.declinedBy._id || t.declinedBy).toString() === (user?._id || user?.id)?.toString()
+                            (t.declinedBy.id || t.declinedBy).toString() === (user?.id || user?.id)?.toString()
                               ? 'Declined'
                               : `Declined: by ${t.declinedBy.fullName}`
                           ) : t.status}
@@ -522,7 +522,7 @@ const PlayerHistory = () => {
 
                     <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
                       <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
-                        <Link to={`/dashboard/tournament/${t._id}#bracket`} className="flex items-center gap-1.5 font-black uppercase tracking-wider text-primary hover:text-primary-focus transition-colors">
+                        <Link to={`/dashboard/tournament/${t.id}#bracket`} className="flex items-center gap-1.5 font-black uppercase tracking-wider text-primary hover:text-primary-focus transition-colors">
                           <TargetIcon size={12} />
                           View Tournament Details
                         </Link>

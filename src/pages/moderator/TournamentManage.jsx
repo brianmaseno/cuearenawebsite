@@ -51,9 +51,9 @@ const TournamentManage = () => {
 
    const togglePlayerSelection = (player) => {
       setSelectedPlayers(prev => {
-         const exists = prev.find(p => p._id === player._id);
-         if (exists) return prev.filter(p => p._id !== player._id);
-         return [...prev, { _id: player._id, fullName: player.fullName, email: player.email }];
+         const exists = prev.find(p => p.id === player.id);
+         if (exists) return prev.filter(p => p.id !== player.id);
+         return [...prev, { id: player.id, fullName: player.fullName, email: player.email }];
       });
    };
 
@@ -62,7 +62,7 @@ const TournamentManage = () => {
       setActionLoading(true);
       try {
          const { data } = await api.post(`/tournaments/${id}/invite-bulk`, {
-            playerIds: selectedPlayers.map(p => p._id)
+            playerIds: selectedPlayers.map(p => p.id)
          });
          toast.success(data.message);
          setSelectedPlayers([]);
@@ -115,7 +115,7 @@ const TournamentManage = () => {
    useEffect(() => {
       if (socket) {
          socket.on('TOURNAMENT_UPDATE', (data) => {
-            if (data && data._id) {
+            if (data && data.id) {
                // Check if it's a special event
                if (data.type === 'final_winner_declared') {
                   setIsPayoutModalOpen(true);
@@ -205,10 +205,10 @@ const TournamentManage = () => {
    };
 
    const handleStartTournamentMatch = async () => {
-      if (!selectedMatchForSets?._id) return;
+      if (!selectedMatchForSets?.id) return;
       setActionLoading(true);
       try {
-         await api.put(`/tournaments/matches/${selectedMatchForSets._id}/start`, { poolTableId: selectedTableId || undefined });
+         await api.put(`/tournaments/matches/${selectedMatchForSets.id}/start`, { poolTableId: selectedTableId || undefined });
          toast.success('Match started! Table Unlocked successfully 🎱', { icon: '🔓', duration: 4000 });
          setShowTableModal(false);
          setSelectedTableId('');
@@ -343,12 +343,12 @@ const TournamentManage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                            {tournament?.confirmedPlayers?.map(p => {
                               const isInvited = invitations.some(inv =>
-                                 (inv.playerId?._id || inv.playerId)?.toString() === p._id.toString() &&
+                                 (inv.playerId?.id || inv.playerId)?.toString() === p.id.toString() &&
                                  inv.status === 'accepted'
                               );
 
                               return (
-                                 <div key={p._id} className="group relative flex items-center gap-3 p-3 bg-base3/50 backdrop-blur-sm border border-base2/50 rounded-2xl hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5">
+                                 <div key={p.id} className="group relative flex items-center gap-3 p-3 bg-base3/50 backdrop-blur-sm border border-base2/50 rounded-2xl hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5">
                                     <div className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-sm transition-colors ${isInvited
                                        ? 'bg-violet/10 text-violet border border-violet/20 group-hover:bg-violet/20'
                                        : 'bg-blue/10 text-blue border border-blue/20 group-hover:bg-blue/20'
@@ -362,7 +362,7 @@ const TournamentManage = () => {
                                     <div className="flex flex-col min-w-0 pr-14">
                                        <div className="flex items-center gap-2">
                                           <p className="font-bold text-text-emphasis truncate text-base tracking-tight group-hover:text-primary transition-colors">{p.fullName}</p>
-                                          {tournament?.winner?._id === p._id && <Trophy size={12} className="text-yellow" />}
+                                          {tournament?.winner?.id === p.id && <Trophy size={12} className="text-yellow" />}
                                        </div>
                                        <p className="text-xs text-text/50 truncate font-medium mt-0.5">{maskEmail(p.email)}</p>
                                     </div>
@@ -401,13 +401,13 @@ const TournamentManage = () => {
                                  {playerSearchQuery.trim().length >= 2 ? (
                                     <>
                                        {availablePlayers
-                                          .filter(p => !tournament?.confirmedPlayers?.some(cp => cp._id === p._id))
+                                          .filter(p => !tournament?.confirmedPlayers?.some(cp => cp.id === p.id))
                                           .filter(p =>
                                              p.fullName?.toLowerCase().includes(playerSearchQuery.toLowerCase()) ||
                                              (p.email || '').toLowerCase().includes(playerSearchQuery.toLowerCase())
                                           )
                                           .map(p => (
-                                             <div key={p._id} className="flex items-center justify-between p-3 bg-base2/10 rounded-xl hover:bg-base2/20 transition-colors group">
+                                             <div key={p.id} className="flex items-center justify-between p-3 bg-base2/10 rounded-xl hover:bg-base2/20 transition-colors group">
                                                 <div className="flex items-center gap-3">
                                                    <div className="w-10 h-10 rounded-full bg-violet/10 text-violet flex items-center justify-center text-sm font-bold shadow-sm">
                                                       {p.fullName?.[0]}
@@ -417,12 +417,12 @@ const TournamentManage = () => {
                                                       <p className="text-xs text-text/40 font-medium">{p.email}</p>
                                                    </div>
                                                 </div>
-                                                {tournament?.invitedPlayers?.some(ip => (ip._id || ip).toString() === p._id.toString()) ? (
+                                                {tournament?.invitedPlayers?.some(ip => (ip.id || ip).toString() === p.id.toString()) ? (
                                                    <span className="text-[10px] font-black uppercase text-green tracking-widest bg-green/10 px-2 py-1 rounded-lg border border-green/20">Invited</span>
                                                 ) : (
                                                    <button
                                                       onClick={() => togglePlayerSelection(p)}
-                                                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${selectedPlayers.some(sp => sp._id === p._id)
+                                                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${selectedPlayers.some(sp => sp.id === p.id)
                                                          ? 'bg-red text-base3 shadow-lg shadow-red/20 rotate-45'
                                                          : 'bg-primary text-base3 shadow-lg shadow-primary/20'
                                                          }`}
@@ -477,7 +477,7 @@ const TournamentManage = () => {
                                  {invitations
                                     .filter(inv => inv.status !== 'accepted')
                                     .map((inv) => (
-                                       <div key={inv._id} className="flex items-center justify-between p-2.5 bg-base2/10 rounded-xl border border-base2/30">
+                                       <div key={inv.id} className="flex items-center justify-between p-2.5 bg-base2/10 rounded-xl border border-base2/30">
                                           <div className="min-w-0 pr-2">
                                              <p className="text-sm font-black text-text-emphasis truncate">{inv.playerId?.fullName}</p>
                                              <p className="text-xs text-text/40 font-medium">{inv.status}</p>
@@ -534,7 +534,7 @@ const TournamentManage = () => {
                      ) : (
                         tables.filter(t => t.status === 'available').map(table => (
                            <button
-                              key={table._id}
+                              key={table.id}
                               onClick={() => setSelectedTableId(table.tableId)}
                               className={`w-full p-4 rounded-2xl border-2 flex items-center justify-between transition-all group ${selectedTableId === table.tableId
                                  ? 'bg-primary/5 border-primary shadow-inner'
@@ -625,7 +625,7 @@ const TournamentManage = () => {
                            <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
                            <div className="flex flex-col items-center gap-1 mt-1">
                               <p className="text-xs font-black uppercase text-primary tracking-widest leading-none">
-                                 Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer1 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
+                                 Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer1 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?.id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?.id || selectedMatchForSets.player1Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
                               </p>
                               <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                  {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
@@ -649,7 +649,7 @@ const TournamentManage = () => {
                            <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
                            <div className="flex flex-col items-center gap-1 mt-1">
                               <p className="text-xs font-black uppercase text-violet tracking-widest leading-none">
-                                 Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer2 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?._id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
+                                 Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer2 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?.id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?.id || selectedMatchForSets.player2Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
                               </p>
                               <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                  {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
@@ -683,7 +683,7 @@ const TournamentManage = () => {
                               let tabLabel = `SET ${idx + 1}`;
                               let winnerColor = '';
                               if (sRes) {
-                                 if ((sRes.winnerId?._id || sRes.winnerId) === (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id)) {
+                                 if ((sRes.winnerId?.id || sRes.winnerId) === (selectedMatchForSets.player1Id?.id || selectedMatchForSets.player1Id)) {
                                     tabLabel = selectedMatchForSets.player1Id?.fullName?.split(' ')[0] || 'Player 1';
                                     winnerColor = 'text-primary';
                                  } else {
@@ -752,14 +752,14 @@ const TournamentManage = () => {
                                  <div className="flex-1 flex gap-2">
                                     <button
                                        disabled={!selectedMatchForSets.player1Id}
-                                       onClick={() => selectedMatchForSets.player1Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player1Id?._id || selectedMatchForSets.player1Id))}
+                                       onClick={() => selectedMatchForSets.player1Id && handleRecordTournamentSetWinner(selectedMatchForSets.id, selectingWinnerForSetInModal, (selectedMatchForSets.player1Id?.id || selectedMatchForSets.player1Id))}
                                        className={`flex-1 py-3 bg-primary/5 hover:bg-primary text-primary hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-primary/10 ${!selectedMatchForSets.player1Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                     >
                                        {selectedMatchForSets.player1Id?.fullName || 'P1'}
                                     </button>
                                     <button
                                        disabled={!selectedMatchForSets.player2Id}
-                                       onClick={() => selectedMatchForSets.player2Id && handleRecordTournamentSetWinner(selectedMatchForSets._id, selectingWinnerForSetInModal, (selectedMatchForSets.player2Id?._id || selectedMatchForSets.player2Id))}
+                                       onClick={() => selectedMatchForSets.player2Id && handleRecordTournamentSetWinner(selectedMatchForSets.id, selectingWinnerForSetInModal, (selectedMatchForSets.player2Id?.id || selectedMatchForSets.player2Id))}
                                        className={`flex-1 py-3 bg-violet/5 hover:bg-violet text-violet hover:text-base3 rounded-2xl text-[11px] font-black transition-all flex flex-col items-center justify-center gap-0.5 border border-violet/10 ${!selectedMatchForSets.player2Id ? 'opacity-30 cursor-not-allowed' : ''}`}
                                     >
                                        {selectedMatchForSets.player2Id?.fullName || 'P2'}

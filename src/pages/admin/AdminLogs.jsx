@@ -171,7 +171,7 @@ const AdminLogs = () => {
                 </thead>
                 <tbody className="divide-y divide-base2/50">
                   {filteredLogs.map((log) => (
-                    <tr key={log._id} className="hover:bg-primary/5 transition-colors group">
+                    <tr key={log.id} className="hover:bg-primary/5 transition-colors group">
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-lg bg-base2 flex items-center justify-center text-primary font-bold text-xs ring-1 ring-base2 shrink-0">

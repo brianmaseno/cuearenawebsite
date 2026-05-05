@@ -2,18 +2,22 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import AuraCard from '../../components/AuraCard';
-import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode, Clock, X } from 'lucide-react';
+import { MapPin, Plus, Trash2, Loader2, AlertCircle, CheckCircle2, QrCode, Clock, X, Zap, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useSocket } from '../../context/SocketContext';
 
 const ModeratorTables = () => {
+   const { socket } = useSocket();
    const [tables, setTables] = useState([]);
    const [loading, setLoading] = useState(true);
-   const [adding, setAdding] = useState(false);
-   const [newTable, setNewTable] = useState({ location: '', number: '' });
+   const [activeActivities, setActiveActivities] = useState([]);
+   const [showActivateModal, setShowActivateModal] = useState(false);
+   const [selectedTable, setSelectedTable] = useState(null);
+   const [activationData, setActivationData] = useState({ sessionType: 'direct_match', matchId: '', duration: 60 });
 
    const fetchTables = async () => {
       try {
-         const { data } = await api.get('/users/me/tables');
+         const { data } = await api.get('/tables');
          setTables(data || []);
       } catch (err) {
          toast.error('Failed to load tables');
@@ -22,61 +26,73 @@ const ModeratorTables = () => {
       }
    };
 
+   const fetchActivities = async () => {
+      try {
+         const { data } = await api.get('/moderator/ongoing');
+         setActiveActivities(data || []);
+      } catch (err) {
+         console.error('Failed to load activities');
+      }
+   };
+
    useEffect(() => {
       fetchTables();
-   }, []);
+      fetchActivities();
 
-   const handleAddTable = async (e) => {
+      if (socket) {
+         socket.on('TABLE_UPDATE', (data) => {
+            setTables(prev => prev.map(t => t.id === data.tableId ? { ...t, status: data.status } : t));
+         });
+      }
+
+      return () => {
+         if (socket) {
+            socket.off('TABLE_UPDATE');
+         }
+      };
+   }, [socket]);
+
+   const handleActivateTable = async (e) => {
       e.preventDefault();
-      console.log('handleAddTable triggered', newTable);
-      if (!newTable.location || !newTable.number) return toast.error('Please fill all fields');
+      if (!activationData.matchId) return toast.error('Please select a match');
 
-      const tid = toast.loading('Registering table...');
-      setAdding(true);
+      const tid = toast.loading('Sending activation command...');
       try {
-         const tableData = {
-            tableId: `${newTable.location}/${newTable.number}`,
-            location: newTable.location
-         };
-         console.log('Sending request to /users/me/tables', tableData);
-         const response = await api.post('/users/me/tables', tableData);
-         console.log('Registration Response:', response.data);
-         toast.success('Table registered successfully!', { id: tid });
-         setNewTable({ location: '', number: '' });
+         await api.post(`/tables/${selectedTable.id}/activate`, activationData);
+         toast.success('Table activated!', { id: tid });
+         setShowActivateModal(false);
          fetchTables();
       } catch (err) {
-         console.error('Registration Error:', err);
-         const msg = err.response?.data?.message || 'Failed to register table';
-         toast.error(msg, { id: tid });
-      } finally {
-         setAdding(false);
+         toast.error(err.response?.data?.message || 'Failed to activate table', { id: tid });
       }
    };
 
-   const handleDeleteTable = async (id) => {
-      if (!window.confirm('Are you sure you want to remove this table?')) return;
+   const handleLockTable = async (id) => {
+      const tid = toast.loading('Sending lock command...');
       try {
-         await api.delete(`/users/me/tables/${id}`);
-         toast.success('Table removed');
+         await api.post(`/tables/${id}/lock`);
+         toast.success('Table locked', { id: tid });
          fetchTables();
       } catch (err) {
-         toast.error('Failed to delete table');
+         toast.error('Failed to lock table', { id: tid });
       }
    };
 
-   const handleToggleMaintenance = async (id) => {
+   const handleSendMessage = async (id) => {
+      const message = prompt('Enter message to display on table:');
+      if (!message) return;
+
       try {
-         await api.put(`/users/me/tables/${id}/maintenance`);
-         toast.success('Maintenance status updated');
-         fetchTables();
+         await api.post(`/tables/${id}/display-message`, { message });
+         toast.success('Message sent');
       } catch (err) {
-         toast.error(err.response?.data?.message || 'Failed to update maintenance status');
+         toast.error('Failed to send message');
       }
    };
 
    if (loading) {
       return (
-         <DashboardLayout title="Manage Pool Tables">
+         <DashboardLayout title="Table Management">
             <div className="flex items-center justify-center h-64">
                <Loader2 className="animate-spin text-primary" size={32} />
             </div>
@@ -85,131 +101,131 @@ const ModeratorTables = () => {
    }
 
    return (
-      <DashboardLayout title="Tables">
-         <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <div className="p-8 border-2 border-primary/20 bg-base2/10 rounded-[40px] shadow-xl shadow-primary/5 relative overflow-hidden group">
-               <div className="absolute inset-0 bg-primary/[0.02] pointer-events-none" />
-               <h3 className="text-xl font-bold flex items-center gap-2 border-b border-base2 pb-4 text-text-emphasis mb-6 relative z-10">
-                  <Plus size={20} className="text-primary" />
-                  Register New Physical Table
-               </h3>
-               <form onSubmit={handleAddTable} className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
-                  <div>
-                     <label className="block text-[10px] font-black uppercase tracking-widest text-text/60 mb-1.5 ml-1">Location / Venue</label>
-                     <input
-                        type="text"
-                        placeholder="e.g. Westlands"
-                        value={newTable.location}
-                        onChange={(e) => setNewTable({ ...newTable, location: e.target.value })}
-                        className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold"
-                     />
-                  </div>
-                  <div>
-                     <label className="block text-[10px] font-black uppercase tracking-widest text-text/60 mb-1.5 ml-1">Table Number</label>
-                     <input
-                        type="text"
-                        placeholder="e.g. 01"
-                        value={newTable.number}
-                        onChange={(e) => setNewTable({ ...newTable, number: e.target.value })}
-                        className="w-full bg-base3 border border-base2 rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold"
-                     />
-                  </div>
-                  <div className="flex items-end">
-                     <button
-                        type="submit"
-                        disabled={adding}
-                        className="aura-btn w-full bg-primary text-base3 py-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-primary/20"
-                     >
-                        {adding ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />}
-                        Add Table
-                     </button>
-                  </div>
-               </form>
-               <p className="mt-4 text-[10px] text-text/40 font-bold italic relative z-10">
-                  * Unique ID will be generated as: {newTable.location || 'Location'}/{newTable.number || '00'}
-               </p>
-            </div>
-
-            <div className="space-y-4">
-               <h3 className="text-sm font-black uppercase tracking-widest text-primary ml-2">Your Physical Infrastructure</h3>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {tables.length === 0 ? (
-                     <div className="col-span-full py-12 text-center aura-card border-dashed border-2 text-text/40 italic">
-                        No tables registered yet. Add your hardware above to enable automated unlocking.
+      <DashboardLayout title="Physical Tables">
+         <div className="max-w-6xl mx-auto space-y-8 pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+               {tables.map(table => (
+                  <AuraCard key={table.id} className={`p-6 border-2 transition-all ${table.status === 'occupied' ? 'border-primary/40 bg-primary/5' : 'border-base2 bg-base3/20'}`}>
+                     <div className="flex justify-between items-start mb-4">
+                        <div className="flex items-center gap-3">
+                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${table.status === 'occupied' ? 'bg-primary text-base3' : 'bg-base2 text-text/40'}`}>
+                              <MapPin size={20} />
+                           </div>
+                           <div>
+                              <h4 className="font-black text-text-emphasis leading-none">Table {table.tableNumber || table.id}</h4>
+                              <p className="text-[10px] font-bold text-text/40 uppercase mt-1">{table.name}</p>
+                           </div>
+                        </div>
+                        <div className={`px-2 py-1 rounded-full text-[8px] font-black uppercase border ${table.status === 'available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                           table.status === 'occupied' ? 'bg-primary/10 text-primary border-primary/20' :
+                              'bg-red-50 text-red-600 border-red-100'
+                           }`}>
+                           {table.status}
+                        </div>
                      </div>
-                  ) : (
-                     tables.map(table => (
-                        <AuraCard key={table._id} className="p-5 flex items-center justify-between group border-2 border-primary/20 transition-all bg-base3/20 shadow-sm hover:shadow-md">
-                           <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center text-primary border border-primary/10">
-                                 <MapPin size={24} />
-                              </div>
-                              <div>
-                                 <h4 className="text-lg font-black text-text-emphasis leading-none mb-1">{table.tableId}</h4>
-                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-bold text-text/40 uppercase tracking-tight">{table.location}</span>
-                                    <span className="w-1 h-1 rounded-full bg-base2"></span>
-                                    {table.status === 'busy' ? (
-                                       <span className="text-[10px] font-bold text-orange uppercase flex items-center gap-1 bg-orange/10 px-2 py-0.5 rounded-full border border-orange/20">
-                                          <Clock size={10} /> Busy (In Game)
-                                       </span>
-                                    ) : table.status === 'maintenance' ? (
-                                       <span className="text-[10px] font-bold text-red-500 uppercase flex items-center gap-1 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
-                                          <AlertCircle size={10} /> Maintenance
-                                       </span>
-                                    ) : (
-                                       <span className="text-[10px] font-bold text-emerald-500 uppercase flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                                          <CheckCircle2 size={10} /> {new Date() - new Date(table.lastPulse) < 600000 ? 'IoT Online' : 'IoT Idle'}
-                                       </span>
-                                    )}
-                                 </div>
-                                 <div className="mt-1 flex items-center gap-2">
-                                    <span className="text-[9px] text-text/30 font-bold uppercase">Health: </span>
-                                    <div className={`w-2 h-2 rounded-full ${new Date() - new Date(table.lastPulse) < 300000 ? 'bg-green animate-pulse' : 'bg-red/50'}`}></div>
-                                    <span className="text-[9px] text-text/40">{table.lastPulse ? `Seen ${new Date(table.lastPulse).toLocaleTimeString()}` : 'Never seen'}</span>
-                                 </div>
-                              </div>
-                           </div>
-                           <div className="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                 onClick={() => handleToggleMaintenance(table._id)}
-                                 className={`p-2 rounded-lg transition-all active:scale-95 ${
-                                    table.status === 'maintenance' ? 'bg-red text-text-emphasis shadow-sm' : 'text-text/40 hover:text-red hover:bg-red/5'
-                                 }`}
-                                 title={table.status === 'maintenance' ? 'Restore Table' : 'Mark for Maintenance'}
-                              >
-                                 <AlertCircle size={18} />
-                              </button>
-                              <button
-                                 className="p-2 text-text/40 hover:text-primary transition-colors active:scale-95"
-                                 title="View QR Code/Config"
-                              >
-                                 <QrCode size={18} />
-                              </button>
-                              <button
-                                 onClick={() => handleDeleteTable(table._id)}
-                                 className="p-2 text-text/40 hover:text-red transition-colors active:scale-95"
-                                 title="Remove Table"
-                              >
-                                 <Trash2 size={18} />
-                              </button>
-                           </div>
-                        </AuraCard>
-                     ))
-                  )}
-               </div>
-            </div>
 
-            <div className="bg-amber-50 border border-amber-200 p-6 rounded-2xl flex gap-4">
-               <AlertCircle className="text-amber-600 shrink-0" size={24} />
-               <div>
-                  <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight mb-1">Hardware Setup Required</h4>
-                  <p className="text-xs text-amber-800/80 leading-relaxed">
-                     To enable physical ball release, ensure your ESP32/GSM hardware is configured with the Table IDs listed above. The system sends a pulse to the <code>cue-masters/iot/unlock/[TableID]</code> MQTT topic upon fee distribution.
-                  </p>
-               </div>
+                     <div className="space-y-3 mb-6">
+                        <div className="flex items-center justify-between text-[10px] font-bold">
+                           <span className="text-text/40 uppercase">Hardware Status</span>
+                           <span className={`flex items-center gap-1 ${table.device?.status === 'online' ? 'text-emerald-500' : 'text-red-500'}`}>
+                              <Zap size={10} fill="currentColor" />
+                              {table.device?.status || 'offline'}
+                           </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] font-bold">
+                           <span className="text-text/40 uppercase">Last Pulse</span>
+                           <span className="text-text/60 italic">
+                              {table.device?.lastSeenAt ? new Date(table.device.lastSeenAt).toLocaleTimeString() : 'Never'}
+                           </span>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-2 gap-2">
+                        {table.status === 'available' ? (
+                           <button
+                              onClick={() => { setSelectedTable(table); setShowActivateModal(true); }}
+                              className="aura-btn bg-primary text-base3 py-2 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-1.5"
+                           >
+                              <Zap size={14} /> Activate
+                           </button>
+                        ) : (
+                           <button
+                              onClick={() => handleLockTable(table.id)}
+                              className="aura-btn bg-red text-base3 py-2 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-1.5"
+                           >
+                              <X size={14} /> Lock Table
+                           </button>
+                        )}
+                        <button
+                           onClick={() => handleSendMessage(table.id)}
+                           className="aura-btn bg-base2 text-text-emphasis py-2 rounded-lg text-[10px] font-black uppercase flex items-center justify-center gap-1.5"
+                        >
+                           <MessageSquare size={14} /> Message
+                        </button>
+                     </div>
+                  </AuraCard>
+               ))}
             </div>
          </div>
+
+         {showActivateModal && (
+            <div className="fixed inset-0 bg-base3/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+               <AuraCard className="w-full max-w-md p-8 relative">
+                  <button onClick={() => setShowActivateModal(false)} className="absolute top-4 right-4 text-text/40 hover:text-text-emphasis">
+                     <X size={24} />
+                  </button>
+                  <h3 className="text-xl font-black text-text-emphasis uppercase tracking-tight mb-6">Activate Table {selectedTable?.tableNumber}</h3>
+                  <form onSubmit={handleActivateTable} className="space-y-4">
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-text/40 mb-1.5 ml-1">Session Type</label>
+                        <select
+                           value={activationData.sessionType}
+                           onChange={(e) => setActivationData({ ...activationData, sessionType: e.target.value })}
+                           className="w-full bg-base2/20 border border-base2 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-primary"
+                        >
+                           <option value="direct_match">Direct Match</option>
+                           <option value="tournament">Tournament Match</option>
+                           <option value="manual_test">Manual Test</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-text/40 mb-1.5 ml-1">Select Match/Activity</label>
+                        <select
+                           value={activationData.matchId}
+                           onChange={(e) => {
+                              const match = activeActivities.find(a => a.id === e.target.value);
+                              setActivationData({
+                                 ...activationData,
+                                 matchId: e.target.value,
+                                 playerName: match?.player1?.fullName || match?.player1Id?.fullName
+                              });
+                           }}
+                           className="w-full bg-base2/20 border border-base2 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-primary"
+                        >
+                           <option value="">-- Choose Activity --</option>
+                           {activeActivities.map(act => (
+                              <option key={act.id} value={act.id}>
+                                 {act.type.toUpperCase()}: {act.player1?.fullName || act.player1Id?.fullName} vs {act.player2?.fullName || act.player2Id?.fullName}
+                              </option>
+                           ))}
+                        </select>
+                     </div>
+                     <div>
+                        <label className="block text-[10px] font-black uppercase text-text/40 mb-1.5 ml-1">Duration (Minutes)</label>
+                        <input
+                           type="number"
+                           value={activationData.duration}
+                           onChange={(e) => setActivationData({ ...activationData, duration: e.target.value })}
+                           className="w-full bg-base2/20 border border-base2 rounded-xl px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-primary"
+                        />
+                     </div>
+                     <button type="submit" className="aura-btn w-full bg-primary text-base3 py-4 rounded-xl font-black uppercase tracking-widest mt-4">
+                        Confirm & Unlock
+                     </button>
+                  </form>
+               </AuraCard>
+            </div>
+         )}
       </DashboardLayout>
    );
 };

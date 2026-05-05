@@ -377,7 +377,7 @@ const WalletPage = () => {
                 )}
                 {transactions.length > 0 ? (
                   transactions.map((tx) => (
-                    <div key={tx._id} className="p-3 md:px-6 hover:bg-base2/10 transition-colors flex md:grid md:grid-cols-12 gap-3 md:gap-4 items-center group overflow-hidden">
+                    <div key={tx.id} className="p-3 md:px-6 hover:bg-base2/10 transition-colors flex md:grid md:grid-cols-12 gap-3 md:gap-4 items-center group overflow-hidden">
                       {/* Icon & Type & Date Combined */}
                       <div className="md:col-span-5 flex items-center gap-3 min-w-0 flex-1">
                         <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee'

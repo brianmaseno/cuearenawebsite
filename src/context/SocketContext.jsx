@@ -12,12 +12,15 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Only connect if user is logged in
-    if (user && user._id) {
-      const newSocket = io(import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000`);
+    if (user && user.id) {
+      const socketUrl = import.meta.env.VITE_API_URL || `${window.location.origin}`;
+      const newSocket = io(socketUrl, {
+        transports: ['websocket', 'polling'], // WebSocket first, fallback to polling
+      });
       setSocket(newSocket);
 
       // Join user-specific room for private notifications
-      newSocket.emit('join_room', `user_${user._id}`);
+      newSocket.emit('join_room', `user_${user.id}`);
 
       return () => {
         newSocket.close();
@@ -47,11 +50,11 @@ export const SocketProvider = ({ children }) => {
   };
 
   const value = React.useMemo(() => ({
-    socket, 
-    joinMatchRoom, 
-    leaveMatchRoom, 
-    joinTournamentRoom, 
-    leaveTournamentRoom 
+    socket,
+    joinMatchRoom,
+    leaveMatchRoom,
+    joinTournamentRoom,
+    leaveTournamentRoom
   }), [socket]);
 
   return (

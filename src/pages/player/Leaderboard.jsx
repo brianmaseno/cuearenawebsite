@@ -14,7 +14,7 @@ const Leaderboard = () => {
 
   useEffect(() => {
     fetchLeaderboard();
-  }, [user?._id]);
+  }, [user?.id]);
 
   const fetchLeaderboard = async () => {
     try {
@@ -108,11 +108,11 @@ const Leaderboard = () => {
             </div>
 
             {players.map((player, index) => {
-              const isMe = user?._id === player._id;
+              const isMe = user?.id === player.id;
 
               return (
                 <motion.div
-                  key={player._id}
+                  key={player.id}
                   variants={isMe ? {} : itemVariants}
                   initial={isMe ? { opacity: 1, y: 0 } : "hidden"}
                   animate={isMe ? { opacity: 1, y: 0 } : "visible"}
@@ -207,7 +207,7 @@ const Leaderboard = () => {
             })}
 
             {/* Personalized "Me" row if not in top list */}
-            {user?.role === 'player' && myRankData && !players.find(p => p._id === user._id) && (
+            {user?.role === 'player' && myRankData && !players.find(p => p.id === user.id) && (
               <div className="pt-2 border-t border-primary/20 mt-4">
                 <div className="group relative backdrop-blur-xl border border-primary/40 bg-primary/20 ring-1 ring-primary/20 rounded-2xl p-2.5 md:px-6 md:py-3.5 transition-all duration-400 flex md:grid md:grid-cols-12 md:items-center gap-3 md:gap-4 overflow-hidden">
                   {/* Combined Rank & Info for Mobile */}

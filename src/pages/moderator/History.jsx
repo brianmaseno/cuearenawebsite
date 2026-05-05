@@ -152,9 +152,9 @@ const History = () => {
               </div>
             ) : (
               filteredData.map((match) => {
-                const winnerIdObj = match.winnerId?._id || match.winnerId;
-                const p1IdObj = match.player1Id?._id || match.player1Id;
-                const p2IdObj = match.player2Id?._id || match.player2Id;
+                const winnerIdObj = match.winnerId?.id || match.winnerId;
+                const p1IdObj = match.player1Id?.id || match.player1Id;
+                const p2IdObj = match.player2Id?.id || match.player2Id;
 
                 const isP1Winner = winnerIdObj && winnerIdObj.toString() === p1IdObj?.toString();
                 const isP2Winner = winnerIdObj && winnerIdObj.toString() === p2IdObj?.toString();
@@ -163,7 +163,7 @@ const History = () => {
                 const winnerName = match.winnerId?.fullName || (isP1Winner ? match.player1Id?.fullName : isP2Winner ? match.player2Id?.fullName : null);
 
                 return (
-                  <div key={match._id} className="card-premium p-0 rounded-2xl overflow-hidden group transition-all border-[3px] border-primary/20 bg-base3/10 shadow-sm hover:shadow-md">
+                  <div key={match.id} className="card-premium p-0 rounded-2xl overflow-hidden group transition-all border-[3px] border-primary/20 bg-base3/10 shadow-sm hover:shadow-md">
                     <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <img src="/favicon.png" alt="7 Ball" className="w-5 h-5 md:w-6 md:h-6 shrink-0 drop-shadow-sm" />
@@ -290,7 +290,7 @@ const History = () => {
 
                         {!match.isTournamentMatch && (
                           <button
-                            onClick={() => handleRebook('match', match._id)}
+                            onClick={() => handleRebook('match', match.id)}
                             className="mt-4 w-full py-2.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all border border-primary/20"
                           >
                             <RefreshCw size={12} />
@@ -314,7 +314,7 @@ const History = () => {
               filteredData.map((battle) => {
                 const isCancelled = battle.status === 'cancelled';
                 return (
-                  <div key={battle._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col transition-all shadow-sm hover:shadow-md border-[3px] border-primary/20 bg-base3/10">
+                  <div key={battle.id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col transition-all shadow-sm hover:shadow-md border-[3px] border-primary/20 bg-base3/10">
                     <div className="bg-base2/5 p-4 flex flex-wrap md:flex-nowrap gap-3 justify-between items-center border-b border-base2/50 overflow-hidden">
                       <div className="flex items-center gap-2 flex-1 min-w-0">
                         <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shadow-sm shrink-0">
@@ -351,12 +351,12 @@ const History = () => {
                         </div>
                       )}
 
-                      {expandedBattles[battle._id] && (
+                      {expandedBattles[battle.id] && (
                         <div className="space-y-2 mb-4 max-h-[140px] overflow-y-auto pr-2 thin-scrollbar flex-1 opacity-60 animate-in slide-in-from-top-2 duration-300">
                           {battle.participants.map((p) => {
-                            const isWinner = battle.winnerId?._id === p.userId?._id;
+                            const isWinner = battle.winnerId?.id === p.userId?.id;
                             return (
-                              <div key={p.userId?._id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : 'bg-base2/20 border-base2'
+                              <div key={p.userId?.id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : 'bg-base2/20 border-base2'
                                 }`}>
                                 <div className="flex items-center gap-2 overflow-hidden">
                                   <img
@@ -379,10 +379,10 @@ const History = () => {
                       )}
 
                       <button
-                        onClick={() => setExpandedBattles(prev => ({ ...prev, [battle._id]: !prev[battle._id] }))}
+                        onClick={() => setExpandedBattles(prev => ({ ...prev, [battle.id]: !prev[battle.id] }))}
                         className="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors flex items-center justify-center gap-2 mb-4 border border-dashed border-primary/20 rounded-lg hover:bg-primary/5"
                       >
-                        {expandedBattles[battle._id] ? (
+                        {expandedBattles[battle.id] ? (
                           <>Hide Participants <ChevronRight size={10} className="rotate-90" /></>
                         ) : (
                           <>View Participants ({battle.participants.length}) <ChevronRight size={10} /></>
@@ -404,7 +404,7 @@ const History = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleRebook('battle', battle._id)}
+                        onClick={() => handleRebook('battle', battle.id)}
                         className="w-full py-2 bg-primary text-base3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md active:scale-95"
                       >
                         <RefreshCw size={12} />
@@ -426,7 +426,7 @@ const History = () => {
               filteredData.map((t) => {
                 const isCancelled = t.status === 'cancelled';
                 return (
-                  <div key={t._id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group transition-all shadow-sm hover:shadow-md h-full border-[3px] border-primary/20 bg-base3/10">
+                  <div key={t.id} className="card-premium p-0 rounded-2xl overflow-hidden flex flex-col group transition-all shadow-sm hover:shadow-md h-full border-[3px] border-primary/20 bg-base3/10">
                     <div className="bg-base2/5 p-4 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         <img src="/favicon.png" alt="7 Ball" className="w-6 h-6 shrink-0 drop-shadow-sm" />
@@ -470,7 +470,7 @@ const History = () => {
                     {/* Completion Metadata Footer matching Match Style */}
                     <div className="bg-base2/10 p-4 border-t border-base2 mt-auto">
                       <div className="flex items-center justify-between text-[10px] font-bold text-text/40">
-                        <Link to={`/moderator/manage-tournament/${t._id}`} className="flex items-center gap-1.5 font-black uppercase tracking-wider text-primary hover:text-primary-focus transition-colors">
+                        <Link to={`/moderator/manage-tournament/${t.id}`} className="flex items-center gap-1.5 font-black uppercase tracking-wider text-primary hover:text-primary-focus transition-colors">
                           <TargetIcon size={12} />
                           View Tournament Details
                         </Link>

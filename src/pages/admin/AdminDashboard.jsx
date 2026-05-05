@@ -43,7 +43,7 @@ const AdminDashboard = () => {
 
         const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
         const activeNow = users.filter(u => u.lastActive && new Date(u.lastActive) > fifteenMinsAgo).length;
-        
+
         const ongoingTournaments = tournaments.filter(t => t.status === 'ongoing');
         const ongoingMatches = matches.filter(m => m.status === 'ongoing');
         const totalOngoing = ongoingTournaments.length + ongoingMatches.length;
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
   return (
     <DashboardLayout title="System Administration Dashboard">
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-        
+
         {/* Strategic Hero Metrics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {/* Platform Reach */}
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
                 <Users size={24} />
               </div>
               <div className={`flex items-center gap-1.5 ${parseFloat(stats.platformGrowth) >= 0 ? 'text-green bg-green/10' : 'text-red bg-red/10'} px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-current/10`}>
-                {parseFloat(stats.platformGrowth) >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />} 
+                {parseFloat(stats.platformGrowth) >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                 {parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}{stats.platformGrowth}%
               </div>
             </div>
@@ -136,7 +136,7 @@ const AdminDashboard = () => {
               <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Reach</div>
               <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalUsers}</h4>
               <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                 <span className="text-blue font-black">{stats.newMembersToday}</span> registrations today
+                <span className="text-blue font-black">{stats.newMembersToday}</span> registrations today
               </div>
             </div>
             <motion.div
@@ -154,14 +154,14 @@ const AdminDashboard = () => {
                 <Zap size={24} />
               </div>
               <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-primary/10">
-                 LIVE PULSE
+                LIVE PULSE
               </div>
             </div>
             <div>
               <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Live Pulse</div>
               <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.activeNow}</h4>
               <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic relative z-10">
-                 Engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
+                Engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
               </div>
             </div>
             <motion.div
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
               <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Event Velocity</div>
               <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalActivities}</h4>
               <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                 <span className="text-green font-black">{stats.completedCount}</span> successfully archived
+                <span className="text-green font-black">{stats.completedCount}</span> successfully archived
               </div>
             </div>
             <motion.div
@@ -211,7 +211,7 @@ const AdminDashboard = () => {
               <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Fleet</div>
               <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderatorCount}</h4>
               <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                 System coverage <span className="text-primary font-black">{stats.moderationCoverage}%</span>
+                System coverage <span className="text-primary font-black">{stats.moderationCoverage}%</span>
               </div>
             </div>
             <motion.div
@@ -236,7 +236,7 @@ const AdminDashboard = () => {
               <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Audit Pulse</div>
               <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalLogs}</h4>
               <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                 <span className="text-orange font-black">{stats.logsToday}</span> system events today
+                <span className="text-orange font-black">{stats.logsToday}</span> system events today
               </div>
             </div>
             <motion.div
@@ -245,11 +245,33 @@ const AdminDashboard = () => {
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
             />
           </AuraCard>
+
+          {/* Device Fleet */}
+          <Link to="/admin/devices" className="block">
+            <AuraCard className="relative group overflow-hidden border-2 border-emerald/20 bg-emerald/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all hover:scale-[1.02]">
+              <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald/10 rounded-full blur-3xl group-hover:bg-emerald/20 transition-colors" />
+              <div className="flex justify-between items-start mb-4 relative z-10">
+                <div className="w-12 h-12 bg-emerald-500 text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-6 transition-transform">
+                  <Zap size={24} />
+                </div>
+                <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-emerald-100">
+                  HARDWARE
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Device Fleet</div>
+                <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">IoT</h4>
+                <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
+                  Manage physical table controllers
+                </div>
+              </div>
+            </AuraCard>
+          </Link>
         </div>
 
         {/* Global Strategy Matrix */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Main Activity Matrix */}
           <div className="lg:col-span-2 space-y-6">
             <section className="card-premium rounded-3xl overflow-hidden border-2 border-primary/20 bg-base3/10 shadow-2xl backdrop-blur-md">
@@ -277,31 +299,30 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-base2/50">
                     {activityMatrix.map((item) => (
-                      <tr key={item._id} className="hover:bg-primary/5 transition-colors group">
+                      <tr key={item.id} className="hover:bg-primary/5 transition-colors group">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${
-                              item.type === 'Tournament' ? 'bg-violet/10 text-violet border border-violet/20' : 'bg-blue/10 text-blue border border-blue/20'
-                            }`}>
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${item.type === 'Tournament' ? 'bg-violet/10 text-violet border border-violet/20' : 'bg-blue/10 text-blue border border-blue/20'
+                              }`}>
                               {item.type === 'Tournament' ? <Trophy size={14} /> : <Target size={14} />}
                             </div>
                             <div>
                               <div className="text-xs font-black text-text-emphasis group-hover:text-primary transition-colors">
                                 {item.type === 'Tournament' ? item.name : (item.player1Id ? `${item.player1Id.fullName} vs ${item.player2Id?.fullName}` : (item.name || item.title || 'Direct Match'))}
                               </div>
-                              <div className="text-[9px] font-mono text-text/30 uppercase tracking-tighter">{item.type} ID: {item._id.slice(-8)}</div>
+                              <div className="text-[9px] font-mono text-text/30 uppercase tracking-tighter">{item.type} ID: {String(item.id).slice(-8)}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                           <StatusBadge status={item.status} registrationDeadline={item.registrationDeadline} className="text-[9px] px-2 py-0.5 font-black uppercase rounded-full shadow-sm" />
+                          <StatusBadge status={item.status} registrationDeadline={item.registrationDeadline} className="text-[9px] px-2 py-0.5 font-black uppercase rounded-full shadow-sm" />
                         </td>
                         <td className="px-6 py-4">
-                           <div className="text-xs font-bold text-text-emphasis leading-tight">{item.organizerId?.fullName || 'System'}</div>
+                          <div className="text-xs font-bold text-text-emphasis leading-tight">{item.organizerId?.fullName || 'System'}</div>
                         </td>
                         <td className="px-6 py-4 text-right">
-                           <div className="text-[10px] font-black text-text/40">{new Date(item.updatedAt).toLocaleDateString()}</div>
-                           <div className="text-[9px] font-bold text-primary italic uppercase">{new Date(item.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                          <div className="text-[10px] font-black text-text/40">{new Date(item.updatedAt).toLocaleDateString()}</div>
+                          <div className="text-[9px] font-bold text-primary italic uppercase">{new Date(item.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         </td>
                       </tr>
                     ))}
@@ -318,30 +339,30 @@ const AdminDashboard = () => {
             <section className="card-premium rounded-3xl overflow-hidden border-2 border-primary/20 bg-base3/10 shadow-xl backdrop-blur-md">
               <div className="p-4 border-b border-base2/50 bg-base3/40">
                 <h3 className="text-[11px] font-black text-text-emphasis uppercase tracking-widest flex items-center gap-2">
-                   <Shield size={14} className="text-primary" /> Platform Pulse
+                  <Shield size={14} className="text-primary" /> Platform Pulse
                 </h3>
               </div>
               <div className="max-h-[380px] overflow-y-auto divide-y divide-base2/50">
                 {moderatorPulse.map((log) => (
-                  <div key={log._id} className="p-4 hover:bg-base2/10 transition-colors">
+                  <div key={log.id} className="p-4 hover:bg-base2/10 transition-colors">
                     <div className="flex items-center gap-2 mb-1.5">
-                       <div className="w-6 h-6 rounded bg-violet/10 text-violet flex items-center justify-center text-[10px] font-black border border-violet/20">
-                          {log.user?.fullName?.[0]}
-                       </div>
-                       <div className="text-[10px] font-black text-text-emphasis uppercase tracking-tight">{log.user?.fullName}</div>
-                       <div className="text-[8px] font-bold text-text/30 bg-base2/50 px-1 rounded ml-auto">{new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="w-6 h-6 rounded bg-violet/10 text-violet flex items-center justify-center text-[10px] font-black border border-violet/20">
+                        {log.user?.fullName?.[0]}
+                      </div>
+                      <div className="text-[10px] font-black text-text-emphasis uppercase tracking-tight">{log.user?.fullName}</div>
+                      <div className="text-[8px] font-bold text-text/30 bg-base2/50 px-1 rounded ml-auto">{new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                     </div>
                     <div className="pl-8">
-                       <div className="text-[10px] font-black text-primary leading-tight mb-0.5">{log.action.replace(/_/g, ' ')}</div>
-                       <div className="text-[10px] text-text/60 font-medium italic break-words">"{log.description.split(': ')[1] || log.description}"</div>
+                      <div className="text-[10px] font-black text-primary leading-tight mb-0.5">{log.action.replace(/_/g, ' ')}</div>
+                      <div className="text-[10px] text-text/60 font-medium italic break-words">"{log.description.split(': ')[1] || log.description}"</div>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="p-4 bg-base3/50 text-center border-t border-base2/50">
-                 <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline transition-all">
-                    Expand Audit Log
-                 </button>
+                <button className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline transition-all">
+                  Expand Audit Log
+                </button>
               </div>
             </section>
           </div>

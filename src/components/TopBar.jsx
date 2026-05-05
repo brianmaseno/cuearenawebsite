@@ -161,9 +161,9 @@ const TopBar = ({ title }) => {
                 {notifications.length > 0 ? (
                   notifications.slice(0, 10).map((n) => (
                     <div
-                      key={n._id}
+                      key={n.id}
                       onClick={() => {
-                        if (!n.isRead) markAsRead(n._id);
+                        if (!n.isRead) markAsRead(n.id);
 
                         // Direct Navigation Logic
                         const rolePath = user?.role === 'moderator' ? '/moderator' : '/dashboard';
@@ -211,7 +211,7 @@ const TopBar = ({ title }) => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            markAsRead(n._id);
+                            markAsRead(n.id);
                           }}
                           className="self-center p-2 text-text/20 hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
                           title="Mark as read"

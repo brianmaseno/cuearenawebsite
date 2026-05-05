@@ -110,7 +110,7 @@ const AdminUsers = () => {
       // Since there's no batch endpoint, we'll fetch in parallel for visible users or just fetch all
       // For now, let's assume we fetch all to simplify caching logic in this component
       const statsPromises = userList.slice(0, 50).map(u =>
-        api.get(`/users/${u._id}/stats`).then(res => ({ id: u._id, stats: res.data }))
+        api.get(`/users/${u.id}/stats`).then(res => ({ id: u.id, stats: res.data }))
       );
       const results = await Promise.allSettled(statsPromises);
       const newStats = {};
@@ -152,7 +152,7 @@ const AdminUsers = () => {
       const { data } = await api.put(`/users/${userId}/status`);
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser({ ...selectedUser, status: data.user.status });
+      if (selectedUser?.id === userId) setSelectedUser({ ...selectedUser, status: data.user.status });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Update failed');
     }
@@ -163,7 +163,7 @@ const AdminUsers = () => {
       const { data } = await api.put(`/users/${userId}/block`);
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser({ ...selectedUser, status: data.user.status });
+      if (selectedUser?.id === userId) setSelectedUser({ ...selectedUser, status: data.user.status });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Block action failed');
     }
@@ -174,7 +174,7 @@ const AdminUsers = () => {
       const { data } = await api.put(`/users/${userId}/role`, { role: newRole });
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser({ ...selectedUser, role: newRole });
+      if (selectedUser?.id === userId) setSelectedUser({ ...selectedUser, role: newRole });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Role update failed');
     }
@@ -184,7 +184,7 @@ const AdminUsers = () => {
     if (e) e.preventDefault();
     try {
       setUpdating(true);
-      const { data } = await api.put(`/users/${selectedUser._id}`, editData);
+      const { data } = await api.put(`/users/${selectedUser.id}`, editData);
       toast.success(data.message);
       fetchUsers();
       setSelectedUser({ ...selectedUser, ...editData });
@@ -228,7 +228,7 @@ const AdminUsers = () => {
       const { data } = await api.delete(`/users/${userId}`);
       toast.success(data.message);
       fetchUsers();
-      if (selectedUser?._id === userId) setSelectedUser(null);
+      if (selectedUser?.id === userId) setSelectedUser(null);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Deletion failed');
     } finally {
@@ -380,9 +380,9 @@ const AdminUsers = () => {
                     <tbody className="divide-y divide-base2/50">
                       {filteredUsers.map((u) => (
                         <tr
-                          key={u._id}
+                          key={u.id}
                           onClick={() => setSelectedUser(u)}
-                          className={`hover:bg-primary/5 transition-colors cursor-pointer group ${selectedUser?._id === u._id ? 'bg-primary/5 ring-1 ring-inset ring-primary/10' : ''}`}
+                          className={`hover:bg-primary/5 transition-colors cursor-pointer group ${selectedUser?.id === u.id ? 'bg-primary/5 ring-1 ring-inset ring-primary/10' : ''}`}
                         >
                           <td className="px-4 py-2.5">
                             <div className="flex items-center gap-3">
@@ -407,7 +407,7 @@ const AdminUsers = () => {
                           </td>
                           <td className="px-4 py-2.5">
                             <div className="flex justify-center">
-                              <UserStatsBadge stats={userStats[u._id]} loading={statsLoading && !userStats[u._id]} />
+                              <UserStatsBadge stats={userStats[u.id]} loading={statsLoading && !userStats[u.id]} />
                             </div>
                           </td>
                           <td className="px-4 py-2.5 text-center">
@@ -457,7 +457,7 @@ const AdminUsers = () => {
                                 <History size={12} /> Logs
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleResetPassword(u._id); }}
+                                onClick={(e) => { e.stopPropagation(); handleResetPassword(u.id); }}
                                 disabled={u.role === 'admin'}
                                 className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-text/60 hover:text-yellow hover:bg-yellow/10 transition-all border border-transparent hover:border-yellow/20 disabled:opacity-20 flex items-center gap-1"
                               >
@@ -465,7 +465,7 @@ const AdminUsers = () => {
                               </button>
                               <div className="w-px h-3 bg-base2 mx-1" />
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleStatusToggle(u._id); }}
+                                onClick={(e) => { e.stopPropagation(); handleStatusToggle(u.id); }}
                                 disabled={u.role === 'admin' || u.status === 'blocked'}
                                 className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${u.status === 'suspended'
                                     ? 'bg-emerald/10 text-emerald border-emerald/20 hover:bg-emerald/20'
@@ -476,7 +476,7 @@ const AdminUsers = () => {
                                 {u.status === 'suspended' ? 'Activate' : 'Suspend'}
                               </button>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); handleBlockToggle(u._id); }}
+                                  onClick={(e) => { e.stopPropagation(); handleBlockToggle(u.id); }}
                                   disabled={u.role === 'admin'}
                                   className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter transition-all border flex items-center gap-1 ${u.status === 'blocked'
                                       ? 'bg-blue/10 text-blue border-blue/20 hover:bg-blue/20'
@@ -487,7 +487,7 @@ const AdminUsers = () => {
                                   {u.status === 'blocked' ? 'Unblock' : 'Block'}
                                 </button>
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id); }}
+                                  onClick={(e) => { e.stopPropagation(); handleDeleteUser(u.id); }}
                                   disabled={u.role === 'admin'}
                                   className="px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-tighter text-red hover:bg-red hover:text-base3 transition-all border border-red/20 flex items-center gap-1 shadow-sm"
                                 >
@@ -561,13 +561,13 @@ const AdminUsers = () => {
                 <div className="bg-base2/20 p-3 rounded-2xl border border-base2/40 text-center backdrop-blur-sm group hover:border-text/30 transition-all">
                   <p className="text-[8px] uppercase font-black text-text/40 mb-1 tracking-tighter">Battles</p>
                   <p className="text-xl font-black text-text-emphasis leading-none">
-                    {userStats[selectedUser._id]?.totalGames || 0}
+                    {userStats[selectedUser.id]?.totalGames || 0}
                   </p>
                 </div>
                 <div className="bg-yellow/5 p-3 rounded-2xl border border-yellow/20 text-center backdrop-blur-sm group hover:border-yellow transition-all">
                   <p className="text-[8px] uppercase font-black text-yellow/60 mb-1 tracking-tighter">Victories</p>
                   <p className="text-xl font-black text-yellow leading-none">
-                    {userStats[selectedUser._id]?.totalWins || 0}
+                    {userStats[selectedUser.id]?.totalWins || 0}
                   </p>
                 </div>
               </div>
@@ -625,14 +625,14 @@ const AdminUsers = () => {
                 <p className="text-[8px] uppercase font-medium text-primary tracking-widest">Authority Control</p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => handleRoleChange(selectedUser._id, 'moderator')}
+                    onClick={() => handleRoleChange(selectedUser.id, 'moderator')}
                     disabled={selectedUser.role === 'moderator' || selectedUser.role === 'admin'}
                     className="flex items-center justify-center gap-2 px-3 py-2 bg-purple/10 text-purple border border-purple/20 rounded-xl text-[9px] font-medium uppercase hover:bg-purple/20 transition-all disabled:opacity-20"
                   >
                     <Shield size={12} /> Promote
                   </button>
                   <button
-                    onClick={() => handleRoleChange(selectedUser._id, 'player')}
+                    onClick={() => handleRoleChange(selectedUser.id, 'player')}
                     disabled={selectedUser.role === 'player' || selectedUser.role === 'admin'}
                     className="flex items-center justify-center gap-2 px-3 py-2 bg-blue/10 text-blue border border-blue/20 rounded-xl text-[9px] font-medium uppercase hover:bg-blue/20 transition-all disabled:opacity-20"
                   >
@@ -651,7 +651,7 @@ const AdminUsers = () => {
               </button>
               {selectedUser.role !== 'admin' && (
                 <button
-                  onClick={() => handleDeleteUser(selectedUser._id)}
+                  onClick={() => handleDeleteUser(selectedUser.id)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red/5 border border-red/10 rounded-xl text-[9px] font-black uppercase text-red hover:bg-red hover:text-white transition-all"
                 >
                   <UserX size={14} /> Terminate Account

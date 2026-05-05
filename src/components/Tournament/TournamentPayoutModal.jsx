@@ -23,17 +23,17 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
         let rankLabel = `${i + 1}${i === 0 ? 'st' : i === 1 ? 'nd' : i === 2 ? 'rd' : 'th'} Place`;
 
         if (i === 0) {
-            playerId = tournament?.winner?._id || tournament?.winner || '';
+            playerId = tournament?.winner?.id || tournament?.winner || '';
         } else if (i === 1 && finalMatch && finalMatch.status === 'completed') {
-            playerId = (finalMatch.winnerId?._id || finalMatch.winnerId || '').toString() === (finalMatch.player1Id?._id || finalMatch.player1Id || '').toString()
-                ? finalMatch.player2Id?._id || finalMatch.player2Id
-                : finalMatch.player1Id?._id || finalMatch.player1Id;
+            playerId = (finalMatch.winnerId?.id || finalMatch.winnerId || '').toString() === (finalMatch.player1Id?.id || finalMatch.player1Id || '').toString()
+                ? finalMatch.player2Id?.id || finalMatch.player2Id
+                : finalMatch.player1Id?.id || finalMatch.player1Id;
         } else if (i === 2 && thirdPlaceMatch && thirdPlaceMatch.status === 'completed') {
-            playerId = thirdPlaceMatch.winnerId?._id || thirdPlaceMatch.winnerId || '';
+            playerId = thirdPlaceMatch.winnerId?.id || thirdPlaceMatch.winnerId || '';
         } else if (i === 3 && thirdPlaceMatch && thirdPlaceMatch.status === 'completed') {
-            playerId = (thirdPlaceMatch.winnerId?._id || thirdPlaceMatch.winnerId || '').toString() === (thirdPlaceMatch.player1Id?._id || thirdPlaceMatch.player1Id || '').toString()
-                ? thirdPlaceMatch.player2Id?._id || thirdPlaceMatch.player2Id
-                : thirdPlaceMatch.player1Id?._id || thirdPlaceMatch.player1Id;
+            playerId = (thirdPlaceMatch.winnerId?.id || thirdPlaceMatch.winnerId || '').toString() === (thirdPlaceMatch.player1Id?.id || thirdPlaceMatch.player1Id || '').toString()
+                ? thirdPlaceMatch.player2Id?.id || thirdPlaceMatch.player2Id
+                : thirdPlaceMatch.player1Id?.id || thirdPlaceMatch.player1Id;
         }
 
         initial.push({
@@ -101,7 +101,7 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
 
     setLoading(true);
     try {
-      await api.post(`/tournaments/${tournament._id}/distribute-prizes`, { payouts: validPayouts });
+      await api.post(`/tournaments/${tournament.id}/distribute-prizes`, { payouts: validPayouts });
       toast.success('Prizes distributed successfully!');
       onSuccess?.();
       onClose();
@@ -194,7 +194,7 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
                     >
                       <option value="">Select Player</option>
                       {tournament?.confirmedPlayers?.map(player => (
-                        <option key={player._id} value={player._id}>{player.fullName}</option>
+                        <option key={player.id} value={player.id}>{player.fullName}</option>
                       ))}
                     </select>
                   </div>

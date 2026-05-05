@@ -79,8 +79,8 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                   { id: match.player1Id, score: match.scorePlayer1, accepted: match.player1Accepted },
                   { id: match.player2Id, score: match.scorePlayer2, accepted: match.player2Accepted }
                ].map((p, i) => {
-                  const isWinner = isCompleted && (match.winnerId?._id || match.winnerId) === (p.id?._id || p.id);
-                  const isLoser = isCompleted && (match.winnerId?._id || match.winnerId) && (match.winnerId?._id || match.winnerId) !== (p.id?._id || p.id);
+                  const isWinner = isCompleted && (match.winnerId?.id || match.winnerId) === (p.id?.id || p.id);
+                  const isLoser = isCompleted && (match.winnerId?.id || match.winnerId) && (match.winnerId?.id || match.winnerId) !== (p.id?.id || p.id);
                   
                   return (
                      <div key={i} className={`flex items-center justify-between px-2 py-1.5 rounded-xl transition-all duration-300 ${
@@ -235,7 +235,7 @@ const BracketCanvas = ({ tournament, onMatchClick, user }) => {
                            .filter(m => m.round === roundNum)
                            .sort((a, b) => a.matchIndex - b.matchIndex)
                            .map(match => (
-                              <div key={match._id} className="match-node">
+                              <div key={match.id} className="match-node">
                                  <BracketMatchCard 
                                     match={match} 
                                     isFinal={roundNum === maxRound}

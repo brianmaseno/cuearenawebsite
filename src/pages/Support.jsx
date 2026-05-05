@@ -151,14 +151,14 @@ const Support = () => {
               </div>
             ) : (
               tickets.map((ticket) => (
-                <AuraCard key={ticket._id} className="p-0 overflow-hidden border-none group transition-all hover:scale-[1.01]">
+                <AuraCard key={ticket.id} className="p-0 overflow-hidden border-none group transition-all hover:scale-[1.01]">
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
                         <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase border ${getStatusColor(ticket.status)}`}>
                           {ticket.status.replace('_', ' ')}
                         </div>
-                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">#{ticket._id.slice(-8)}</span>
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">#{String(ticket.id).slice(-8)}</span>
                       </div>
                       <span className="text-[10px] font-black text-gray-600">{new Date(ticket.createdAt).toLocaleDateString()}</span>
                     </div>

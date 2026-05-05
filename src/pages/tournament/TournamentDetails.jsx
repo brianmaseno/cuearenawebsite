@@ -107,7 +107,7 @@ const TournamentDetails = () => {
       );
    }
 
-   const isPlayerConfirmed = tournament.confirmedPlayers?.some(p => p._id === user?._id);
+   const isPlayerConfirmed = tournament.confirmedPlayers?.some(p => p.id === user?.id);
    const isRegistrationOpen = tournament.status === 'open_for_players';
 
    return (
@@ -265,7 +265,7 @@ const TournamentDetails = () => {
                            </h4>
                            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 thin-scrollbar">
                               {tournament.confirmedPlayers?.map((player) => (
-                                 <div key={player._id} className="flex items-center justify-between p-3 bg-base3 rounded-xl border border-base2/50 group transition-all hover:border-primary/30">
+                                 <div key={player.id} className="flex items-center justify-between p-3 bg-base3 rounded-xl border border-base2/50 group transition-all hover:border-primary/30">
                                     <div className="flex items-center gap-3">
                                        <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-black text-xs">
                                           {player.fullName?.[0] || 'P'}

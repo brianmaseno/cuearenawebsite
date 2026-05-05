@@ -33,7 +33,7 @@ const CreateMatch = () => {
         const { data } = await api.get(`/users/players?search=${searchQuery}`);
         // Filter out already selected players
         const filtered = data.filter(
-          p => !selectedPlayers.some(selected => selected._id === p._id)
+          p => !selectedPlayers.some(selected => selected.id === p.id)
         );
         setSearchResults(filtered);
       } catch (err) {
@@ -62,7 +62,7 @@ const CreateMatch = () => {
   };
 
   const handleRemovePlayer = (id) => {
-    setSelectedPlayers(selectedPlayers.filter(p => p._id !== id));
+    setSelectedPlayers(selectedPlayers.filter(p => p.id !== id));
   };
 
   const maskEmail = (email) => {
@@ -83,8 +83,8 @@ const CreateMatch = () => {
       const payload = {
         ...formData,
         setsCount: Number(formData.setsCount || 1),
-        player1Id: selectedPlayers[0]._id,
-        player2Id: selectedPlayers[1]._id,
+        player1Id: selectedPlayers[0].id,
+        player2Id: selectedPlayers[1].id,
       };
       await api.post('/direct-matches', payload);
       toast.success('Direct match created and invitations sent!');
@@ -204,7 +204,7 @@ const CreateMatch = () => {
                   <div className="absolute z-50 w-full mt-2 bg-base3 border border-base2 rounded-xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto">
                     {searchResults.map((p) => (
                       <button
-                        key={p._id}
+                        key={p.id}
                         type="button"
                         onClick={() => handleSelectPlayer(p)}
                         className="w-full px-4 py-3 text-left hover:bg-base2/50 flex items-center gap-3 transition-colors border-b border-base2 last:border-0"
@@ -240,7 +240,7 @@ const CreateMatch = () => {
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {selectedPlayers.map((p, index) => (
-                  <div key={p._id} className="bg-base3 border border-base2 p-4 rounded-xl flex items-center justify-between group hover:border-primary transition-colors shadow-sm">
+                  <div key={p.id} className="bg-base3 border border-base2 p-4 rounded-xl flex items-center justify-between group hover:border-primary transition-colors shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-base2 flex items-center justify-center text-text font-bold">
                         {index + 1}
@@ -252,7 +252,7 @@ const CreateMatch = () => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleRemovePlayer(p._id)}
+                      onClick={() => handleRemovePlayer(p.id)}
                       className="p-2 text-red hover:bg-red/5 rounded-lg transition-colors"
                       title="Remove Player"
                     >

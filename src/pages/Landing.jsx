@@ -395,7 +395,7 @@ const Landing = () => {
                       const style = colors[idx % colors.length];
                       return (
                         <motion.div
-                          key={t._id}
+                          key={t.id}
                           variants={itemVariants}
                           whileHover="hover"
                           customVariants={card3DVariants}
@@ -403,7 +403,7 @@ const Landing = () => {
                           style={{ transformStyle: 'preserve-3d' }}
                         >
                           <motion.div variants={card3DVariants} className="p-8 flex flex-col h-full text-left">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-base2"><motion.div initial={{ width: 0 }} whileInView={{ width: `${(t.confirmedPlayers.length / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} /></div>
+                            <div className="absolute top-0 left-0 w-full h-2 bg-base2"><motion.div initial={{ width: 0 }} whileInView={{ width: `${((t.confirmedPlayers?.length || 0) / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} /></div>
 
                             <div className="flex justify-between items-start mb-4" style={{ translateZ: 20 }}>
                               <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
@@ -415,7 +415,7 @@ const Landing = () => {
                             <div className="grid grid-cols-1 gap-3 mb-6 flex-1 text-xs font-bold text-text/80 text-left" style={{ translateZ: 10 }}>
                               <div className="flex items-center gap-3 p-2.5 rounded-xl bg-base2/30 text-left"><MapPin size={16} className="text-primary" /> <span className="truncate text-left">{t.venue}</span></div>
                               <div className="flex gap-3 text-left">
-                                <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Users size={16} className="text-blue" /> <span>{t.confirmedPlayers.length}/{t.maxPlayers}</span></div>
+                                <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Users size={16} className="text-blue" /> <span>{t.confirmedPlayers?.length || 0}/{t.maxPlayers}</span></div>
                                 <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Calendar size={16} className="text-special-red" /> <span>{new Date(t.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span></div>
                               </div>
                             </div>
@@ -434,7 +434,7 @@ const Landing = () => {
               <div className="aura-card border-none overflow-hidden shadow-2xl relative h-auto text-left">
                 <div className="divide-y divide-base2/50 max-h-[850px] overflow-y-auto custom-scrollbar text-left">
                   {leaderboard.map((p, i) => (
-                    <motion.div key={p._id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className={`flex items-center gap-3 p-2.5 transition-all group relative overflow-hidden ${i === 0 ? 'bg-primary/5' : 'hover:bg-primary/5'}`}>
+                    <motion.div key={p.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className={`flex items-center gap-3 p-2.5 transition-all group relative overflow-hidden ${i === 0 ? 'bg-primary/5' : 'hover:bg-primary/5'}`}>
                       {i === 0 && <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />}
                       <div className="flex flex-col items-center justify-center min-w-[20px]">
                         {p.rankTrend === 'up' ? <ChevronUp size={12} className="text-emerald-500 mb-0.5" /> : p.rankTrend === 'down' ? <ChevronDown size={12} className="text-aura-cyan mb-0.5" /> : p.rankTrend === 'new' ? <Info size={12} className="text-primary mx-auto mb-0.5" /> : <Minus size={12} className="text-text/20 mb-0.5" />}

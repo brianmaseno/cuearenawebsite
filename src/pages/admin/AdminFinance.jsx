@@ -148,7 +148,7 @@ const AdminFinance = () => {
             </thead>
             <tbody className="divide-y divide-base2/20">
               {filteredTransactions.map(tx => (
-                <tr key={tx._id} className="hover:bg-base2/10 transition-colors group">
+                <tr key={tx.id} className="hover:bg-base2/10 transition-colors group">
                   <td className="px-6 py-3">
                     <p className="text-[12px] font-black text-text-emphasis tracking-tight">{new Date(tx.createdAt).toLocaleDateString()}</p>
                     <p className="text-[9px] text-text/40 font-bold">{new Date(tx.createdAt).toLocaleTimeString()}</p>

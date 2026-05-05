@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Deployed at: https://cuearena.africa/
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
@@ -19,8 +21,8 @@ export default defineConfig({
         theme_color: '#7c3aed',
         background_color: '#0f172a',
         display: 'standalone',
-        scope: '/',
-        start_url: '/',
+        scope: '/cue-arena/',
+        start_url: '/cue-arena/',
         orientation: 'portrait',
         icons: [
           {
@@ -46,4 +48,12 @@ export default defineConfig({
       }
     })
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
+  },
 })

@@ -192,7 +192,7 @@ const AdminModeratorRequests = () => {
                 </tr>
               ) : (
                 filteredRequests.map((request) => (
-                  <tr key={request._id} className="hover:bg-base2/5 transition-colors group">
+                  <tr key={request.id} className="hover:bg-base2/5 transition-colors group">
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/10 to-blue/10 flex items-center justify-center border border-primary/20 shadow-sm group-hover:scale-110 transition-transform">
@@ -215,12 +215,12 @@ const AdminModeratorRequests = () => {
                       <div className="relative group/assign">
                         <select
                           className="appearance-none bg-base2/30 border border-base2/50 rounded-lg pl-3 pr-8 py-1.5 text-[11px] font-bold text-text-emphasis hover:bg-base2/50 transition-all cursor-pointer outline-none w-40"
-                          value={request.assignedAdmin?._id || ''}
-                          onChange={(e) => handleAssign(request._id, e.target.value)}
+                          value={request.assignedAdmin?.id || ''}
+                          onChange={(e) => handleAssign(request.id, e.target.value)}
                         >
                           <option value="">Unassigned</option>
                           {admins.map(admin => (
-                            <option key={admin._id} value={admin._id}>{admin.fullName}</option>
+                            <option key={admin.id} value={admin.id}>{admin.fullName}</option>
                           ))}
                         </select>
                         <UserPlus size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text/30 pointer-events-none" />
@@ -311,21 +311,21 @@ const AdminModeratorRequests = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button
-                      onClick={() => handleUpdateStatus(selectedRequest._id, 'on-hold')}
+                      onClick={() => handleUpdateStatus(selectedRequest.id, 'on-hold')}
                       disabled={updating}
                       className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-orange/10 text-orange border border-orange/20 font-black hover:bg-orange/20 transition-all active:scale-95"
                     >
                       <Clock size={18} /> Mark On Hold
                     </button>
                     <button
-                      onClick={() => handleUpdateStatus(selectedRequest._id, 'rejected')}
+                      onClick={() => handleUpdateStatus(selectedRequest.id, 'rejected')}
                       disabled={updating}
                       className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-red/10 text-red border border-red/20 font-black hover:bg-red/20 transition-all active:scale-95"
                     >
                       <XCircle size={18} /> Reject Application
                     </button>
                     <button
-                      onClick={() => handleUpdateStatus(selectedRequest._id, 'created')}
+                      onClick={() => handleUpdateStatus(selectedRequest.id, 'created')}
                       disabled={updating}
                       className="flex items-center justify-center gap-2 py-4 rounded-2xl bg-green-500/10 text-green-500 border border-green-500/20 font-black hover:bg-green-500/20 transition-all active:scale-95"
                     >

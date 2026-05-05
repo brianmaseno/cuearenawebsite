@@ -65,7 +65,7 @@ const PublicTournaments = () => {
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map(t => (
-            <div key={t._id} className="card-premium rounded-2xl overflow-hidden flex flex-col h-full group border-none shadow-sm transition-all hover:shadow-md">
+            <div key={t.id} className="card-premium rounded-2xl overflow-hidden flex flex-col h-full group border-none shadow-sm transition-all hover:shadow-md">
               <div className="relative h-2 w-full bg-primary/10">
                 <div 
                   className="h-full bg-green" 
@@ -98,7 +98,7 @@ const PublicTournaments = () => {
                 </div>
 
                 <Link 
-                  to={user ? `/dashboard/tournament/${t._id}` : `/login`} 
+                  to={user ? `/dashboard/tournament/${t.id}` : `/login`} 
                   className="w-full btn-primary mt-auto py-2.5 rounded-xl flex items-center justify-center gap-2 opacity-90 hover:opacity-100"
                 >
                   {user ? 'Join / View Details' : 'Login to Join'} <ArrowRight size={18} />

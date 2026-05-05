@@ -53,7 +53,7 @@ export const NotificationProvider = ({ children }) => {
   const markAsRead = async (id) => {
     // Optimistic update to UI state
     setNotifications(prev => {
-      const next = prev.map(n => n._id === id ? { ...n, isRead: true } : n);
+      const next = prev.map(n => n.id === id ? { ...n, isRead: true } : n);
       setUnreadCount(next.filter(n => !n.isRead).length);
       return next;
     });
@@ -72,7 +72,7 @@ export const NotificationProvider = ({ children }) => {
       // Assuming backend supports this, if not we'll do individual calls or a new route
       // For now, let's do individual calls for current unread to ensure compatibility
       const unread = notifications.filter(n => !n.isRead);
-      await Promise.all(unread.map(n => api.put(`/notifications/${n._id}/read`)));
+      await Promise.all(unread.map(n => api.put(`/notifications/${n.id}/read`)));
       
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       setUnreadCount(0);
