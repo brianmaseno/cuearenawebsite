@@ -18,10 +18,14 @@ const Login = () => {
       const user = await login(email, password);
       toast.success(`Welcome back, ${user.fullName}!`);
 
-      // Redirect based on role
-      if (user.role === 'admin') navigate('/admin');
-      else if (user.role === 'moderator') navigate('/moderator/ongoing');
-      else navigate('/dashboard');
+      // Redirect based on role - using window.location for reliable navigation
+      if (user.role === 'admin') {
+        window.location.href = '/admin';
+      } else if (user.role === 'moderator') {
+        window.location.href = '/moderator/ongoing';
+      } else {
+        window.location.href = '/dashboard';
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
