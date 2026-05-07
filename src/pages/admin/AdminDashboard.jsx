@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Users, Trophy, Target, Activity, ShieldAlert, CheckCircle, Zap, Shield, Clock, TrendingUp, TrendingDown } from 'lucide-react';
