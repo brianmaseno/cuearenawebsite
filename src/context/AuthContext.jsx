@@ -10,17 +10,24 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const verifyUser = async () => {
       const userStr = sessionStorage.getItem('userInfo');
+      console.log('🔍 AuthContext: Verifying user...', userStr ? 'User data found' : 'No user data');
+      
       if (userStr && userStr !== 'undefined' && userStr !== 'null') {
         try {
           const userInfo = JSON.parse(userStr);
+          console.log('✅ AuthContext: Parsed user info:', userInfo.email, userInfo.role);
+          
           if (userInfo && userInfo.token) {
             // Set user immediately from sessionStorage
+            console.log('✅ AuthContext: Setting user from sessionStorage');
             setUser(userInfo);
             
             // Then try to verify with server
             api.defaults.headers.common['Authorization'] = `Bearer ${userInfo.token}`;
             try {
+              console.log('🔄 AuthContext: Verifying with server...');
               const { data } = await api.get('/auth/me');
+              console.log('✅ AuthContext: Server verification successful');
               // Update user info including latest status from server
               const updatedUser = { ...userInfo, ...data };
               sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
@@ -28,17 +35,22 @@ export const AuthProvider = ({ children }) => {
             } catch (verifyErr) {
               // If verification fails, keep the user from sessionStorage
               // Only log the error, don't clear the user
-              console.warn('User verification failed, using cached data:', verifyErr.message);
+              console.warn('⚠️ AuthContext: Server verification failed, using cached data:', verifyErr.message);
+              console.warn('⚠️ AuthContext: Error details:', verifyErr.response?.data);
+              // User is already set from sessionStorage, so dashboard will still work
             }
           }
         } catch (err) {
-          console.error('Token parsing failed:', err);
+          console.error('❌ AuthContext: Token parsing failed:', err);
           sessionStorage.removeItem('userInfo');
           delete api.defaults.headers.common['Authorization'];
           setUser(null);
         }
+      } else {
+        console.log('ℹ️ AuthContext: No user in sessionStorage');
       }
       setLoading(false);
+      console.log('✅ AuthContext: Verification complete');
     };
     verifyUser();
   }, []);
