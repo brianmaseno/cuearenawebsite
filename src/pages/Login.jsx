@@ -15,18 +15,26 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      console.log('🔐 Starting login...');
       const user = await login(email, password);
+      console.log('✅ Login successful, user:', user);
+      console.log('👤 User role:', user.role);
+      
       toast.success(`Welcome back, ${user.fullName}!`);
 
       // Redirect based on role - using window.location for reliable navigation
       if (user.role === 'admin') {
+        console.log('🚀 Redirecting to /admin');
         window.location.href = '/admin';
       } else if (user.role === 'moderator') {
+        console.log('🚀 Redirecting to /moderator/ongoing');
         window.location.href = '/moderator/ongoing';
       } else {
+        console.log('🚀 Redirecting to /dashboard');
         window.location.href = '/dashboard';
       }
     } catch (err) {
+      console.error('❌ Login error:', err);
       toast.error(err.response?.data?.message || 'Login failed');
     } finally {
       setIsLoading(false);

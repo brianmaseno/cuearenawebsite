@@ -14,16 +14,25 @@ export const AuthProvider = ({ children }) => {
         try {
           const userInfo = JSON.parse(userStr);
           if (userInfo && userInfo.token) {
-            // Set authorization header for the verification call
+            // Set user immediately from sessionStorage
+            setUser(userInfo);
+            
+            // Then try to verify with server
             api.defaults.headers.common['Authorization'] = `Bearer ${userInfo.token}`;
-            const { data } = await api.get('/auth/me');
-            // Update user info including latest status from server
-            const updatedUser = { ...userInfo, ...data };
-            sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
-            setUser(updatedUser);
+            try {
+              const { data } = await api.get('/auth/me');
+              // Update user info including latest status from server
+              const updatedUser = { ...userInfo, ...data };
+              sessionStorage.setItem('userInfo', JSON.stringify(updatedUser));
+              setUser(updatedUser);
+            } catch (verifyErr) {
+              // If verification fails, keep the user from sessionStorage
+              // Only log the error, don't clear the user
+              console.warn('User verification failed, using cached data:', verifyErr.message);
+            }
           }
         } catch (err) {
-          console.error('Token verification failed:', err);
+          console.error('Token parsing failed:', err);
           sessionStorage.removeItem('userInfo');
           delete api.defaults.headers.common['Authorization'];
           setUser(null);

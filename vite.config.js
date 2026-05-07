@@ -13,16 +13,21 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      workbox: {
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true
+      },
       includeAssets: ['favicon.ico', 'favicon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'Cue-Masters',
-        short_name: 'Cue-Masters',
+        name: 'Cue Arena',
+        short_name: 'Cue Arena',
         description: 'Professional Pool & Tournament Management',
-        theme_color: '#7c3aed',
-        background_color: '#0f172a',
+        theme_color: '#268bd2',
+        background_color: '#fcf9f1',
         display: 'standalone',
-        scope: '/cue-arena/',
-        start_url: '/cue-arena/',
+        scope: '/',
+        start_url: '/',
         orientation: 'portrait',
         icons: [
           {
