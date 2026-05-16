@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 
 const PlayerDashboard = () => {
   const navigate = useNavigate();
-  const [data, setData] = useState({ tournaments: [], matches: [], invitations: [], notifications: [], achievements: [] });
+  const [data, setData] = useState({ tournaments: [], matches: [], tournamentMatches: [], battles: [], invitations: [], notifications: [], achievements: [] });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('matches');
   const [userId, setUserId] = useState(null);
@@ -18,11 +18,20 @@ const PlayerDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [ongoingRes, notifRes, achievementsRes] = await Promise.all([
+      const [ongoingResult, notifResult, achievementsResult] = await Promise.allSettled([
         api.get('/direct-matches/player/ongoing'),
         api.get('/notifications/my'),
         api.get('/users/me/achievements'),
       ]);
+
+      const ongoingData = ongoingResult.status === 'fulfilled' ? ongoingResult.value.data : {};
+      const notifData = notifResult.status === 'fulfilled' ? notifResult.value.data : [];
+      const achievementsData = achievementsResult.status === 'fulfilled' ? achievementsResult.value.data : [];
+
+      // Log any failures but don't crash
+      if (ongoingResult.status === 'rejected') console.error('Failed to fetch ongoing activities:', ongoingResult.reason?.message);
+      if (notifResult.status === 'rejected') console.error('Failed to fetch notifications:', notifResult.reason?.message);
+      if (achievementsResult.status === 'rejected') console.error('Failed to fetch achievements:', achievementsResult.reason?.message);
 
       const userStr = sessionStorage.getItem('userInfo');
       if (userStr) {
@@ -30,19 +39,24 @@ const PlayerDashboard = () => {
         setUserId(u.id);
       }
 
+      const matches = ongoingData.matches || [];
+      const tournamentMatches = ongoingData.tournamentMatches || [];
+      const battles = ongoingData.battles || [];
+      const tournaments = ongoingData.tournaments || [];
+
       setData({
-        matches: ongoingRes.data.matches || [],
-        tournamentMatches: ongoingRes.data.tournamentMatches || [],
-        battles: ongoingRes.data.battles || [],
-        tournaments: ongoingRes.data.tournaments || [],
-        notifications: notifRes.data || [],
-        achievements: achievementsRes.data || [],
+        matches,
+        tournamentMatches,
+        battles,
+        tournaments,
+        notifications: notifData || [],
+        achievements: Array.isArray(achievementsData) ? achievementsData : [],
         // Calculate invitations from all sources
         invitations: [
-          ...(ongoingRes.data.matches || []).filter(m => m.myStatus === 'pending'),
-          ...(ongoingRes.data.tournamentMatches || []).filter(m => m.myStatus === 'pending'),
-          ...(ongoingRes.data.battles || []).filter(b => b.myStatus === 'pending'),
-          ...(ongoingRes.data.tournaments || []).filter(t => t.myStatus === 'pending')
+          ...matches.filter(m => m.myStatus === 'pending'),
+          ...tournamentMatches.filter(m => m.myStatus === 'pending'),
+          ...battles.filter(b => b.myStatus === 'pending'),
+          ...tournaments.filter(t => t.myStatus === 'pending')
         ]
       });
     } catch (err) {
@@ -140,23 +154,26 @@ const PlayerDashboard = () => {
               <Link to="/leaderboard" className="text-xs font-bold text-primary hover:underline">View Hall of Fame</Link>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
-              {data.achievements.map((ua) => (
+              {data.achievements.map((ua) => {
+                const ach = ua.achievement || ua.achievementId;
+                return (
                 <div key={ua.id} className="min-w-[200px] bg-base2/20 p-4 rounded-2xl border border-base2/10 relative group shrink-0 overflow-hidden">
                   <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full group-hover:bg-primary/10 transition-all"></div>
                   <div className="relative z-10 flex items-center gap-3">
-                    <div className={`p-2 rounded-xl bg-opacity-10 ${ua.achievementId?.rarity === 'legendary' ? 'bg-yellow-500 text-yellow-500' :
-                      ua.achievementId?.rarity === 'epic' ? 'bg-purple-500 text-purple-500' :
-                        ua.achievementId?.rarity === 'rare' ? 'bg-blue-500 text-blue-500' : 'bg-gray-400 text-gray-400'
+                    <div className={`p-2 rounded-xl bg-opacity-10 ${ach?.rarity === 'legendary' ? 'bg-yellow-500 text-yellow-500' :
+                      ach?.rarity === 'epic' ? 'bg-purple-500 text-purple-500' :
+                        ach?.rarity === 'rare' ? 'bg-blue-500 text-blue-500' : 'bg-gray-400 text-gray-400'
                       }`}>
                       <Award size={20} />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-text-emphasis uppercase truncate tracking-tight">{ua.achievementId?.name}</h4>
+                      <h4 className="text-xs font-black text-text-emphasis uppercase truncate tracking-tight">{ach?.name}</h4>
                       <p className="text-[10px] text-gray-500 leading-tight">{new Date(ua.earnedAt).toLocaleDateString()}</p>
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
