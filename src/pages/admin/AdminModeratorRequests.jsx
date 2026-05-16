@@ -215,7 +215,7 @@ const AdminModeratorRequests = () => {
                       <div className="relative group/assign">
                         <select
                           className="appearance-none bg-base2/30 border border-base2/50 rounded-lg pl-3 pr-8 py-1.5 text-[11px] font-bold text-text-emphasis hover:bg-base2/50 transition-all cursor-pointer outline-none w-40"
-                          value={request.assignedAdmin?.id || ''}
+                          value={request.assignedAdminUser?.id || ''}
                           onChange={(e) => handleAssign(request.id, e.target.value)}
                         >
                           <option value="">Unassigned</option>
@@ -230,6 +230,16 @@ const AdminModeratorRequests = () => {
                       <div className="flex items-center gap-2 text-[11px] font-bold text-text/40">
                         <Calendar size={12} />
                         {new Date(request.createdAt).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-2 text-[11px] font-bold text-text/40">
+                         {request.actionedByUser && (
+                           <div className="flex flex-col">
+                             <span className="text-[9px] text-text/30 uppercase">Actioned By</span>
+                             <span>{request.actionedByUser.fullName}</span>
+                           </div>
+                         )}
                       </div>
                     </td>
                     <td className="px-6 py-3 text-right">
