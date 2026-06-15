@@ -4,6 +4,8 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Target, Users, Calendar, MapPin, Search, Loader2, Send, X, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
+import PotSplitPreview from '../../components/moderator/PotSplitPreview';
+import { calculatePotSplit } from '../../utils/potSplit';
 
 const CreateBattle = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const CreateBattle = () => {
     venue: '',
     location: '',
     stakeAmount: 0,
+    moderatorFee: 0,
   });
 
   // Handle live search
@@ -76,6 +79,18 @@ const CreateBattle = () => {
 
     setLoading(true);
     try {
+      const stake = Number(formData.stakeAmount) || 0;
+      const modFee = Number(formData.moderatorFee) || 0;
+      if (stake > 0 && modFee > 0) {
+        const minPot = stake * Math.max(1, selectedPlayers.length);
+        const { winnerPrize } = calculatePotSplit(minPot, modFee);
+        if (winnerPrize <= 0) {
+          toast.error('Moderator fee is too high for this stake and player count');
+          setLoading(false);
+          return;
+        }
+      }
+
       const payload = {
         ...formData,
         invitedPlayerIds: selectedPlayers.map(p => p.id),
@@ -159,6 +174,27 @@ const CreateBattle = () => {
                   />
                 </div>
                 <p className="text-[10px] text-text/50 mt-1 font-bold italic">Each participant pays this amount</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text mb-2">Your Moderator Fee (KES)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3.5 text-blue font-bold text-sm">KES</span>
+                  <input
+                    name="moderatorFee"
+                    type="number"
+                    min="0"
+                    value={formData.moderatorFee}
+                    onChange={handleChange}
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none transition-all font-bold text-blue"
+                    placeholder="0"
+                  />
+                </div>
+                <p className="text-[10px] text-text/50 mt-1 font-bold italic">Fixed amount you earn; platform takes 1.5%</p>
+                <PotSplitPreview
+                  totalPot={(Number(formData.stakeAmount) || 0) * Math.max(1, selectedPlayers.length)}
+                  moderatorFee={formData.moderatorFee}
+                />
               </div>
 
             </div>

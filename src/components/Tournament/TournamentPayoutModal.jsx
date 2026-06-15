@@ -3,6 +3,7 @@ import { Trophy, X, DollarSign, Award, Users, AlertCircle, CheckCircle2, Chevron
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { calculatePotSplit } from '../../utils/potSplit';
 
 const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
   const getInitialPayouts = () => {
@@ -60,9 +61,7 @@ const TournamentPayoutModal = ({ isOpen, onClose, tournament, onSuccess }) => {
   const isDistributed = tournament.prizesDistributed;
 
   const totalPot = tournament.confirmedPlayers?.length * (tournament.stakePerPlayer || 0) || 0;
-  const platformFee = totalPot * 0.05;
-  const moderationFee = totalPot * 0.10;
-  const availablePrizePool = totalPot - platformFee - moderationFee;
+  const { platformFee, moderationFee, winnerPrize: availablePrizePool } = calculatePotSplit(totalPot, tournament.moderatorFee);
   
   const currentTotalPayout = payouts.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
   const remainingPool = availablePrizePool - currentTotalPayout;

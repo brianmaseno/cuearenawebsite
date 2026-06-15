@@ -7,6 +7,7 @@ import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
+import { winnerPrize } from '../../utils/potSplit';
 
 
 const OngoingActivities = () => {
@@ -465,13 +466,13 @@ const OngoingActivities = () => {
                         {match.stakeAmount > 0 && !match.isTournamentMatch && (
                           <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap drop-shadow-sm">
                             <Award size={10} className="text-emerald-500" />
-                            PRIZE: KES {(match.stakeAmount * 2 * 0.85).toLocaleString()}
+                            PRIZE: KES {winnerPrize(match.stakeAmount * 2, match.moderatorFee).toLocaleString()}
                           </span>
                         )}
                         {match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0 && (
                           <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 flex items-center gap-1 shrink-0 whitespace-nowrap drop-shadow-sm">
                             <Award size={10} className="text-emerald-500" />
-                            PRIZE: KES {((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)) * 0.85).toLocaleString()}
+                            PRIZE: KES {winnerPrize((match.tournamentId.stakePerPlayer * (match.tournamentId.confirmedPlayers?.length || match.tournamentId.maxPlayers)), match.tournamentId.moderatorFee).toLocaleString()}
                           </span>
                         )}
                         <div className="flex items-center gap-1 shrink-0">
@@ -791,7 +792,7 @@ const OngoingActivities = () => {
                       {t.stakePerPlayer > 0 && (
                         <div className="flex items-center gap-1.5 font-bold text-emerald-600">
                           <Trophy size={14} className="text-emerald-600" />
-                          PRIZE: KES {((t.stakePerPlayer * (t.confirmedPlayers?.length || t.maxPlayers)) * 0.85).toLocaleString()}
+                          PRIZE: KES {winnerPrize(t.stakePerPlayer * (t.confirmedPlayers?.length || t.maxPlayers), t.moderatorFee).toLocaleString()}
                         </div>
                       )}
                       <div className="flex items-center gap-1.5 font-bold capitalize">
@@ -832,7 +833,7 @@ const OngoingActivities = () => {
                     <div className="flex items-center gap-1.5 shrink-0">
                       <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 whitespace-nowrap">
                         <Award size={10} className="text-emerald-500" />
-                        PRIZE: KES {(battle.stakeAmount * battle.participants.filter(p => getBattleParticipantStatus(p) === 'accepted').length * 0.85).toLocaleString()}
+                        PRIZE: KES {winnerPrize(battle.stakeAmount * battle.participants.filter(p => getBattleParticipantStatus(p) === 'accepted').length, battle.moderatorFee).toLocaleString()}
                       </span>
                       <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)]" />
                       <button

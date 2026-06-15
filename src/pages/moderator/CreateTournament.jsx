@@ -4,6 +4,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Trophy, Calendar, MapPin, Users, Info, Loader2, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
+import PotSplitPreview from '../../components/moderator/PotSplitPreview';
 
 const CreateTournament = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const CreateTournament = () => {
     registrationDeadline: '',
     matchSetsCount: 1,
     stakePerPlayer: 0,
+    moderatorFee: 0,
     rewardPositions: 3,
   });
 
@@ -231,6 +233,26 @@ const CreateTournament = () => {
                   />
                 </div>
                 <p className="text-[10px] text-text/50 mt-1 font-bold italic uppercase transition-all">Player pays this to join</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-text-emphasis mb-2">Your Moderator Fee (KES)</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3.5 text-blue font-bold text-sm">KES</span>
+                  <input
+                    name="moderatorFee"
+                    type="number"
+                    min="0"
+                    value={formData.moderatorFee}
+                    onChange={handleChange}
+                    placeholder="0"
+                    className="w-full bg-base2/30 border border-base2 rounded-xl pl-12 pr-4 py-3 focus:ring-2 focus:ring-primary outline-none font-bold text-blue"
+                  />
+                </div>
+                <PotSplitPreview
+                  totalPot={(Number(formData.stakePerPlayer) || 0) * (Number(formData.maxPlayers) || Number(formData.numPlayers) || 0)}
+                  moderatorFee={formData.moderatorFee}
+                />
               </div>
 
               <div>

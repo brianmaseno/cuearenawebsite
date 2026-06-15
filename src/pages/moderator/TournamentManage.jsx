@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
+import { winnerPrize } from '../../utils/potSplit';
 import {
    Trophy,
    Users,
@@ -25,6 +26,7 @@ import {
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
+import { winnerPrize } from '../../utils/potSplit';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 import { maskEmail } from '../../utils/emailHelper';
@@ -727,7 +729,7 @@ const TournamentManage = () => {
                               {tournament?.stakePerPlayer > 0 && (
                                  <div className="mt-2 text-[9px] md:text-[10px] text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 inline-flex items-center gap-1 normal-case tracking-normal whitespace-nowrap">
                                     <Award size={12} className="text-emerald-500" />
-                                    PRIZE: KES {((tournament.stakePerPlayer * (tournament.confirmedPlayers?.length || tournament.maxPlayers)) * 0.85).toLocaleString()}
+                                    PRIZE: KES {winnerPrize(tournament.stakePerPlayer * (tournament.confirmedPlayers?.length || tournament.maxPlayers), tournament.moderatorFee).toLocaleString()}
                                  </div>
                               )}
                            </div>

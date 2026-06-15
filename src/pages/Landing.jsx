@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, ChevronUp, ChevronDown, Minus, Info } from 'lucide-react';
+import { Trophy, Users, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, X } from 'lucide-react';
 import { animate } from 'framer-motion';
 import api from '../api/axios';
-import StatusBadge from '../components/StatusBadge';
 import PublicLayout from '../components/public/PublicLayout';
+import { TournamentCard, LeaderboardPanel } from '../components/public/PublicCards';
 import toast from 'react-hot-toast';
 
 const AnimatedCounter = ({ value, duration = 2, suffix = "" }) => {
@@ -345,72 +345,53 @@ const Landing = () => {
       {/* Tournaments and Leaderboard */}
       <section id="tournaments-section" className="py-24 bg-base3/50 relative overflow-hidden text-left">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col xl:flex-row gap-12">
-            <div className="flex-1 min-w-0 text-left">
-              <div className="mb-10 text-left">
-                <h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight text-left">Active tournaments</h2>
-                <p className="text-lg text-text/70 font-medium text-left">Join high-stakes competitions and prove your mastery.</p>
+          <div className="flex flex-col xl:flex-row gap-10 xl:gap-12">
+            <div className="flex-1 min-w-0">
+              <div className="mb-8">
+                <p className="text-xs font-semibold uppercase tracking-widest text-magenta mb-2">Live competitions</p>
+                <h2 className="text-3xl lg:text-4xl font-bold text-text-emphasis tracking-tight">Active tournaments</h2>
+                <p className="mt-2 text-text-muted">Join high-stakes competitions and prove your mastery.</p>
               </div>
               <AnimatePresence mode="wait">
-                {loading ? <div className="grid grid-cols-1 md:grid-cols-2 gap-6">{[1, 2, 3, 4].map(i => <div key={i} className="h-80 bg-base2/30 rounded-3xl animate-pulse" />)}</div> : tournaments.length > 0 ? (
-                  <motion.div variants={containerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left" style={{ perspective: 1500 }}>
-                    {tournaments.map((t, idx) => {
-                      const colors = [{ border: 'hover:border-primary/60', shadow: 'shadow-primary/20', accent: 'bg-primary' }, { border: 'hover:border-indigo-500/60', shadow: 'shadow-indigo-500/20', accent: 'bg-indigo-500' }, { border: 'hover:border-special-red/60', shadow: 'shadow-special-red/20', accent: 'bg-special-red' }, { border: 'hover:border-emerald-500/60', shadow: 'shadow-emerald-500/20', accent: 'bg-emerald-500' }];
-                      const style = colors[idx % colors.length];
-                      return (
-                        <motion.div
-                          key={t.id}
-                          variants={itemVariants}
-                          whileHover="hover"
-                          customVariants={card3DVariants}
-                          className={`group relative h-full aura-card border-none overflow-hidden hover:shadow-3xl ${style.shadow} transition-all duration-700 text-left`}
-                          style={{ transformStyle: 'preserve-3d' }}
-                        >
-                          <motion.div variants={card3DVariants} className="p-8 flex flex-col h-full text-left">
-                            <div className="absolute top-0 left-0 w-full h-2 bg-base2"><motion.div initial={{ width: 0 }} whileInView={{ width: `${((t.confirmedPlayers?.length || 0) / t.maxPlayers) * 100}%` }} transition={{ duration: 1.5 }} className={`h-full ${style.accent} shadow-[0_0_15px_rgba(38,139,210,0.5)]`} /></div>
-
-                            <div className="flex justify-between items-start mb-4" style={{ translateZ: 20 }}>
-                              <StatusBadge status={t.status} registrationDeadline={t.registrationDeadline} />
-                              <span className="text-[10px] font-black text-text/60 bg-base2 px-3 py-1 rounded-full uppercase tracking-[0.2em]">{t.format.replace('_', ' ')}</span>
-                            </div>
-
-                            <h3 className="text-xl font-black text-text-emphasis mb-5 group-hover:text-primary transition-colors line-clamp-2 leading-tight text-left" style={{ translateZ: 30 }}>{t.name}</h3>
-
-                            <div className="grid grid-cols-1 gap-3 mb-6 flex-1 text-xs font-bold text-text/80 text-left" style={{ translateZ: 10 }}>
-                              <div className="flex items-center gap-3 p-2.5 rounded-xl bg-base2/30 text-left"><MapPin size={16} className="text-primary" /> <span className="truncate text-left">{t.venue}</span></div>
-                              <div className="flex gap-3 text-left">
-                                <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Users size={16} className="text-blue" /> <span>{t.confirmedPlayers?.length || 0}/{t.maxPlayers}</span></div>
-                                <div className="flex-1 flex items-center gap-2 p-2.5 rounded-xl bg-base2/30"><Calendar size={16} className="text-special-red" /> <span>{new Date(t.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span></div>
-                              </div>
-                            </div>
-
-                            <Link to="/login" className="w-full py-3 aura-btn text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/10 transition-all font-black" style={{ translateZ: 25 }}>Join tournament <ArrowRight size={16} /></Link>
-                          </motion.div>
-                        </motion.div>
-                      );
-                    })}
+                {loading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-72 rounded-[20px] bg-base2/30 animate-pulse" />
+                    ))}
+                  </div>
+                ) : tournaments.length > 0 ? (
+                  <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                  >
+                    {tournaments.map((t) => (
+                      <motion.div key={t.id} variants={itemVariants}>
+                        <TournamentCard tournament={t} />
+                      </motion.div>
+                    ))}
                   </motion.div>
-                ) : <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 bg-base3/30 border-2 border-dashed border-base2 rounded-[32px] h-full flex flex-col justify-center"><Trophy size={48} className="text-text/20 mx-auto mb-4" /><h3 className="text-xl font-black text-text-emphasis mb-2 text-center">The tournaments are silent.</h3></motion.div>}
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="rounded-[20px] border border-dashed border-base2 bg-surface/50 py-16 text-center"
+                  >
+                    <Trophy size={40} className="text-text-muted/30 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-text-emphasis">No active tournaments</h3>
+                    <p className="text-sm text-text-muted mt-1">Check back soon for new competitions.</p>
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
-            <div className="w-full xl:w-[420px] shrink-0 text-left">
-              <div className="mb-10 text-center xl:text-left"><h2 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Elite rank</h2><p className="text-lg text-text/70 font-medium">The most prestigious players.</p></div>
-              <div className="aura-card border-none overflow-hidden shadow-2xl relative h-auto text-left">
-                <div className="divide-y divide-base2/50 max-h-[850px] overflow-y-auto custom-scrollbar text-left">
-                  {leaderboard.map((p, i) => (
-                    <motion.div key={p.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className={`flex items-center gap-3 p-2.5 transition-all group relative overflow-hidden ${i === 0 ? 'bg-primary/5' : 'hover:bg-primary/5'}`}>
-                      {i === 0 && <div className="absolute inset-0 animate-shimmer pointer-events-none opacity-20" />}
-                      <div className="flex flex-col items-center justify-center min-w-[20px]">
-                        {p.rankTrend === 'up' ? <ChevronUp size={12} className="text-emerald-500 mb-0.5" /> : p.rankTrend === 'down' ? <ChevronDown size={12} className="text-aura-cyan mb-0.5" /> : p.rankTrend === 'new' ? <Info size={12} className="text-primary mx-auto mb-0.5" /> : <Minus size={12} className="text-text/20 mb-0.5" />}
-                        <div className={`w-7 h-7 flex items-center justify-center rounded-lg font-black text-[10px] shadow-inner ${i === 0 ? 'bg-primary text-base3 shadow-[0_0_15px_rgba(38,139,210,0.4)]' : i === 1 ? 'bg-text/5 text-text ring-1 ring-text/20' : i === 2 ? 'bg-aura-cyan/5 text-aura-cyan ring-1 ring-aura-cyan/20' : 'bg-base2 text-text/40'}`}>{i + 1}</div>
-                      </div>
-                      <div className={`w-10 h-10 rounded-full p-0.5 shrink-0 ${i === 0 ? 'bg-primary shadow-[0_0_15px_rgba(38,139,210,0.5)]' : 'bg-gradient-to-br from-primary to-aura-cyan'}`}><img src={p.profilePhoto || `https://ui-avatars.com/api/?name=${p.fullName}&background=random`} alt={p.fullName} className="w-full h-full rounded-full object-cover border-2 border-base3" /></div>
-                      <div className="flex-1 min-w-0"><h3 className={`font-black truncate text-left ${i === 0 ? 'text-text-emphasis text-sm text-aura' : 'text-xs text-text-emphasis'}`}>{p.fullName}</h3></div>
-                      <div className="text-right flex flex-col items-end"><span className={`text-[7px] font-black uppercase tracking-[0.2em] leading-none mb-1 ${i === 0 ? 'text-primary' : 'text-text/30'}`}>Points</span><div className={`font-black leading-none ${i === 0 ? 'text-xl text-primary' : 'text-lg text-gradient-premium'}`}>{p.points || 0}</div></div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+            <div className="w-full xl:w-[380px] shrink-0">
+              <LeaderboardPanel
+                players={leaderboard}
+                title="Elite rank"
+                subtitle="The most prestigious players"
+              />
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, MapPin, Trophy, Users, ArrowRight, Clock } from 'lucide-react';
+import { CalendarDays, MapPin, Trophy, Users, ArrowRight, Clock, ChevronUp, ChevronDown, Minus } from 'lucide-react';
+import DashStatusPill from '../ui/StatusPill';
 
 export const formatDate = (value) => value ? new Date(value).toLocaleDateString(undefined, {
   month: 'short',
@@ -43,10 +44,19 @@ const statusBadgeText = (match) => {
   return String(match.status || 'scheduled').replaceAll('_', ' ');
 };
 
+const tournamentStatusTone = (status) => {
+  const s = String(status || 'scheduled').toLowerCase();
+  if (s === 'open_for_players') return 'success';
+  if (s === 'ongoing' || s === 'in_progress') return 'info';
+  if (s === 'full') return 'warning';
+  if (s === 'completed' || s === 'cancelled') return 'neutral';
+  return 'info';
+};
+
 export const StatusPill = ({ status }) => (
-  <span className="inline-flex items-center rounded-full bg-magenta/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-magenta">
+  <DashStatusPill tone={tournamentStatusTone(status)} className="text-[11px] capitalize shrink-0">
     {String(status || 'scheduled').replaceAll('_', ' ')}
-  </span>
+  </DashStatusPill>
 );
 
 export const PlayerAvatar = ({ player, size = 'md' }) => {
@@ -196,60 +206,119 @@ export const MatchRow = ({ match, variant = 'compact' }) => {
 };
 
 export const TournamentCard = ({ tournament, featured = false }) => {
-  const fillPct = Math.min(100, ((tournament.playerCount || tournament.confirmedPlayers?.length || 0) / (tournament.maxPlayers || 1)) * 100);
   const playerCount = tournament.playerCount ?? tournament.confirmedPlayers?.length ?? 0;
-
-  const inner = (
-    <>
-      <div className={`relative overflow-hidden ${featured ? 'bg-gradient-to-br from-[#4a1570] via-[#2d0a4a] to-[#1e0021] p-6' : 'border-b border-base2 bg-gradient-to-r from-magenta/10 via-violet/5 to-transparent p-5'}`}>
-        {featured && (
-          <div className="pointer-events-none absolute inset-0 opacity-[0.06]">
-            <Trophy className="absolute -right-4 -top-4 h-32 w-32 text-white" />
-          </div>
-        )}
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className={`text-[10px] font-bold uppercase tracking-widest ${featured ? 'text-white/60' : 'text-magenta'}`}>
-              {String(tournament.format || 'tournament').replaceAll('_', ' ')}
-            </p>
-            <h3 className={`mt-1 line-clamp-2 text-xl font-black leading-tight ${featured ? 'text-white' : 'text-text-emphasis'}`}>
-              {tournament.name}
-            </h3>
-          </div>
-          <span className={`shrink-0 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-            featured ? 'bg-white/15 text-white' : 'bg-magenta/15 text-magenta'
-          }`}>
-            {String(tournament.status || 'open').replaceAll('_', ' ')}
-          </span>
-        </div>
-      </div>
-      <div className="p-5">
-        {tournament.description && (
-          <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-text-muted">{tournament.description}</p>
-        )}
-        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-base2">
-          <div className="h-full rounded-full bg-gradient-to-r from-magenta to-violet transition-all" style={{ width: `${fillPct}%` }} />
-        </div>
-        <div className="grid gap-2.5 text-sm text-text-muted">
-          <span className="flex items-center gap-2"><MapPin size={15} className="shrink-0 text-magenta" /> {tournament.venue}{tournament.location ? `, ${tournament.location}` : ''}</span>
-          <span className="flex items-center gap-2"><CalendarDays size={15} className="shrink-0 text-magenta" /> {formatDate(tournament.startDate)}</span>
-          <span className="flex items-center gap-2"><Users size={15} className="shrink-0 text-magenta" /> {playerCount}/{tournament.maxPlayers} players</span>
-          <span className="flex items-center gap-2"><Trophy size={15} className="shrink-0 text-magenta" /> Prize pool {formatMoney(tournament.prizePool ?? (tournament.stakePerPlayer * tournament.maxPlayers))}</span>
-        </div>
-        <div className="mt-5 flex items-center justify-between text-xs font-bold uppercase tracking-widest text-magenta">
-          <span>View details</span>
-          <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-        </div>
-      </div>
-    </>
-  );
+  const maxPlayers = tournament.maxPlayers || 1;
+  const fillPct = Math.min(100, (playerCount / maxPlayers) * 100);
+  const prize = tournament.prizePool ?? (tournament.stakePerPlayer * tournament.maxPlayers);
 
   return (
     <Link
       to={`/tournaments/${tournament.id}`}
-      className={`group block overflow-hidden rounded-3xl border border-base2 bg-surface shadow-lg shadow-black/5 transition-all hover:-translate-y-0.5 hover:border-magenta/30 hover:shadow-xl ${featured ? 'border-transparent' : ''}`}
+      className={`public-tournament-card group ${featured ? 'public-tournament-card-featured' : ''}`}
     >
-      {inner}
+      <div className="public-tournament-card-grid" aria-hidden />
+      <div className="public-tournament-card-body">
+        <div className="public-tournament-card-head">
+          <div className="min-w-0">
+            <p className="public-tournament-format">
+              {String(tournament.format || 'tournament').replaceAll('_', ' ')}
+            </p>
+            <h3 className="public-tournament-title">{tournament.name}</h3>
+          </div>
+          <StatusPill status={tournament.status} />
+        </div>
+
+        {tournament.description && (
+          <p className="public-tournament-desc">{tournament.description}</p>
+        )}
+
+        <div className="public-tournament-progress">
+          <div className="public-tournament-progress-label">
+            <span>Slots filled</span>
+            <span>{playerCount}/{maxPlayers}</span>
+          </div>
+          <div className="public-tournament-progress-track">
+            <div className="public-tournament-progress-fill" style={{ width: `${fillPct}%` }} />
+          </div>
+        </div>
+
+        <div className="public-stat-grid">
+          <div className="public-stat-chip">
+            <MapPin size={14} />
+            <span>{tournament.venue || 'Venue TBA'}{tournament.location ? `, ${tournament.location}` : ''}</span>
+          </div>
+          <div className="public-stat-chip">
+            <CalendarDays size={14} />
+            <span>{formatDate(tournament.startDate)}</span>
+          </div>
+          <div className="public-stat-chip">
+            <Users size={14} />
+            <span>{playerCount} players</span>
+          </div>
+          <div className="public-stat-chip">
+            <Trophy size={14} />
+            <span>{formatMoney(prize)}</span>
+          </div>
+        </div>
+
+        <div className="public-tournament-foot">
+          <span>View tournament</span>
+          <ArrowRight size={16} />
+        </div>
+      </div>
     </Link>
   );
 };
+
+const rankTrendIcon = (trend) => {
+  if (trend === 'up') return <ChevronUp size={12} className="text-green" />;
+  if (trend === 'down') return <ChevronDown size={12} className="text-red" />;
+  return <Minus size={12} className="text-text-muted opacity-40" />;
+};
+
+export const LeaderboardPanel = ({
+  players = [],
+  title = 'Elite rank',
+  subtitle = 'Top players by prestige points',
+  className = '',
+}) => (
+  <div className={`public-rank-panel ${className}`}>
+    <div className="public-rank-panel-head">
+      <div className="public-rank-panel-icon">
+        <Trophy size={20} />
+      </div>
+      <div>
+        <h3 className="text-base font-semibold text-text-emphasis">{title}</h3>
+        <p className="text-xs text-text-muted mt-0.5">{subtitle}</p>
+      </div>
+    </div>
+    <div className="public-rank-list thin-scrollbar">
+      {players.length === 0 ? (
+        <p className="px-5 py-10 text-center text-sm text-text-muted">No rankings yet.</p>
+      ) : (
+        players.map((player, index) => (
+          <Link
+            key={player.id}
+            to={`/players/${player.id}`}
+            className={`public-rank-row ${index === 0 ? 'public-rank-row-top' : ''}`}
+          >
+            <div className="flex flex-col items-center gap-0.5">
+              {rankTrendIcon(player.rankTrend)}
+              <span className="public-rank-num">{index + 1}</span>
+            </div>
+            <img
+              src={avatarUrl(player, player.fullName)}
+              alt=""
+              className="public-rank-avatar"
+            />
+            <span className="public-rank-name">{player.fullName}</span>
+            <div className="public-rank-points">
+              <p className="public-rank-points-label">Points</p>
+              <p className="public-rank-points-value">{player.points || 0}</p>
+            </div>
+          </Link>
+        ))
+      )}
+    </div>
+  </div>
+);
