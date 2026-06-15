@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
+import DataTable from '../../components/ui/DataTable';
+import StatusPill from '../../components/ui/StatusPill';
 import api from '../../api/axios';
 import { 
   Activity, 
   Search, 
-  Calendar, 
-  User, 
-  ChevronRight,
   RotateCcw,
   Shield,
-  Info,
-  AlertCircle,
-  AlertTriangle,
   Monitor,
   Smartphone,
   Globe
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const AdminLogs = () => {
   const [searchParams] = useSearchParams();
@@ -57,28 +54,6 @@ const AdminLogs = () => {
   const actions = ['ALL', ...new Set(logs.map(l => l.action))];
   const severities = ['ALL', 'info', 'warning', 'error'];
 
-  const getActionColor = (action) => {
-    switch (action) {
-      case 'LOGIN': return 'bg-blue/10 text-blue border-blue/20';
-      case 'REGISTER': return 'bg-emerald/10 text-emerald border-emerald/20';
-      case 'CREATE_TOURNAMENT': 
-      case 'CREATE_MATCH': return 'bg-primary/10 text-primary border-primary/20';
-      case 'TOGGLE_USER_STATUS': return 'bg-red/10 text-red border-red/20';
-      case 'BUTTON_CLICK': return 'bg-violet/10 text-violet border-violet/20';
-      case 'NAVIGATION': return 'bg-orange/10 text-orange border-orange/20';
-      case 'LINK_CLICK': return 'bg-cyan/10 text-cyan border-cyan/20';
-      default: return 'bg-base2 text-text border-base2';
-    }
-  };
-
-  const getSeverityIcon = (severity) => {
-    switch (severity) {
-      case 'error': return <AlertCircle size={14} className="text-red" />;
-      case 'warning': return <AlertTriangle size={14} className="text-yellow" />;
-      default: return <Info size={14} className="text-blue" />;
-    }
-  };
-
   const getDeviceIcon = (ua) => {
     if (!ua) return <Globe size={14} />;
     if (ua.toLowerCase().includes('mobi')) return <Smartphone size={14} />;
@@ -93,40 +68,124 @@ const AdminLogs = () => {
     return 'Web Browser';
   };
 
+  const getActionTone = (action) => {
+    if (action === 'LOGIN') return 'info';
+    if (action === 'REGISTER') return 'success';
+    if (action === 'TOGGLE_USER_STATUS') return 'danger';
+    return 'neutral';
+  };
+
+  const getSeverityTone = (severity) => {
+    if (severity === 'error') return 'danger';
+    if (severity === 'warning') return 'warning';
+    return 'info';
+  };
+
+  const columns = [
+    {
+      key: 'subject',
+      header: 'Subject',
+      width: '22%',
+      render: (log) => (
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="dash-avatar-sm">
+            {log.user?.fullName?.charAt(0) || '?'}
+          </div>
+          <div className="min-w-0">
+            <p className="dash-cell-emphasis truncate">{log.user?.fullName || 'System'}</p>
+            <p className="dash-cell-muted capitalize">{log.user?.role || 'automatic'}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'event',
+      header: 'Event',
+      align: 'center',
+      width: '15%',
+      render: (log) => (
+        <div className="flex flex-col items-center gap-1.5">
+          <StatusPill tone={getActionTone(log.action)}>
+            {log.action?.replace(/_/g, ' ')}
+          </StatusPill>
+          <StatusPill tone={getSeverityTone(log.severity)} className="text-[11px] py-0.5">
+            {log.severity}
+          </StatusPill>
+        </div>
+      ),
+    },
+    {
+      key: 'description',
+      header: 'Description',
+      width: '33%',
+      render: (log) => (
+        <p className="text-sm text-text line-clamp-2 leading-snug">{log.description}</p>
+      ),
+    },
+    {
+      key: 'timestamp',
+      header: 'Timestamp',
+      width: '15%',
+      render: (log) => (
+        <div>
+          <p className="dash-cell-emphasis">
+            {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
+          </p>
+          <p className="dash-cell-muted">
+            {new Date(log.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: 'origin',
+      header: 'Origin',
+      width: '15%',
+      render: (log) => (
+        <div>
+          <div className="flex items-center gap-1.5 text-text-muted text-xs font-medium">
+            {getDeviceIcon(log.userAgent)}
+            <span className="truncate">{parseUA(log.userAgent)}</span>
+          </div>
+          <p className="dash-cell-mono mt-0.5">{log.ipAddress || '—'}</p>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <DashboardLayout title="Platform Audit Logs">
-      <div className="space-y-6 animate-reveal">
-        {/* Header Actions */}
+      <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <p className="text-sm text-text">Real-time audit trail of all administrative and user actions.</p>
+          <p className="text-sm text-text-muted">Real-time audit trail of administrative and user actions.</p>
           <button 
+            type="button"
             onClick={fetchLogs}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-base2 hover:bg-base3 rounded-xl transition-all border border-base2 text-sm font-bold w-full sm:w-auto shadow-sm"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-surface hover:bg-base2/40 rounded-xl transition-all text-sm font-medium w-full sm:w-auto border border-base2/40"
           >
             <RotateCcw size={16} />
-            Refresh Trail
+            Refresh
           </button>
         </div>
 
-        {/* Filters Bar */}
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/40" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
             <input 
               type="text"
-              placeholder="Filter by user, action, description..."
+              placeholder="Filter by user, action, description…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 bg-base3 border border-base2 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm transition-all"
+              className="w-full pl-11 pr-4 py-2.5 bg-surface border border-base2/40 rounded-xl focus:ring-2 focus:ring-magenta/25 outline-none text-sm transition-all"
             />
           </div>
           <div className="flex gap-2">
             <select
               value={filterAction}
               onChange={(e) => setFilterAction(e.target.value)}
-              className="px-3 py-2.5 bg-base3 border border-base2 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm min-w-[140px]"
+              className="px-3 py-2.5 bg-surface border border-base2/40 rounded-xl focus:ring-2 focus:ring-magenta/25 outline-none text-sm min-w-[140px]"
             >
-              <option value="ALL">All Actions</option>
+              <option value="ALL">All actions</option>
               {actions.filter(a => a !== 'ALL').map(action => (
                 <option key={action} value={action}>{action.replace(/_/g, ' ')}</option>
               ))}
@@ -134,9 +193,9 @@ const AdminLogs = () => {
             <select
               value={filterSeverity}
               onChange={(e) => setFilterSeverity(e.target.value)}
-              className="px-3 py-2.5 bg-base3 border border-base2 rounded-xl focus:ring-2 focus:ring-primary/20 outline-none text-sm min-w-[120px]"
+              className="px-3 py-2.5 bg-surface border border-base2/40 rounded-xl focus:ring-2 focus:ring-magenta/25 outline-none text-sm min-w-[120px]"
             >
-              <option value="ALL">All Levels</option>
+              <option value="ALL">All levels</option>
               <option value="info">Info</option>
               <option value="warning">Warning</option>
               <option value="error">Error</option>
@@ -144,93 +203,22 @@ const AdminLogs = () => {
           </div>
         </div>
 
-        {/* High-Density Logs Table */}
-        <div className="bg-base3 border-2 border-primary/20 rounded-2xl overflow-hidden shadow-sm">
-          {loading ? (
-            <div className="p-16 text-center">
-              <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p className="text-sm text-text">Syncing audit trail...</p>
-            </div>
-          ) : filteredLogs.length === 0 ? (
-            <div className="p-16 text-center">
-              <Activity size={40} className="mx-auto text-base2 mb-3" />
-              <p className="text-text-emphasis font-bold">No results matching filters</p>
-              <p className="text-xs text-text">Try broadening your search criteria</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse table-fixed min-w-[900px]">
-                <thead>
-                  <tr className="border-b border-base2 bg-base2/20 text-text/60 uppercase text-[10px] font-black tracking-widest">
-                    <th className="px-4 py-3 w-[22%]">Subject</th>
-                    <th className="px-4 py-3 w-[15%] text-center">Event</th>
-                    <th className="px-4 py-3 w-[33%]">Description</th>
-                    <th className="px-4 py-3 w-[15%]">Timestamp</th>
-                    <th className="px-4 py-3 w-[15%]">Origin</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-base2/50">
-                  {filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-primary/5 transition-colors group">
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-base2 flex items-center justify-center text-primary font-bold text-xs ring-1 ring-base2 shrink-0">
-                            {log.user?.fullName?.charAt(0) || '?'}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-text-emphasis text-sm truncate leading-tight">
-                              {log.user?.fullName || 'System'}
-                            </p>
-                            <p className="text-[10px] text-text/60 truncate uppercase">{log.user?.role || 'automatic'}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex flex-col items-center gap-1">
-                          <span className={`px-2 py-0.5 rounded-md text-[9px] font-black tracking-tighter uppercase border ${getActionColor(log.action)}`}>
-                            {log.action?.replace(/_/g, ' ')}
-                          </span>
-                          <div className="flex items-center gap-1 opacity-60">
-                            {getSeverityIcon(log.severity)}
-                            <span className="text-[9px] font-bold uppercase">{log.severity}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <p className="text-sm text-text-emphasis leading-tight line-clamp-2">{log.description}</p>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="space-y-0.5">
-                          <p className="text-sm font-bold text-text-emphasis leading-none">
-                            {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                          </p>
-                          <p className="text-[10px] text-text/60 uppercase font-medium">
-                            {new Date(log.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1.5 text-text/70">
-                            {getDeviceIcon(log.userAgent)}
-                            <span className="text-[10px] font-bold truncate">{parseUA(log.userAgent)}</span>
-                          </div>
-                          <p className="text-[10px] font-mono text-text/40">{log.ipAddress || '—'}</p>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+        <DataTable
+          columns={columns}
+          data={filteredLogs}
+          loading={loading}
+          loadingMessage="Syncing audit trail…"
+          emptyIcon={Activity}
+          emptyTitle="No results matching filters"
+          emptyDescription="Try broadening your search criteria."
+          minWidth={900}
+          stickyHeader
+        />
 
-        {/* Audit Disclaimer */}
-        <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-xl border-2 border-primary/20">
-          <Shield size={16} className="text-primary" />
-          <p className="text-xs text-text italic">
-            Tamper-proof audit logs. This trail is retained for 90 days for compliance and oversight.
+        <div className="flex items-center gap-3 px-4 py-3 bg-surface rounded-xl border border-base2/30">
+          <Shield size={16} className="text-magenta shrink-0" />
+          <p className="text-xs text-text-muted">
+            Tamper-proof audit logs retained for 90 days for compliance and oversight.
           </p>
         </div>
       </div>

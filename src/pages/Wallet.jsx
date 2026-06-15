@@ -17,8 +17,10 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DashboardLayout from '../components/DashboardLayout';
+import DataTable from '../components/ui/DataTable';
+import StatusPill from '../components/ui/StatusPill';
+import MetricCard from '../components/ui/MetricCard';
 import api from '../api/axios';
-import AuraCard from '../components/AuraCard';
 
 const WalletPage = () => {
   const [wallet, setWallet] = useState(null);
@@ -28,6 +30,13 @@ const WalletPage = () => {
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [amount, setAmount] = useState('');
+  const [banks, setBanks] = useState([]);
+  const [withdrawForm, setWithdrawForm] = useState({
+    recipientType: 'mobile_money',
+    accountName: '',
+    accountNumber: '',
+    bankCode: ''
+  });
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
@@ -50,16 +59,22 @@ const WalletPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!showWithdraw || banks.length) return;
+    api.get('/wallet/paystack/banks')
+      .then((res) => setBanks(res.data || []))
+      .catch(() => setBanks([]));
+  }, [showWithdraw, banks.length]);
+
   const handleDeposit = async (e) => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post('/wallet/deposit', { amount: Number(amount) });
-      setSuccessMsg(`Successfully deposited KES ${amount}`);
-      setAmount('');
-      setShowDeposit(false);
-      fetchData();
-      setTimeout(() => setSuccessMsg(''), 5000);
+      const { data } = await api.post('/payments/paystack/initialize', { amount: Number(amount) });
+      if (!data.authorizationUrl) {
+        throw new Error('Paystack checkout URL was not returned');
+      }
+      window.location.href = data.authorizationUrl;
     } catch (err) {
       setError(err.response?.data?.message || 'Deposit failed');
     } finally {
@@ -71,9 +86,10 @@ const WalletPage = () => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await api.post('/wallet/withdraw', { amount: Number(amount) });
-      setSuccessMsg(`Successfully withdrawn KES ${amount}`);
+      await api.post('/wallet/withdraw', { amount: Number(amount), ...withdrawForm });
+      setSuccessMsg(`Withdrawal submitted for KES ${Number(amount).toLocaleString()}`);
       setAmount('');
+      setWithdrawForm({ recipientType: 'mobile_money', accountName: '', accountNumber: '', bankCode: '' });
       setShowWithdraw(false);
       fetchData();
       setTimeout(() => setSuccessMsg(''), 5000);
@@ -105,6 +121,68 @@ const WalletPage = () => {
       default: return 'bg-base2/20 text-text/40 border-base2/30';
     }
   };
+
+  const statusTone = (status) => {
+    if (status === 'completed') return 'success';
+    if (status === 'failed') return 'danger';
+    return 'warning';
+  };
+
+  const txColumns = [
+    {
+      key: 'details',
+      header: 'Transaction',
+      render: (tx) => (
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-surface border border-base2/30">
+            {getTransactionIcon(tx.type)}
+          </div>
+          <div className="min-w-0">
+            <p className="dash-cell-emphasis capitalize">{tx.type.replace(/_/g, ' ')}</p>
+            <p className="dash-cell-muted">
+              {new Date(tx.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'ref',
+      header: 'Reference',
+      render: (tx) => (
+        <span className="dash-cell-mono">{tx.txRef || tx.referenceId?.toString().slice(-8) || '—'}</span>
+      ),
+    },
+    {
+      key: 'amount',
+      header: 'Amount',
+      align: 'right',
+      render: (tx) => {
+        const positive = ['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type);
+        return (
+          <span className={`font-semibold tabular-nums ${positive ? 'text-green' : 'text-text-emphasis'}`}>
+            {positive ? '+' : '−'} KES {tx.amount.toLocaleString()}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'balance',
+      header: 'Balance',
+      align: 'right',
+      render: (tx) => (
+        <span className="dash-cell-muted tabular-nums">
+          {tx.postBalance != null ? `KES ${Number(tx.postBalance).toLocaleString()}` : '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      align: 'right',
+      render: (tx) => <StatusPill tone={statusTone(tx.status)}>{tx.status}</StatusPill>,
+    },
+  ];
 
   if (loading && !wallet) return (
     <div className="flex items-center justify-center min-h-[60vh]">
@@ -174,7 +252,7 @@ const WalletPage = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#073642] via-[#002b36] to-[#073642] p-5 md:p-8 text-text-light shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-base3/10 group aura-card"
+              className="relative aspect-video md:aspect-[1.586/1] w-full max-w-[400px] mx-auto md:mx-0 rounded-[2.5rem] bg-gradient-to-br from-[#0f172a] via-[#1e3a5f] to-[#111827] p-5 md:p-8 text-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] overflow-hidden transition-all border border-white/15 group"
               style={{ animation: 'aura-breathe 8s ease-in-out infinite' }}
             >
               {/* Glossy Overlay */}
@@ -188,23 +266,23 @@ const WalletPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
-                    <p className="text-[12px] font-black text-base3/50 tracking-[0.3em] uppercase leading-none italic font-mono">CUE MASTERS</p>
+                    <p className="text-[12px] font-black text-white/80 tracking-[0.3em] uppercase leading-none italic font-mono">CUE MASTERS</p>
                   </div>
                 </div>
 
                 <div className="space-y-0.5">
-                  <p className="text-[10px] md:text-xs font-black text-base3/40 uppercase tracking-[0.2em] leading-none mb-2">Available Balance</p>
+                  <p className="text-[10px] md:text-xs font-black text-white/70 uppercase tracking-[0.2em] leading-none mb-2">Available Balance</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl md:text-6xl font-black tracking-tighter tabular-nums drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-base3 to-base3/70 pr-1">
+                    <span className="text-3xl md:text-6xl font-black tracking-tighter tabular-nums drop-shadow-2xl text-white pr-1">
                       {wallet?.balance?.toLocaleString()}
                     </span>
-                    <span className="text-sm md:text-xl font-bold text-base3/30 uppercase tracking-widest">KES</span>
+                    <span className="text-sm md:text-xl font-bold text-white/65 uppercase tracking-widest">KES</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-end pt-2">
                   <div className="flex flex-col gap-1.5">
-                    <p className="text-[9px] font-black uppercase text-base3/30 tracking-[0.2em] leading-none">Account Holder</p>
+                    <p className="text-[9px] font-black uppercase text-white/60 tracking-[0.2em] leading-none">Account Holder</p>
                     <p className="text-xs md:text-base font-black text-text-light tracking-[0.15em] uppercase drop-shadow-sm">
                       {userInfo?.fullName || 'PREMIUM PLAYER'}
                     </p>
@@ -229,35 +307,35 @@ const WalletPage = () => {
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="bg-text-emphasis p-8 rounded-[2.5rem] text-text-light shadow-2xl border border-base3/5"
+                  className="bg-surface p-8 rounded-[2.5rem] text-text shadow-2xl border border-base2"
                 >
                   <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-black uppercase tracking-tight">Deposit Funds</h3>
-                    <button onClick={() => setShowDeposit(false)} className="w-10 h-10 rounded-full bg-base3/10 flex items-center justify-center hover:bg-red/20 hover:text-red transition-all">
+                    <h3 className="text-xl font-black uppercase tracking-tight text-text-emphasis">Deposit Funds</h3>
+                    <button onClick={() => setShowDeposit(false)} className="w-10 h-10 rounded-full bg-base2/70 flex items-center justify-center hover:bg-red/10 hover:text-red transition-all">
                       <X size={18} />
                     </button>
                   </div>
                   <form onSubmit={handleDeposit} className="space-y-6">
                     <div>
-                      <label className="text-[10px] text-base3/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
+                      <label className="text-[10px] text-text-muted font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
                       <input
                         type="number"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Enter amount"
-                        className="w-full bg-base3/5 border border-base3/10 rounded-2xl px-6 py-4 text-text-light text-lg font-black placeholder:text-base3/20 focus:ring-2 focus:ring-primary outline-none transition-all"
+                        className="w-full bg-background border border-base2 rounded-2xl px-6 py-4 text-text-emphasis text-lg font-black placeholder:text-text-muted focus:ring-2 focus:ring-primary outline-none transition-all"
                         required
                       />
                     </div>
-                    <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 text-primary-light text-xs font-bold space-y-2">
-                      <p className="flex items-center gap-2"><CheckCircle2 size={14} /> Instant verification via M-Pesa</p>
-                      <p className="flex items-center gap-2"><CheckCircle2 size={14} /> No hidden transaction fees</p>
+                    <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 text-primary text-xs font-bold space-y-2">
+                      <p className="flex items-center gap-2"><CheckCircle2 size={14} /> Secure checkout powered by Paystack</p>
+                      <p className="flex items-center gap-2"><CheckCircle2 size={14} /> Wallet is credited after payment verification</p>
                     </div>
                     <button
                       disabled={submitting}
                       className="w-full py-4 aura-btn flex items-center justify-center gap-2 text-sm"
                     >
-                      {submitting ? <Loader2 className="animate-spin" /> : <>Confirm Deposit <ArrowRight size={18} /></>}
+                      {submitting ? <Loader2 className="animate-spin" /> : <>Proceed to Paystack <ArrowRight size={18} /></>}
                     </button>
                   </form>
                 </motion.div>
@@ -276,6 +354,55 @@ const WalletPage = () => {
                     </button>
                   </div>
                   <form onSubmit={handleWithdraw} className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <label className="text-[10px] text-text/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Recipient Type</label>
+                        <select
+                          value={withdrawForm.recipientType}
+                          onChange={(e) => setWithdrawForm({ ...withdrawForm, recipientType: e.target.value })}
+                          className="w-full bg-base2/20 border border-base2 rounded-2xl px-5 py-4 text-text-emphasis text-sm font-black focus:ring-2 focus:ring-primary outline-none transition-all"
+                        >
+                          <option value="mobile_money">Mobile money</option>
+                          <option value="kepss">Bank account</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-text/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Bank / Provider</label>
+                        <select
+                          value={withdrawForm.bankCode}
+                          onChange={(e) => setWithdrawForm({ ...withdrawForm, bankCode: e.target.value })}
+                          className="w-full bg-base2/20 border border-base2 rounded-2xl px-5 py-4 text-text-emphasis text-sm font-black focus:ring-2 focus:ring-primary outline-none transition-all"
+                          required
+                        >
+                          <option value="">Select provider</option>
+                          {banks.map((bank) => (
+                            <option key={bank.code} value={bank.code}>{bank.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-text/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Recipient Name</label>
+                      <input
+                        type="text"
+                        value={withdrawForm.accountName}
+                        onChange={(e) => setWithdrawForm({ ...withdrawForm, accountName: e.target.value })}
+                        placeholder="Name registered on account"
+                        className="w-full bg-base2/20 border border-base2 rounded-2xl px-6 py-4 text-text-emphasis text-lg font-black placeholder:text-text/20 focus:ring-2 focus:ring-primary outline-none transition-all"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-text/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Account / Phone Number</label>
+                      <input
+                        type="text"
+                        value={withdrawForm.accountNumber}
+                        onChange={(e) => setWithdrawForm({ ...withdrawForm, accountNumber: e.target.value })}
+                        placeholder="Paystack recipient number"
+                        className="w-full bg-base2/20 border border-base2 rounded-2xl px-6 py-4 text-text-emphasis text-lg font-black placeholder:text-text/20 focus:ring-2 focus:ring-primary outline-none transition-all"
+                        required
+                      />
+                    </div>
                     <div>
                       <label className="text-[10px] text-text/40 font-black uppercase tracking-[0.2em] block mb-2.5 ml-1">Amount (KES)</label>
                       <input
@@ -305,132 +432,42 @@ const WalletPage = () => {
 
           {/* Individual Stats Blocks */}
           <div className="col-span-1 lg:col-span-1">
-            <AuraCard
-              className="p-5 flex flex-col justify-between border-2 border-amber-500/20 bg-amber-500/[0.04] relative overflow-hidden h-full group"
-            >
-              <div className="absolute inset-0 bg-amber-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner border border-amber-500/20">
-                  <Clock size={20} />
-                </div>
-                <span className="text-[9px] font-black text-amber-600 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 italic">ESCROW</span>
-              </div>
-              <div className="relative z-10 mt-auto">
-                <p className="text-[10px] font-black text-amber-600/60 uppercase mb-1 tracking-widest">Active Stakes</p>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {wallet?.lockedBalance?.toLocaleString()}</span>
-                </div>
-              </div>
-              <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-amber-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
-            </AuraCard>
+            <MetricCard
+              compact
+              label="Active stakes"
+              prefix="KES"
+              value={Number(wallet?.lockedBalance || wallet?.escrow || 0).toLocaleString()}
+              icon={Clock}
+            />
           </div>
-
           <div className="col-span-1 lg:col-span-1">
-            <AuraCard
-              className="p-5 flex flex-col justify-between border-2 border-emerald-500/20 bg-emerald-500/[0.04] relative overflow-hidden h-full group"
-            >
-              <div className="absolute inset-0 bg-emerald-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="flex items-center justify-between mb-4 relative z-10">
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner border border-emerald-500/20">
-                  <TrendingUp size={20} />
-                </div>
-                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 italic">
-                  {userInfo?.role === 'moderator' ? 'EARNINGS' : 'YIELD'}
-                </span>
-              </div>
-              <div className="relative z-10 mt-auto">
-                <p className="text-[10px] font-black text-emerald-600/60 uppercase mb-1 tracking-widest">
-                   {userInfo?.role === 'moderator' ? 'Total Commission' : 'Net Returns'}
-                </p>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-2xl font-black text-text-emphasis tabular-nums tracking-tighter">KES {transactions?.filter(t => t.type === (userInfo?.role === 'moderator' ? 'moderation_fee' : 'prize_payout')).reduce((acc, t) => acc + t.amount, 0).toLocaleString()}</span>
-                </div>
-              </div>
-              <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700" />
-            </AuraCard>
+            <MetricCard
+              compact
+              label={userInfo?.role === 'moderator' ? 'Total commission' : 'Net returns'}
+              prefix="KES"
+              value={transactions?.filter(t => t.type === (userInfo?.role === 'moderator' ? 'moderation_fee' : 'prize_payout')).reduce((acc, t) => acc + t.amount, 0).toLocaleString()}
+              icon={TrendingUp}
+              trend={{ value: userInfo?.role === 'moderator' ? 'Fees' : 'Wins', label: 'Lifetime' }}
+            />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8">
-          {/* Transaction History - Simplified grid spanning full width */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between px-0">
-              <h2 className="text-xl font-black text-text-emphasis tracking-tight flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-                  <History size={20} />
-                </div>
-                Recent Activity
-              </h2>
-              <button className="text-xs font-black uppercase tracking-widest text-primary hover:underline">View All</button>
-            </div>
-            {/* ... Rest of transaction history ... */}
-
-            <div className="aura-card border-none overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <div className="divide-y divide-base2/10">
-                {transactions.length > 0 && (
-                  <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 bg-primary/5 text-[10px] font-black text-primary/40 uppercase tracking-[0.2em]">
-                    <div className="col-span-5">Transaction Details</div>
-                    <div className="col-span-2 text-center">Reference</div>
-                    <div className="col-span-2 text-right">Amount</div>
-                    <div className="col-span-3 text-right">Post Balance</div>
-                  </div>
-                )}
-                {transactions.length > 0 ? (
-                  transactions.map((tx) => (
-                    <div key={tx.id} className="p-3 md:px-6 hover:bg-base2/10 transition-colors flex md:grid md:grid-cols-12 gap-3 md:gap-4 items-center group overflow-hidden">
-                      {/* Icon & Type & Date Combined */}
-                      <div className="md:col-span-5 flex items-center gap-3 min-w-0 flex-1">
-                        <div className={`w-8 h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${tx.type === 'deposit' || tx.type === 'prize_payout' || tx.type === 'stake_refund' || tx.type === 'moderation_fee' || tx.type === 'platform_fee'
-                            ? 'bg-emerald-500/10 border-emerald-500/20'
-                            : tx.type === 'withdrawal' ? 'bg-red/10 border-red/20' : 'bg-base2/20 border-base2/30'
-                          }`}>
-                          {getTransactionIcon(tx.type)}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-black text-text-emphasis capitalize truncate text-xs md:text-sm tracking-tight mb-0">{tx.type.replace('_', ' ')}</p>
-                          <p className="text-[8px] md:text-[9px] text-text/40 font-bold uppercase tracking-widest truncate">
-                            {new Date(tx.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Reference - Hidden on Mobile */}
-                      <div className="hidden md:flex md:col-span-2 justify-center items-center gap-3">
-                        <span className="text-[11px] font-mono font-black bg-base2/30 text-text/60 px-3 py-1 rounded-lg border border-base2/50 tracking-tighter italic">
-                          {tx.txRef || 'LEGACY'}
-                        </span>
-                      </div>
-
-                      {/* Amount & Status Combined for Mobile */}
-                      <div className="md:col-span-5 flex items-center justify-end gap-3 md:gap-10 shrink-0">
-                        <div className="flex flex-col items-end">
-                          <p className={`font-black tracking-tighter text-sm md:text-base ${['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? 'text-emerald-600' : 'text-text-emphasis'
-                            }`}>
-                            {['deposit', 'prize_payout', 'stake_refund', 'moderation_fee', 'platform_fee'].includes(tx.type) ? '+' : '-'} {tx.amount.toLocaleString()}
-                          </p>
-                          <p className="hidden md:block text-[9px] text-text/30 font-bold tabular-nums">
-                            {tx.postBalance ? `KES ${tx.postBalance.toLocaleString()}` : '-'}
-                          </p>
-                        </div>
-                        
-                        <span className={`text-[8px] md:text-[9px] px-2 py-0.5 rounded-md border shadow-sm ${getStatusColor(tx.status)} font-black uppercase tracking-widest shrink-0`}>
-                          {tx.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-20 text-center">
-                    <div className="bg-base2/10 w-20 h-20 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 border border-dashed border-base2">
-                      <History className="text-text/10" size={40} />
-                    </div>
-                    <p className="text-text-emphasis font-black uppercase tracking-widest text-sm">Clear History</p>
-                    <p className="text-text/40 text-xs font-bold mt-2">No transaction signals recorded yet.</p>
-                  </div>
-                )}
-              </div>
-            </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-text-emphasis flex items-center gap-2">
+              <History size={18} className="text-magenta" />
+              Recent activity
+            </h2>
           </div>
+          <DataTable
+            columns={txColumns}
+            data={transactions}
+            loading={loading}
+            emptyIcon={History}
+            emptyTitle="No transactions yet"
+            emptyDescription="Deposits, withdrawals, and stakes will appear here."
+            minWidth={640}
+          />
         </div>
       </div>
     </DashboardLayout>

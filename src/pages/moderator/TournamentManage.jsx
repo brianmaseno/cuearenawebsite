@@ -17,11 +17,13 @@ import {
    Trash2,
    Search,
    X,
-   Send
+   Send,
+   Shield,
+   MapPin,
+   Play
 } from 'lucide-react';
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from '../../components/StatusBadge';
-import TournamentPayoutModal from '../../components/Tournament/TournamentPayoutModal';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
@@ -44,7 +46,6 @@ const TournamentManage = () => {
    const [selectedPlayers, setSelectedPlayers] = useState([]);
    const [invitations, setInvitations] = useState([]);
    const [activeTab, setActiveTab] = useState('brackets'); // 'brackets' or 'overview'
-   const [isPayoutModalOpen, setIsPayoutModalOpen] = useState(false);
    const [tables, setTables] = useState([]);
    const [showTableModal, setShowTableModal] = useState(false);
    const [selectedTableId, setSelectedTableId] = useState('');
@@ -115,14 +116,14 @@ const TournamentManage = () => {
    useEffect(() => {
       if (socket) {
          socket.on('TOURNAMENT_UPDATE', (data) => {
-            if (data && data.id) {
-               // Check if it's a special event
-               if (data.type === 'final_winner_declared') {
-                  setIsPayoutModalOpen(true);
-                  toast.success('Tournament Completed! Winner declared.', { duration: 5000 });
-               }
-               if (!data.type) setTournament(data);
+            if (data?.type === 'final_winner_declared') {
+               toast.success('Tournament completed. Winner paid automatically.', { duration: 5000 });
             }
+
+            if (data?.id && !data.type) {
+               setTournament(data);
+            }
+
             fetchTournamentData();
             toast.info('Tournament updated!', { id: 'tourney-update' });
          });
@@ -155,6 +156,31 @@ const TournamentManage = () => {
          fetchTournamentData();
       } catch (err) {
          toast.error('Failed to publish tournament');
+      } finally {
+         setActionLoading(false);
+      }
+   };
+
+   const handleStartTournament = async () => {
+      const joinedCount = tournament?.confirmedPlayers?.length || 0;
+      if (joinedCount < 2) {
+         toast.error('At least 2 joined players are required to run a tournament.');
+         return;
+      }
+
+      if (joinedCount < (tournament?.minPlayers || 0)) {
+         const proceed = window.confirm(`Only ${joinedCount} players have joined, while the planned minimum is ${tournament.minPlayers}. Run this tournament with the current joined players?`);
+         if (!proceed) return;
+      }
+
+      setActionLoading(true);
+      try {
+         await api.post(`/tournaments/${id}/start`);
+         toast.success('Tournament bracket generated. Players can accept their match invitations.');
+         setActiveTab('brackets');
+         fetchTournamentData();
+      } catch (err) {
+         toast.error(err.response?.data?.message || 'Failed to run tournament');
       } finally {
          setActionLoading(false);
       }
@@ -231,6 +257,12 @@ const TournamentManage = () => {
       );
    }
 
+   const joinedCount = tournament?.confirmedPlayers?.length || 0;
+   const plannedMinimum = tournament?.minPlayers || 0;
+   const hasBracket = (tournament?.matches?.length || 0) > 0;
+   const canRunTournament = ['open_for_players', 'full'].includes(tournament?.status) && joinedCount >= 2;
+   const isShortStart = canRunTournament && plannedMinimum > joinedCount;
+
    return (
       <DashboardLayout title="Manage Tournament">
          <div className="space-y-10 pb-20 max-w-[1600px] mx-auto px-4 md:px-8 bg-background min-h-screen" style={{ fontFamily: "'Outfit', sans-serif" }}>
@@ -269,13 +301,26 @@ const TournamentManage = () => {
                         </select>
                      </div>
                   )}
-                  {tournament?.status === 'completed' && (
+                  {tournament?.status === 'completed' && tournament?.prizesDistributed && (
                      <button
-                        onClick={() => setIsPayoutModalOpen(true)}
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 rounded-[22px] text-[12px] font-black uppercase tracking-widest shadow-[0_10px_25px_-5px_rgba(249,115,22,0.4)] flex items-center gap-2 transition-all hover:scale-105 active:scale-95"
+                        type="button"
+                        disabled
+                        className="bg-emerald-500/10 text-emerald-600 px-8 py-3.5 rounded-[22px] text-[12px] font-black uppercase tracking-widest border border-emerald-500/20 flex items-center gap-2"
                      >
                         <Award size={18} />
-                        Distribute Prizes
+                        Payout Completed
+                     </button>
+                  )}
+                  {['open_for_players', 'full'].includes(tournament?.status) && (
+                     <button
+                        type="button"
+                        onClick={handleStartTournament}
+                        disabled={actionLoading || joinedCount < 2}
+                        className="bg-primary hover:bg-primary-dark text-base3 px-8 py-3.5 rounded-[22px] text-[12px] font-black uppercase tracking-widest shadow-[0_10px_25px_-5px_rgba(var(--color-primary-rgb),0.35)] flex items-center gap-2 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                        title={joinedCount < 2 ? 'At least 2 joined players are required' : 'Generate the bracket and start tournament play'}
+                     >
+                        {actionLoading ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />}
+                        {joinedCount < 2 ? 'Need 2 Players' : 'Run Tournament'}
                      </button>
                   )}
                   {tournament?.status === 'draft' && (
@@ -376,6 +421,27 @@ const TournamentManage = () => {
                            )}
                         </div>
                      </div>
+
+                     {canRunTournament && (
+                        <div className="lg:col-span-3 card-premium p-6 rounded-2xl border border-primary/20 bg-primary/5 flex flex-col md:flex-row md:items-center justify-between gap-5">
+                           <div>
+                              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-primary mb-2">Tournament Ready</p>
+                              <h3 className="text-xl font-black text-text-emphasis tracking-tight">Run with {joinedCount} joined players</h3>
+                              <p className="text-sm font-bold text-text/60 mt-1">
+                                 Starting will lock the roster, generate the bracket, and create match invitations for the players.
+                                 {isShortStart ? ` This starts below the planned minimum of ${plannedMinimum}.` : ''}
+                              </p>
+                           </div>
+                           <button
+                              type="button"
+                              onClick={handleStartTournament}
+                              disabled={actionLoading}
+                              className="shrink-0 bg-primary text-base3 px-8 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                           >
+                              {actionLoading ? <Loader2 size={18} className="animate-spin" /> : 'Generate Bracket'}
+                           </button>
+                        </div>
+                     )}
 
                      {/* Invite / Status Section */}
                      <div className="card-premium p-6 rounded-2xl shadow-sm flex flex-col h-fit bg-base3/30 backdrop-blur-md">
@@ -496,11 +562,33 @@ const TournamentManage = () => {
                   </div>
                ) : (
                   <div className="space-y-4">
-                     <BracketCanvas
-                        tournament={tournament}
-                        onMatchClick={(match) => { setSelectedMatchForSets(match); setActiveSetInModal(null); }}
-                        user={user}
-                     />
+                     {!hasBracket && ['open_for_players', 'full'].includes(tournament?.status) ? (
+                        <div className="card-premium rounded-2xl p-10 md:p-14 border border-primary/20 bg-primary/5 text-center">
+                           <div className="w-16 h-16 bg-primary text-base3 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-primary/20">
+                              <Target size={30} />
+                           </div>
+                           <p className="text-[11px] font-black uppercase tracking-[0.25em] text-primary mb-3">No Bracket Yet</p>
+                           <h3 className="text-3xl font-black text-text-emphasis tracking-tight mb-3">Run the tournament to create matches</h3>
+                           <p className="text-sm md:text-base font-bold text-text/60 max-w-2xl mx-auto leading-relaxed">
+                              The moderator can start play once at least two players have joined. The winner is declared from the generated match console, and the wallet payout happens automatically after the final result.
+                           </p>
+                           <button
+                              type="button"
+                              onClick={handleStartTournament}
+                              disabled={actionLoading || joinedCount < 2}
+                              className="mt-8 bg-primary text-base3 px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:hover:scale-100 inline-flex items-center justify-center gap-3"
+                           >
+                              {actionLoading ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />}
+                              {joinedCount < 2 ? 'Need 2 Players' : `Run With ${joinedCount} Players`}
+                           </button>
+                        </div>
+                     ) : (
+                        <BracketCanvas
+                           tournament={tournament}
+                           onMatchClick={(match) => { setSelectedMatchForSets(match); setActiveSetInModal(null); }}
+                           user={user}
+                        />
+                     )}
                   </div>
                )}
             </div>
@@ -601,14 +689,14 @@ const TournamentManage = () => {
 
          {/* Match Console Modal */}
          {selectedMatchForSets && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-base1/80 backdrop-blur-sm animate-in fade-in duration-300">
-               <div className="bg-base3 w-full max-w-2xl rounded-[40px] shadow-2xl border border-base2 overflow-hidden animate-in zoom-in-95 duration-300">
-                  <div className="p-8 border-b border-base2 flex justify-between items-center bg-base2/10">
+            <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center px-4 py-6 bg-base1/75 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto">
+               <div className="bg-base3 w-full max-w-3xl max-h-[calc(100vh-3rem)] rounded-2xl shadow-2xl border border-base2 overflow-y-auto animate-in zoom-in-95 duration-300">
+                  <div className="sticky top-0 z-20 p-5 md:p-6 border-b border-base2 flex justify-between items-center bg-base3/95 backdrop-blur-md">
                      <div className="flex items-center gap-4">
-                        <img src="/favicon.png" alt="7 Ball" className="w-10 h-10 drop-shadow-md" />
+                        <img src="/favicon.png" alt="7 Ball" className="w-10 h-10 drop-shadow-md shrink-0" />
                         <div>
-                           <h3 className="text-3xl font-black text-text-emphasis tracking-tight">Cue Tournament</h3>
-                           <p className="text-sm font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
+                           <h3 className="text-xl md:text-2xl font-black text-text-emphasis tracking-tight">Cue Tournament</h3>
+                           <p className="text-[10px] md:text-xs font-black uppercase text-primary tracking-widest mt-1">Tournament System Engine</p>
                         </div>
                      </div>
                      <button
@@ -619,25 +707,25 @@ const TournamentManage = () => {
                      </button>
                   </div>
 
-                  <div className="p-8 space-y-8">
-                     <div className="flex items-center justify-between gap-6 p-6 bg-base2/10 rounded-[32px] border border-base2/50">
-                        <div className="text-center flex-1">
-                           <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player1Id?.fullName}</p>
+                  <div className="p-5 md:p-6 space-y-6">
+                     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 p-4 md:p-6 bg-base2/10 rounded-2xl border border-base2/50">
+                        <div className="text-center min-w-0">
+                           <p className="text-base md:text-xl font-black text-text-emphasis break-words">{selectedMatchForSets.player1Id?.fullName}</p>
                            <div className="flex flex-col items-center gap-1 mt-1">
-                              <p className="text-xs font-black uppercase text-primary tracking-widest leading-none">
+                              <p className="text-[10px] md:text-xs font-black uppercase text-primary tracking-widest leading-none">
                                  Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer1 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?.id || s.winnerId || '').toString() === (selectedMatchForSets.player1Id?.id || selectedMatchForSets.player1Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
                               </p>
                               <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player1Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                  {selectedMatchForSets.player1Accepted ? 'Accepted' : 'Pending'}
                               </span>
                            </div>
-                           <p className="text-4xl font-black text-primary mt-4">{selectedMatchForSets.scorePlayer1}</p>
+                           <p className="text-4xl md:text-5xl font-black text-primary mt-3">{selectedMatchForSets.scorePlayer1}</p>
                         </div>
-                        <div className="px-6 flex flex-col items-center gap-2">
-                           <div className="text-xs font-black uppercase tracking-[0.3em] text-primary/80 text-center leading-tight mb-2 drop-shadow-sm">
+                        <div className="px-2 md:px-4 flex flex-col items-center gap-2 min-w-[92px] md:min-w-[140px]">
+                           <div className="text-[9px] md:text-xs font-black uppercase tracking-widest text-primary/80 text-center leading-tight mb-1 drop-shadow-sm">
                               {tournament?.name} • Match
                               {tournament?.stakePerPlayer > 0 && (
-                                 <div className="mt-2 text-[10px] text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 inline-flex items-center gap-1 normal-case tracking-normal">
+                                 <div className="mt-2 text-[9px] md:text-[10px] text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 inline-flex items-center gap-1 normal-case tracking-normal whitespace-nowrap">
                                     <Award size={12} className="text-emerald-500" />
                                     PRIZE: KES {((tournament.stakePerPlayer * (tournament.confirmedPlayers?.length || tournament.maxPlayers)) * 0.85).toLocaleString()}
                                  </div>
@@ -645,17 +733,17 @@ const TournamentManage = () => {
                            </div>
                            <div className="text-base font-black italic text-text/20">VS</div>
                         </div>
-                        <div className="text-center flex-1">
-                           <p className="text-xl font-black text-text-emphasis">{selectedMatchForSets.player2Id?.fullName}</p>
+                        <div className="text-center min-w-0">
+                           <p className="text-base md:text-xl font-black text-text-emphasis break-words">{selectedMatchForSets.player2Id?.fullName}</p>
                            <div className="flex flex-col items-center gap-1 mt-1">
-                              <p className="text-xs font-black uppercase text-violet tracking-widest leading-none">
+                              <p className="text-[10px] md:text-xs font-black uppercase text-violet tracking-widest leading-none">
                                  Won: {selectedMatchForSets.status === 'completed' && (!selectedMatchForSets.setsResults || selectedMatchForSets.setsResults.length === 0) ? selectedMatchForSets.scorePlayer2 : (selectedMatchForSets.setsResults?.filter(s => (s.winnerId?.id || s.winnerId || '').toString() === (selectedMatchForSets.player2Id?.id || selectedMatchForSets.player2Id || '').toString()).length || 0)} / {selectedMatchForSets.setsCount}
                               </p>
                               <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded leading-none ${selectedMatchForSets.player2Accepted ? 'bg-green/10 text-green' : 'bg-orange/10 text-orange'}`}>
                                  {selectedMatchForSets.player2Accepted ? 'Accepted' : 'Pending'}
                               </span>
                            </div>
-                           <p className="text-4xl font-black text-violet mt-4">{selectedMatchForSets.scorePlayer2}</p>
+                           <p className="text-4xl md:text-5xl font-black text-violet mt-3">{selectedMatchForSets.scorePlayer2}</p>
                         </div>
                      </div>
 
@@ -777,23 +865,16 @@ const TournamentManage = () => {
                      </div>
 
                      {selectedMatchForSets.status === 'completed' && (
-                        <div className="bg-green/10 border border-green/20 p-8 rounded-[32px] text-center">
-                           <Trophy className="mx-auto text-green mb-4" size={48} />
-                           <h4 className="text-3xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
-                           <p className="text-base font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
+                        <div className="bg-green/10 border border-green/20 p-6 rounded-2xl text-center">
+                           <Trophy className="mx-auto text-green mb-3" size={38} />
+                           <h4 className="text-2xl md:text-3xl font-black text-text-emphasis italic tracking-tight">MATCH CONCLUDED</h4>
+                           <p className="text-sm md:text-base font-bold text-green-700 mt-2 uppercase tracking-widest">Victor: {selectedMatchForSets.winnerId?.fullName}</p>
                         </div>
                      )}
                   </div>
                </div>
             </div>
          )}
-         {/* Payout Modal */}
-         <TournamentPayoutModal
-            isOpen={isPayoutModalOpen}
-            onClose={() => setIsPayoutModalOpen(false)}
-            tournament={tournament}
-            onSuccess={fetchTournamentData}
-         />
       </DashboardLayout>
    );
 };

@@ -35,56 +35,88 @@ const ModeratorApplication = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full card-premium p-10 text-center rounded-[32px]"
-        >
-          <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 size={48} />
+      <div className="min-h-screen flex">
+        <div className="hidden md:flex md:w-1/2 relative bg-base2">
+          <img src="/images/players_win.png" alt="Cue Arena" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-br from-base3/80 via-base3/60 to-primary/30" />
+          <div className="relative z-10 flex flex-col justify-center p-16">
+            <Link to="/" className="inline-flex items-center gap-3 mb-8">
+              <span className="text-4xl brand-premium drop-shadow-lg">Cue Arena</span>
+            </Link>
+            <h2 className="text-3xl font-bold text-text-light mb-4 drop-shadow-md">Application Received!</h2>
+            <p className="text-lg text-text-light/80 max-w-md leading-relaxed">
+              Thank you for applying to be a moderator. Our management team will review your details and contact you via email shortly.
+            </p>
           </div>
-          <h2 className="text-3xl font-black text-text-emphasis mb-4">Application Received!</h2>
-          <p className="text-text/70 mb-8 font-medium">
-            Thank you for applying to be a moderator. Our management team will review your details and contact you via email shortly.
-          </p>
-          <Link to="/" className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-2xl">
-            Return Home <ArrowLeft size={18} />
-          </Link>
-        </motion.div>
+        </div>
+        <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-background">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-md w-full text-center">
+            <div className="md:hidden mb-8">
+              <Link to="/" className="inline-flex items-center gap-3 mb-4">
+                <span className="text-3xl brand-premium">Cue Arena</span>
+              </Link>
+            </div>
+            <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 size={48} />
+            </div>
+            <h2 className="text-3xl font-black text-text-emphasis mb-4">Application Received!</h2>
+            <p className="text-text/70 mb-8 font-medium">
+              Thank you for applying to be a moderator. Our management team will review your details and contact you via email shortly.
+            </p>
+            <Link to="/" className="btn-primary inline-flex items-center gap-2 px-8 py-4 rounded-2xl">
+              Return Home <ArrowLeft size={18} />
+            </Link>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Decorative Orbs */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none"></div>
-
-      <div className="max-w-2xl w-full">
-        <div className="text-center mb-10">
-          <Link to="/" className="inline-flex items-center gap-3 mb-6 group">
-            <div className="w-10 h-10 bg-base2 rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-              <ShieldCheck className="text-primary" size={24} />
-            </div>
-            <span className="text-2xl brand-premium">Cue-Arena</span>
+    <div className="min-h-screen flex">
+      {/* Left Panel - Image */}
+      <div className="hidden md:flex md:w-1/2 relative bg-base2">
+        <img
+          src="/images/players_win.png"
+          alt="Cue Arena"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-base3/80 via-base3/60 to-primary/30" />
+        <div className="relative z-10 flex flex-col justify-center p-16">
+          <Link to="/" className="inline-flex items-center gap-3 mb-8">
+            <span className="text-4xl brand-premium drop-shadow-lg">Cue Arena</span>
           </Link>
-          <h1 className="text-4xl lg:text-5xl font-black text-text-emphasis mb-4 tracking-tight">Become a Moderator</h1>
-          <p className="text-text/60 text-lg font-medium">Join our elite management team and help shape the future of professional pool.</p>
+          <h2 className="text-3xl font-bold text-text-light mb-4 drop-shadow-md">
+            Become a Moderator
+          </h2>
+          <p className="text-lg text-text-light/80 max-w-md leading-relaxed">
+            Join our elite management team and help shape the future of professional pool. Organize tournaments, manage matches, and build the community.
+          </p>
         </div>
+      </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card-premium p-8 lg:p-12 rounded-[40px] border border-base2/50 backdrop-blur-3xl"
-        >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Right Panel - Form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-background">
+        <div className="w-full max-w-lg">
+          {/* Mobile Brand */}
+          <div className="md:hidden text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-base2 rounded-xl flex items-center justify-center">
+                <ShieldCheck className="text-primary" size={24} />
+              </div>
+              <span className="text-2xl brand-premium">Cue Arena</span>
+            </Link>
+          </div>
+
+          <h1 className="text-2xl font-bold text-text-emphasis mb-2">Become a Moderator</h1>
+          <p className="text-text mb-8">Join our elite management team and help shape the future of professional pool.</p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm font-black text-text-emphasis mb-3 uppercase tracking-widest">Full Name</label>
+                <label className="block text-sm font-semibold text-text-emphasis mb-2">Full Name</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text/30">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base1">
                     <User size={18} />
                   </div>
                   <input
@@ -93,15 +125,15 @@ const ModeratorApplication = () => {
                     required
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="w-full bg-base2/30 border border-base2/50 rounded-2xl pl-12 pr-4 py-4 text-text-emphasis focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
+                    className="w-full bg-base2/50 border border-base2 rounded-xl pl-10 pr-4 py-3 text-text-emphasis focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
                     placeholder="John Doe"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-black text-text-emphasis mb-3 uppercase tracking-widest">Email Address</label>
+                <label className="block text-sm font-semibold text-text-emphasis mb-2">Email Address</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text/30">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base1">
                     <Mail size={18} />
                   </div>
                   <input
@@ -110,7 +142,7 @@ const ModeratorApplication = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full bg-base2/30 border border-base2/50 rounded-2xl pl-12 pr-4 py-4 text-text-emphasis focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
+                    className="w-full bg-base2/50 border border-base2 rounded-xl pl-10 pr-4 py-3 text-text-emphasis focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -118,9 +150,9 @@ const ModeratorApplication = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-black text-text-emphasis mb-3 uppercase tracking-widest">Phone Number (Optional)</label>
+              <label className="block text-sm font-semibold text-text-emphasis mb-2">Phone Number (Optional)</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-text/30">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base1">
                   <Phone size={18} />
                 </div>
                 <input
@@ -128,21 +160,21 @@ const ModeratorApplication = () => {
                   type="text"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full bg-base2/30 border border-base2/50 rounded-2xl pl-12 pr-4 py-4 text-text-emphasis focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
+                  className="w-full bg-base2/50 border border-base2 rounded-xl pl-10 pr-4 py-3 text-text-emphasis focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none"
                   placeholder="+1 234 567 8900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-black text-text-emphasis mb-3 uppercase tracking-widest">Why do you want to join?</label>
+              <label className="block text-sm font-semibold text-text-emphasis mb-2">Why do you want to join?</label>
               <textarea
                 name="experience"
                 required
                 rows={5}
                 value={formData.experience}
                 onChange={handleChange}
-                className="w-full bg-base2/30 border border-base2/50 rounded-2xl px-6 py-4 text-text-emphasis focus:ring-2 focus:ring-primary outline-none transition-all font-medium resize-none"
+                className="w-full bg-base2/50 border border-base2 rounded-xl px-4 py-3 text-text-emphasis focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none resize-none"
                 placeholder="Tell us about your experience with pool management or refereeing..."
               />
             </div>
@@ -150,18 +182,30 @@ const ModeratorApplication = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-5 rounded-2xl flex items-center justify-center gap-3 text-xl font-black shadow-2xl shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] transition-all disabled:opacity-70"
+              className="w-full relative group h-14 bg-primary hover:bg-primary-dark disabled:opacity-70 text-text-light font-black text-lg rounded-2xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
             >
-              {loading ? <Loader2 className="animate-spin" size={24} /> : <Send size={24} />}
-              {loading ? 'Submitting...' : 'Submit Application'}
+              <div className="absolute inset-0 bg-gradient-to-r from-base3/0 via-base3/10 to-base3/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+              <div className="flex items-center justify-center gap-3">
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={22} />
+                    <span>Submitting...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit Application</span>
+                    <Send size={20} />
+                  </>
+                )}
+              </div>
             </button>
           </form>
-        </motion.div>
 
-        <div className="mt-8 text-center">
-          <Link to="/register" className="text-text/50 font-bold hover:text-primary transition-colors flex items-center justify-center gap-2">
-            <ArrowLeft size={16} /> Back to Player Registration
-          </Link>
+          <div className="mt-6 text-center">
+            <Link to="/register" className="text-text/50 font-bold hover:text-primary transition-colors inline-flex items-center gap-2">
+              <ArrowLeft size={16} /> Back to Player Registration
+            </Link>
+          </div>
         </div>
       </div>
     </div>

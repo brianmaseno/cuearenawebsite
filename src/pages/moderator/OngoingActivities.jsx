@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
-import { Trophy, Target, Clock, Users, ChevronRight, Loader2, CheckCircle2, Trash2, Award, X, Shield, Play, MapPin } from 'lucide-react';
+import { Trophy, Target, Clock, Users, ChevronRight, Loader2, CheckCircle2, Trash2, Award, X, Shield, Play, MapPin, AlertCircle, Pencil, UserPlus, Search, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import AuraCard from '../../components/AuraCard';
 import StatusBadge from '../../components/StatusBadge';
 import QuickStatsBar from '../../components/QuickStatsBar';
 import toast from 'react-hot-toast';
@@ -22,7 +21,18 @@ const OngoingActivities = () => {
   const [showTableModal, setShowTableModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null); // { id, type }
   const [selectedTableId, setSelectedTableId] = useState('');
+  const [editingItem, setEditingItem] = useState(null);
+  const [editForm, setEditForm] = useState({});
+  const [inviteTarget, setInviteTarget] = useState(null);
+  const [inviteSearch, setInviteSearch] = useState('');
+  const [inviteResults, setInviteResults] = useState([]);
+  const [selectedInvitePlayers, setSelectedInvitePlayers] = useState([]);
   const { socket, joinMatchRoom, leaveMatchRoom, joinTournamentRoom, leaveTournamentRoom } = useSocket();
+
+  const getBattleParticipantStatus = (participant) => participant?.BattleParticipants?.status || participant?.status || 'pending';
+  const getBattleParticipantId = (participant) => participant?.id || participant?.userId?.id || participant?.userId;
+  const getBattleParticipantName = (participant) => participant?.fullName || participant?.userId?.fullName || 'Player';
+  const getBattleParticipantPhoto = (participant) => participant?.profilePhoto || participant?.userId?.profilePhoto;
 
 
   const fetchOngoing = async () => {
@@ -53,6 +63,27 @@ const OngoingActivities = () => {
     fetchOngoing();
     fetchTables();
   }, []);
+
+  useEffect(() => {
+    const searchPlayers = async () => {
+      if (!inviteTarget || inviteSearch.trim().length < 2) {
+        setInviteResults([]);
+        return;
+      }
+
+      try {
+        const { data } = await api.get(`/users/players?search=${encodeURIComponent(inviteSearch.trim())}`);
+        const existingIds = new Set((inviteTarget.existingIds || []).map((id) => id?.toString()));
+        const selectedIds = new Set(selectedInvitePlayers.map((player) => player.id.toString()));
+        setInviteResults((data || []).filter((player) => !existingIds.has(player.id.toString()) && !selectedIds.has(player.id.toString())));
+      } catch (err) {
+        setInviteResults([]);
+      }
+    };
+
+    const timer = setTimeout(searchPlayers, 250);
+    return () => clearTimeout(timer);
+  }, [inviteSearch, inviteTarget, selectedInvitePlayers]);
 
 
   // Real-time updates with room joining
@@ -231,11 +262,118 @@ const OngoingActivities = () => {
     if (!window.confirm('Cancel this battle? All accepted stakes will be refunded.')) return;
     setActionLoading(true);
     try {
-      await api.put(`/battles/${battleId}`);
+      await api.put(`/battles/${battleId}/cancel`);
       toast.success('Battle cancelled.');
       fetchOngoing();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to cancel battle');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openEditModal = (type, item) => {
+    setEditingItem({ type, id: item.id });
+    if (type === 'tournament') {
+      setEditForm({
+        name: item.name || '',
+        venue: item.venue || '',
+        location: item.location || '',
+        stakePerPlayer: item.stakePerPlayer || 0,
+        maxPlayers: item.maxPlayers || 2,
+        minPlayers: item.minPlayers || 2,
+        startDate: item.startDate ? new Date(item.startDate).toISOString().slice(0, 16) : ''
+      });
+    } else {
+      setEditForm({
+        title: item.title || '',
+        venue: item.venue || '',
+        location: item.location || '',
+        stakeAmount: item.stakeAmount || 0,
+        scheduledAt: item.scheduledAt ? new Date(item.scheduledAt).toISOString().slice(0, 16) : ''
+      });
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingItem) return;
+
+    setActionLoading(true);
+    try {
+      const payload = { ...editForm };
+      if (payload.startDate) payload.startDate = new Date(payload.startDate).toISOString();
+      if (payload.scheduledAt) payload.scheduledAt = new Date(payload.scheduledAt).toISOString();
+
+      const endpoint = editingItem.type === 'tournament'
+        ? `/tournaments/${editingItem.id}`
+        : `/battles/${editingItem.id}`;
+      await api.put(endpoint, payload);
+      toast.success(`${editingItem.type === 'tournament' ? 'Tournament' : 'Battle'} updated.`);
+      setEditingItem(null);
+      setEditForm({});
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update activity');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openInviteModal = (type, item) => {
+    const existingIds = type === 'tournament'
+      ? (item.confirmedPlayers || []).map((player) => player.id)
+      : (item.participants || []).map(getBattleParticipantId);
+    setInviteTarget({ type, id: item.id, title: item.name || item.title, existingIds });
+    setInviteSearch('');
+    setInviteResults([]);
+    setSelectedInvitePlayers([]);
+  };
+
+  const handleInviteSubmit = async () => {
+    if (!inviteTarget || selectedInvitePlayers.length === 0) return;
+    setActionLoading(true);
+    try {
+      const ids = selectedInvitePlayers.map((player) => player.id);
+      if (inviteTarget.type === 'tournament') {
+        await api.post(`/tournaments/${inviteTarget.id}/invite-bulk`, { playerIds: ids });
+      } else {
+        await api.post(`/battles/${inviteTarget.id}/invite`, { playerIds: ids });
+      }
+      toast.success(`Sent ${ids.length} invitation${ids.length === 1 ? '' : 's'}.`);
+      setInviteTarget(null);
+      setSelectedInvitePlayers([]);
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to send invitations');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteTournament = async (tournamentId) => {
+    if (!window.confirm('Delete this tournament? Active tournaments will be safely cancelled and stakes refunded.')) return;
+    setActionLoading(true);
+    try {
+      await api.delete(`/tournaments/${tournamentId}`);
+      toast.success('Tournament deleted.');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete tournament');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteBattle = async (battleId) => {
+    if (!window.confirm('Delete this battle? Active battles will be safely cancelled and stakes refunded.')) return;
+    setActionLoading(true);
+    try {
+      await api.delete(`/battles/${battleId}`);
+      toast.success('Battle deleted.');
+      fetchOngoing();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete battle');
     } finally {
       setActionLoading(false);
     }
@@ -264,7 +402,7 @@ const OngoingActivities = () => {
 
         <QuickStatsBar />
         {/* Tabs */}
-        <div className="flex items-center p-1 bg-[#f5f1e4]/50 backdrop-blur-xl rounded-[24px] md:rounded-[28px] border-[3px] border-primary/20 shadow-inner w-full sm:w-fit overflow-x-auto no-scrollbar">
+        <div className="flex items-center p-1 bg-surface backdrop-blur-xl rounded-2xl border border-base2 shadow-sm w-full sm:w-fit overflow-x-auto no-scrollbar">
           {[
             { id: 'matches', label: 'Matches', count: data.matches.length, icon: Target, color: 'bg-blue-500', shadow: 'shadow-blue-500/40' },
             { id: 'tournaments', label: 'Tournaments', count: data.tournaments.length, icon: Trophy, color: 'bg-amber-500', shadow: 'shadow-amber-500/40' },
@@ -285,7 +423,7 @@ const OngoingActivities = () => {
         </div>
 
         {activeTab === 'matches' ? (
-          <div className="grid-dashboard">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
             {data.matches.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
                 No active matches found.
@@ -309,7 +447,7 @@ const OngoingActivities = () => {
                 const selectingSetIdx = selectingWinnerForSetMap[match.id];
 
                 return (
-                  <AuraCard key={match.id} className="p-0 rounded-2xl overflow-hidden group border-[3px] border-primary/20 transition-all perspective-1000 bg-base3/20">
+                  <div id={`match-${match.id}`} key={match.id} className="card-premium p-0 rounded-2xl overflow-visible group border border-base2 bg-surface shadow-sm transition-all hover:border-primary/30 hover:shadow-lg">
                     <div className="bg-base2/5 p-3 flex flex-wrap md:flex-nowrap gap-2 justify-between items-center border-b border-base2/50 preserve-3d overflow-hidden">
                       <div className="flex items-center gap-1.5 flex-1 min-w-0">
                         {match.isTournamentMatch ? (
@@ -559,8 +697,10 @@ const OngoingActivities = () => {
                         </div>
                       ) : (isConfirmed || (match.player1Status === 'accepted' && match.player2Status === 'accepted' && !isOngoing)) ? (
                         <button
+                          type="button"
+                          disabled={actionLoading}
                           onClick={() => handleStartMatch(match, match.isTournamentMatch)}
-                          className="w-full bg-emerald-600 text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20 relative z-50 pointer-events-auto"
+                          className="w-full bg-emerald-600 text-base3 py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-emerald-600/20 relative z-50 pointer-events-auto disabled:opacity-60"
                         >
                           <Play size={14} fill="white" />
                           START MATCH
@@ -569,30 +709,39 @@ const OngoingActivities = () => {
                         <div className="w-full bg-primary/5 text-primary py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 animate-pulse border border-primary/20 shadow-sm">
                           ⚡ ONGOING MATCH {match.poolTable && <span className="opacity-80 ml-1 tracking-widest text-primary italic">"{typeof match.poolTable === 'object' ? match.poolTable.tableId : match.poolTable}"</span>}
                         </div>
-                      ) : (
+                      ) : match.isTournamentMatch ? (
                         <Link
-                          to={match.isTournamentMatch ? `/moderator/manage-tournament/${match.tournamentId?.id || match.tournamentId}` : '#'}
-                          className="w-full bg-primary text-base3 py-2.5 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20"
+                          to={`/moderator/manage-tournament/${match.tournamentId?.id || match.tournamentId}`}
+                          className="w-full bg-primary text-base3 py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20 relative z-50"
                         >
                           <Trophy size={14} />
-                          {match.isTournamentMatch ? 'ENTER ROOM' : 'VIEW DETAILS'}
+                          ENTER ROOM
                         </Link>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => toast.success('Match details are displayed on this card.')}
+                          className="w-full bg-primary text-base3 py-3 rounded-xl text-xs font-black flex items-center justify-center gap-2 hover:scale-[1.02] transition-all shadow-md shadow-primary/20 relative z-50"
+                        >
+                          <Target size={14} />
+                          VIEW DETAILS
+                        </button>
                       )}
                     </div>
-                  </AuraCard>
+                  </div>
                 );
               })
             )}
           </div>
         ) : activeTab === 'tournaments' ? (
-          <div className="grid-dashboard">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
             {data.tournaments.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
                 No active tournaments found.
               </div>
             ) : (
               data.tournaments.map((t) => (
-                <AuraCard key={t.id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
+                <div key={t.id} className="card-premium p-0 rounded-2xl overflow-visible flex flex-col group border border-base2 bg-surface shadow-sm transition-all hover:border-primary/30 hover:shadow-lg">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                     <div className="flex items-center gap-1.5 flex-1 min-w-0">
                       <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
@@ -600,7 +749,36 @@ const OngoingActivities = () => {
                       </div>
                       <h3 className="text-[clamp(10px,1.1vw,13px)] font-black uppercase text-text/40 tracking-widest truncate min-w-0">Tournament Room</h3>
                     </div>
-                    <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} className="text-[clamp(7.5px,0.85vw,9.5px)] shrink-0" />
+                      <button
+                        type="button"
+                        disabled={actionLoading || ['ongoing', 'completed', 'cancelled'].includes(t.status)}
+                        onClick={() => openEditModal('tournament', t)}
+                        className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-40"
+                        title="Edit Tournament"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={actionLoading || ['ongoing', 'completed', 'cancelled'].includes(t.status)}
+                        onClick={() => openInviteModal('tournament', t)}
+                        className="p-1.5 text-emerald-600 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-40"
+                        title="Invite Players"
+                      >
+                        <UserPlus size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={actionLoading || ['completed', 'cancelled'].includes(t.status)}
+                        onClick={() => handleDeleteTournament(t.id)}
+                        className="p-1.5 text-red hover:bg-red/10 rounded-lg transition-colors disabled:opacity-40"
+                        title="Delete Tournament"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="p-5">
@@ -623,28 +801,30 @@ const OngoingActivities = () => {
                     </div>
 
                     <div className="pt-3 border-t border-base2/50">
-                      <Link
-                        to={`/moderator/manage-tournament/${t.id}`}
-                        className="w-full bg-primary text-base3 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:scale-[1.02] transition-all"
-                      >
-                        Enter Room
-                        <ChevronRight size={16} />
-                      </Link>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <Link
+                          to={`/moderator/manage-tournament/${t.id}`}
+                          className="sm:col-span-3 w-full bg-primary text-base3 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-primary/20 hover:scale-[1.02] transition-all"
+                        >
+                          Enter Room
+                          <ChevronRight size={16} />
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </AuraCard>
+                </div>
               ))
             )}
           </div>
         ) : (
-          <div className="grid-dashboard">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
             {data.battles.length === 0 ? (
               <div className="col-span-full card-premium p-12 text-center text-text italic">
                 No active multiplayer battles found.
               </div>
             ) : (
               data.battles.map((battle) => (
-                <AuraCard key={battle.id} className="p-0 rounded-2xl overflow-hidden flex flex-col group border-[3px] border-primary/20 shadow-sm transition-all hover:shadow-md perspective-1000 bg-base3/20">
+                <div key={battle.id} className="card-premium p-0 rounded-2xl overflow-visible flex flex-col group border border-base2 bg-surface shadow-sm transition-all hover:border-primary/30 hover:shadow-lg">
                   <div className="bg-base2/10 p-4 flex justify-between items-center border-b border-base2 preserve-3d overflow-hidden">
                     <div className="w-8 h-8 bg-primary/10 flex items-center justify-center text-primary rounded-lg shrink-0">
                       <Shield size={16} />
@@ -652,14 +832,32 @@ const OngoingActivities = () => {
                     <div className="flex items-center gap-1.5 shrink-0">
                       <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-100 flex items-center gap-1 whitespace-nowrap">
                         <Award size={10} className="text-emerald-500" />
-                        PRIZE: KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length * 0.85).toLocaleString()}
+                        PRIZE: KES {(battle.stakeAmount * battle.participants.filter(p => getBattleParticipantStatus(p) === 'accepted').length * 0.85).toLocaleString()}
                       </span>
                       <StatusBadge status={battle.status} className="text-[clamp(7.5px,0.85vw,9.5px)]" />
                       <button
+                        type="button"
+                        disabled={actionLoading || ['ongoing', 'completed', 'cancelled'].includes(battle.status)}
+                        onClick={() => openEditModal('battle', battle)}
+                        className="p-1 text-primary hover:bg-primary/10 rounded-lg transition-colors disabled:opacity-40"
+                        title="Edit Battle"
+                      >
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={actionLoading || ['ongoing', 'completed', 'cancelled'].includes(battle.status)}
+                        onClick={() => openInviteModal('battle', battle)}
+                        className="p-1 text-emerald-600 hover:bg-emerald-500/10 rounded-lg transition-colors disabled:opacity-40"
+                        title="Invite Players"
+                      >
+                        <UserPlus size={14} />
+                      </button>
+                      <button
                         disabled={actionLoading}
-                        onClick={() => handleCancelBattle(battle.id)}
+                        onClick={() => handleDeleteBattle(battle.id)}
                         className="p-1 text-red hover:bg-red/10 rounded-lg transition-colors"
-                        title="Cancel Battle"
+                        title="Delete Battle"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -679,7 +877,7 @@ const OngoingActivities = () => {
                       </div>
                       <div className="bg-primary/5 border border-primary/10 p-2 rounded-xl text-center">
                         <p className="text-[9px] font-black uppercase text-primary/60 leading-none mb-1">TOTAL POT</p>
-                        <p className="text-xs font-black text-primary leading-none">KES {(battle.stakeAmount * battle.participants.filter(p => p.status === 'accepted').length).toLocaleString()}</p>
+                        <p className="text-xs font-black text-primary leading-none">KES {(battle.stakeAmount * battle.participants.filter(p => getBattleParticipantStatus(p) === 'accepted').length).toLocaleString()}</p>
                       </div>
                     </div>
 
@@ -689,25 +887,28 @@ const OngoingActivities = () => {
                       </p>
                       {battle.participants
                         .filter(p => {
-                          if (battle.status === 'ongoing') return p.status === 'accepted';
+                          if (battle.status === 'ongoing') return getBattleParticipantStatus(p) === 'accepted';
                           if (battle.status === 'completed' && !expandedBattles[battle.id]) {
-                            return (battle.winnerId?.id || battle.winnerId) === (p.userId?.id || p.userId);
+                            return (battle.winnerId?.id || battle.winnerId) === getBattleParticipantId(p);
                           }
                           return true;
                         })
                         .map((p) => {
-                          const isWinner = (battle.winnerId?.id || battle.winnerId || '').toString() === (p.userId?.id || p.userId || '').toString();
+                          const participantId = getBattleParticipantId(p);
+                          const participantName = getBattleParticipantName(p);
+                          const participantStatus = getBattleParticipantStatus(p);
+                          const isWinner = (battle.winnerId?.id || battle.winnerId || '').toString() === (participantId || '').toString();
                           return (
-                            <div key={p.userId?.id} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : 'bg-base2/20 border-base2'
+                            <div key={participantId} className={`flex items-center justify-between p-2 rounded-xl border transition-all ${isWinner ? 'bg-green/10 border-green/30' : 'bg-base2/20 border-base2'
                               }`}>
                               <div className="flex items-center gap-2 overflow-hidden">
                                 <img
-                                  src={p.userId?.profilePhoto || `https://ui-avatars.com/api/?name=${p.userId?.fullName}&background=random`}
+                                  src={getBattleParticipantPhoto(p) || `https://ui-avatars.com/api/?name=${participantName}&background=random`}
                                   className="w-6 h-6 rounded-lg object-cover ring-1 ring-base2 shadow-sm"
                                   alt=""
                                 />
                                 <span className={`text-[11px] font-bold truncate ${isWinner ? 'text-green' : 'text-text-emphasis'}`}>
-                                  {p.userId?.fullName}
+                                  {participantName}
                                 </span>
                                 {isWinner && <Trophy size={10} className="text-green shrink-0 animate-bounce" />}
                               </div>
@@ -715,17 +916,17 @@ const OngoingActivities = () => {
                                 {battle.status === 'ongoing' && !battle.winnerId && (
                                   <button
                                     disabled={actionLoading}
-                                    onClick={() => handleRecordBattleWinner(battle.id, p.userId?.id, p.userId?.fullName)}
+                                    onClick={() => handleRecordBattleWinner(battle.id, participantId, participantName)}
                                     className="px-2 py-0.5 bg-green text-base3 rounded text-[9px] font-black uppercase hover:scale-105 transition-all shadow-sm"
                                   >
                                     WINNER
                                   </button>
                                 )}
                                 {battle.status !== 'ongoing' && (
-                                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${p.status === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                    p.status === 'declined' ? 'bg-red/5 text-red/60 border-red/10' : 'bg-yellow/5 text-yellow border-yellow/10'
+                                  <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded border ${participantStatus === 'accepted' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                    participantStatus === 'declined' ? 'bg-red/5 text-red/60 border-red/10' : 'bg-yellow/5 text-yellow border-yellow/10'
                                     }`}>
-                                    {p.status}
+                                    {participantStatus}
                                   </span>
                                 )}
                               </div>
@@ -749,9 +950,9 @@ const OngoingActivities = () => {
 
                     {battle.status === 'pending' && (
                       <button
-                        disabled={actionLoading || battle.participants.filter(p => p.status === 'accepted').length < 2}
+                        disabled={actionLoading || battle.participants.filter(p => getBattleParticipantStatus(p) === 'accepted').length < 2}
                         onClick={() => handleStartBattle(battle.id)}
-                        className={`w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all ${battle.participants.filter(p => p.status === 'accepted').length < 2
+                        className={`w-full py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all ${battle.participants.filter(p => getBattleParticipantStatus(p) === 'accepted').length < 2
                           ? 'bg-base2 text-text/40 cursor-not-allowed grayscale'
                           : 'bg-primary text-base3 shadow-primary/20 hover:scale-[1.02]'
                           }`}
@@ -773,12 +974,179 @@ const OngoingActivities = () => {
                       </div>
                     )}
                   </div>
-                </AuraCard>
+                </div>
               ))
             )}
           </div>
         )}
       </div>
+
+      {/* Edit Activity Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-base1/75 backdrop-blur-sm">
+          <form onSubmit={handleEditSubmit} className="w-full max-w-xl bg-surface border border-base2 rounded-2xl shadow-2xl p-6 space-y-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Edit {editingItem.type}</p>
+                <h3 className="text-2xl font-black text-text-emphasis tracking-tight">Update Details</h3>
+              </div>
+              <button type="button" onClick={() => setEditingItem(null)} className="w-10 h-10 rounded-xl bg-base2/40 text-text/60 hover:text-red flex items-center justify-center">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label className="md:col-span-2 space-y-1">
+                <span className="text-xs font-black uppercase tracking-widest text-text/50">{editingItem.type === 'tournament' ? 'Tournament Name' : 'Battle Title'}</span>
+                <input
+                  required
+                  value={editingItem.type === 'tournament' ? editForm.name : editForm.title}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, [editingItem.type === 'tournament' ? 'name' : 'title']: e.target.value }))}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </label>
+              <label className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-widest text-text/50">Venue</span>
+                <input
+                  required
+                  value={editForm.venue || ''}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, venue: e.target.value }))}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </label>
+              <label className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-widest text-text/50">Location</span>
+                <input
+                  value={editForm.location || ''}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, location: e.target.value }))}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </label>
+              <label className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-widest text-text/50">{editingItem.type === 'tournament' ? 'Stake Per Player' : 'Stake Amount'}</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={editingItem.type === 'tournament' ? editForm.stakePerPlayer : editForm.stakeAmount}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, [editingItem.type === 'tournament' ? 'stakePerPlayer' : 'stakeAmount']: e.target.value }))}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </label>
+              <label className="space-y-1">
+                <span className="text-xs font-black uppercase tracking-widest text-text/50">{editingItem.type === 'tournament' ? 'Start Date' : 'Scheduled At'}</span>
+                <input
+                  type="datetime-local"
+                  value={editingItem.type === 'tournament' ? editForm.startDate : editForm.scheduledAt}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, [editingItem.type === 'tournament' ? 'startDate' : 'scheduledAt']: e.target.value }))}
+                  className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </label>
+              {editingItem.type === 'tournament' && (
+                <>
+                  <label className="space-y-1">
+                    <span className="text-xs font-black uppercase tracking-widest text-text/50">Min Players</span>
+                    <input
+                      type="number"
+                      min="2"
+                      value={editForm.minPlayers}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, minPlayers: e.target.value }))}
+                      className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                  </label>
+                  <label className="space-y-1">
+                    <span className="text-xs font-black uppercase tracking-widest text-text/50">Max Players</span>
+                    <input
+                      type="number"
+                      min="2"
+                      value={editForm.maxPlayers}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, maxPlayers: e.target.value }))}
+                      className="w-full bg-base2/30 border border-base2 rounded-xl px-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                  </label>
+                </>
+              )}
+            </div>
+
+            <button type="submit" disabled={actionLoading} className="w-full bg-primary text-base3 py-3 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-50">
+              {actionLoading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+              Save Changes
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Invite Players Modal */}
+      {inviteTarget && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-base1/75 backdrop-blur-sm">
+          <div className="w-full max-w-xl bg-surface border border-base2 rounded-2xl shadow-2xl p-6 space-y-5">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Invite Players</p>
+                <h3 className="text-2xl font-black text-text-emphasis tracking-tight truncate">{inviteTarget.title}</h3>
+              </div>
+              <button type="button" onClick={() => setInviteTarget(null)} className="w-10 h-10 rounded-xl bg-base2/40 text-text/60 hover:text-red flex items-center justify-center">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-3.5 text-text/40" />
+              <input
+                value={inviteSearch}
+                onChange={(e) => setInviteSearch(e.target.value)}
+                placeholder="Search players..."
+                className="w-full bg-base2/30 border border-base2 rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-text-emphasis outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+
+            {inviteResults.length > 0 && (
+              <div className="max-h-48 overflow-y-auto thin-scrollbar border border-base2 rounded-xl divide-y divide-base2">
+                {inviteResults.map((player) => (
+                  <button
+                    key={player.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedInvitePlayers(prev => [...prev, player]);
+                      setInviteSearch('');
+                      setInviteResults([]);
+                    }}
+                    className="w-full p-3 flex items-center justify-between text-left hover:bg-primary/5"
+                  >
+                    <span className="text-sm font-bold text-text-emphasis">{player.fullName}</span>
+                    <UserPlus size={16} className="text-primary" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <p className="text-xs font-black uppercase tracking-widest text-text/50">Selected ({selectedInvitePlayers.length})</p>
+              {selectedInvitePlayers.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-base2 p-5 text-center text-sm font-bold text-text/40">No players selected</div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {selectedInvitePlayers.map((player) => (
+                    <button
+                      key={player.id}
+                      type="button"
+                      onClick={() => setSelectedInvitePlayers(prev => prev.filter(p => p.id !== player.id))}
+                      className="px-3 py-2 rounded-xl bg-primary/10 text-primary text-xs font-black flex items-center gap-2"
+                    >
+                      {player.fullName}
+                      <X size={14} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button type="button" disabled={actionLoading || selectedInvitePlayers.length === 0} onClick={handleInviteSubmit} className="w-full bg-primary text-base3 py-3 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-50">
+              {actionLoading ? <Loader2 size={18} className="animate-spin" /> : <UserPlus size={18} />}
+              Send Invitations
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* IoT Table Selection Modal */}
       {showTableModal && (

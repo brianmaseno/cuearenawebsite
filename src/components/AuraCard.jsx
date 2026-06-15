@@ -1,15 +1,23 @@
-import React from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import React from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
-const AuraCard = ({ children, className = '', tiltIntensity = 15 }) => {
+const AuraCard = ({ children, className = "", tiltIntensity = 15 }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
   const mouseXSpring = useSpring(x);
   const mouseYSpring = useSpring(y);
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [tiltIntensity, -tiltIntensity]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [-tiltIntensity, tiltIntensity]);
+  const rotateX = useTransform(
+    mouseYSpring,
+    [-0.5, 0.5],
+    [tiltIntensity, -tiltIntensity],
+  );
+  const rotateY = useTransform(
+    mouseXSpring,
+    [-0.5, 0.5],
+    [-tiltIntensity, tiltIntensity],
+  );
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -40,7 +48,10 @@ const AuraCard = ({ children, className = '', tiltIntensity = 15 }) => {
       whileHover={{ scale: 1.02 }}
       className={`aura-card relative ${className}`}
     >
-      <div className="pointer-events-auto" style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
+      <div
+        className="relative z-10 pointer-events-auto"
+        style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}
+      >
         {children}
       </div>
     </motion.div>

@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { SidebarProvider } from './context/SidebarContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthGuard from './components/AuthGuard';
 import InactivityTimer from './components/InactivityTimer';
@@ -16,11 +17,18 @@ const ActivityTracker = () => {
 };
 
 // Shared / Auth
-import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
-const PublicTournaments = React.lazy(() => import('./pages/PublicTournaments'));
+const Landing = React.lazy(() => import('./pages/Landing'));
+const PublicTournaments = React.lazy(() => import('./pages/public/PublicTournaments'));
+const DashboardTournaments = React.lazy(() => import('./pages/PublicTournaments'));
 const TournamentDetails = React.lazy(() => import('./pages/tournament/TournamentDetails'));
+const PublicTournamentDetails = React.lazy(() => import('./pages/public/PublicTournamentDetails'));
+const PublicFixtures = React.lazy(() => import('./pages/public/PublicFixtures'));
+const PublicResults = React.lazy(() => import('./pages/public/PublicResults'));
+const PublicRankings = React.lazy(() => import('./pages/public/PublicRankings'));
+const PublicPlayers = React.lazy(() => import('./pages/public/PublicPlayers'));
+const PublicPlayerDetails = React.lazy(() => import('./pages/public/PublicPlayerDetails'));
 
 // Dashboards (Lazy Loaded)
 const PlayerDashboard = React.lazy(() => import('./pages/player/PlayerDashboard'));
@@ -42,16 +50,18 @@ const ModeratorApplication = React.lazy(() => import('./pages/ModeratorApplicati
 const AdminModeratorRequests = React.lazy(() => import('./pages/admin/AdminModeratorRequests'));
 const AdminFinance = React.lazy(() => import('./pages/admin/AdminFinance'));
 const Wallet = React.lazy(() => import('./pages/Wallet'));
+const WalletCheckout = React.lazy(() => import('./pages/WalletCheckout'));
 const Support = React.lazy(() => import('./pages/Support'));
 const AdminDevices = React.lazy(() => import('./pages/admin/AdminDevices'));
 
 function App() {
   return (
-    <AuthProvider>
-      <SocketProvider>
-        <NotificationProvider>
-          <SidebarProvider>
-            <div className="min-h-screen font-sans">
+    <ThemeProvider>
+      <AuthProvider>
+        <SocketProvider>
+          <NotificationProvider>
+            <SidebarProvider>
+            <div className="min-h-screen">
               <Toaster position="top-right" />
               <InactivityTimer />
               <ActivityTracker />
@@ -62,14 +72,16 @@ function App() {
               }>
                 <Routes>
                   {/* Public-ish Routes with Auth Guards */}
-                  <Route path="/" element={<AuthGuard><Landing /></AuthGuard>} />
+                  <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<AuthGuard><Login /></AuthGuard>} />
                   <Route path="/register" element={<AuthGuard><Register /></AuthGuard>} />
-                  <Route path="/tournaments" element={
-                    <ProtectedRoute>
-                      <PublicTournaments />
-                    </ProtectedRoute>
-                  } />
+                  <Route path="/tournaments" element={<PublicTournaments />} />
+                  <Route path="/tournaments/:id" element={<PublicTournamentDetails />} />
+                  <Route path="/fixtures" element={<PublicFixtures />} />
+                  <Route path="/results" element={<PublicResults />} />
+                  <Route path="/rankings" element={<PublicRankings />} />
+                  <Route path="/players" element={<PublicPlayers />} />
+                  <Route path="/players/:id" element={<PublicPlayerDetails />} />
 
                   {/* Player Routes */}
                   <Route path="/dashboard" element={
@@ -80,6 +92,11 @@ function App() {
                   <Route path="/dashboard/history" element={
                     <ProtectedRoute roles={['player']}>
                       <PlayerHistory />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/tournaments" element={
+                    <ProtectedRoute roles={['player']}>
+                      <DashboardTournaments />
                     </ProtectedRoute>
                   } />
                   <Route path="/leaderboard" element={
@@ -103,6 +120,11 @@ function App() {
                       <Wallet />
                     </ProtectedRoute>
                   } />
+                  <Route path="/wallet/checkout" element={
+                    <ProtectedRoute>
+                      <WalletCheckout />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/support" element={
                     <ProtectedRoute>
                       <Support />
@@ -112,38 +134,38 @@ function App() {
                   {/* Moderator Routes */}
                   <Route path="/moderator" element={<Navigate to="/moderator/ongoing" replace />} />
                   <Route path="/moderator/create-tournament" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <CreateTournament />
                     </ProtectedRoute>
                   } />
                   <Route path="/moderator/manage-tournament/:id" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <TournamentManage />
                     </ProtectedRoute>
                   } />
                   <Route path="/moderator/create-match" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <CreateMatch />
                     </ProtectedRoute>
                   } />
                   <Route path="/moderator/create-battle" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <CreateBattle />
                     </ProtectedRoute>
                   } />
                   {/* Match details are now handled inline in the moderator dashboard */}
                   <Route path="/moderator/ongoing" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <OngoingActivities />
                     </ProtectedRoute>
                   } />
                   <Route path="/moderator/history" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <History />
                     </ProtectedRoute>
                   } />
                   <Route path="/moderator/tables" element={
-                    <ProtectedRoute roles={['moderator']}>
+                    <ProtectedRoute roles={['moderator', 'admin']}>
                       <ModeratorTables />
                     </ProtectedRoute>
                   } />
@@ -191,10 +213,11 @@ function App() {
                 </Routes>
               </React.Suspense>
             </div>
-          </SidebarProvider>
-        </NotificationProvider>
-      </SocketProvider>
-    </AuthProvider>
+            </SidebarProvider>
+          </NotificationProvider>
+        </SocketProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { Trophy, Search, MapPin, Users, Calendar, ArrowRight, Target, Loader2 } from 'lucide-react';
-import StatusBadge from '../components/StatusBadge';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/DashboardLayout';
+import { TournamentCard } from '../components/public/PublicCards';
 
 const PublicTournaments = () => {
   const { user } = useAuth();
@@ -64,47 +64,8 @@ const PublicTournaments = () => {
         </div>
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map(t => (
-            <div key={t.id} className="card-premium rounded-2xl overflow-hidden flex flex-col h-full group border-none shadow-sm transition-all hover:shadow-md">
-              <div className="relative h-2 w-full bg-primary/10">
-                <div 
-                  className="h-full bg-green" 
-                  style={{ width: `${Math.min(100, (t.confirmedPlayers?.length / t.maxPlayers) * 100)}%` }}
-                ></div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                     <StatusBadge status={t.status} entryType={t.entryType} registrationDeadline={t.registrationDeadline} startDate={t.startDate} />
-                  <span className="text-xs font-bold text-text bg-base2 px-2 py-0.5 rounded uppercase tracking-tighter">
-                    {t.format?.replace('_', ' ')}
-                  </span>
-                </div>
-                
-                <h3 className="text-xl font-bold text-text-emphasis mb-4 group-hover:text-primary transition-colors">{t.name}</h3>
-                
-                <div className="space-y-3 mb-6 flex-1">
-                  <div className="flex items-center gap-2 text-sm text-text">
-                    <Calendar size={16} className="text-primary" />
-                    {new Date(t.startDate).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-text">
-                    <MapPin size={16} className="text-primary" />
-                    {t.venue}, {t.location}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-text">
-                    <Users size={16} className="text-primary" />
-                    {t.confirmedPlayers?.length || 0} / {t.maxPlayers} Players
-                  </div>
-                </div>
-
-                <Link 
-                  to={user ? `/dashboard/tournament/${t.id}` : `/login`} 
-                  className="w-full btn-primary mt-auto py-2.5 rounded-xl flex items-center justify-center gap-2 opacity-90 hover:opacity-100"
-                >
-                  {user ? 'Join / View Details' : 'Login to Join'} <ArrowRight size={18} />
-                </Link>
-              </div>
-            </div>
+          {filtered.map((t) => (
+            <TournamentCard key={t.id} tournament={t} />
           ))}
         </div>
       ) : (

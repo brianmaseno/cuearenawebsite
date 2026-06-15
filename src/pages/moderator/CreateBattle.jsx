@@ -70,8 +70,8 @@ const CreateBattle = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedPlayers.length < 2) {
-      return toast.error('Please select at least two players for a battle');
+    if (selectedPlayers.length < 1) {
+      return toast.error('Please select at least one player to invite');
     }
 
     setLoading(true);
@@ -81,7 +81,7 @@ const CreateBattle = () => {
         invitedPlayerIds: selectedPlayers.map(p => p.id),
       };
       await api.post('/battles', payload);
-      toast.success('Multiplayer battle created and invitations sent!');
+      toast.success('Battle created and invitations sent!');
       navigate('/moderator');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error creating battle');
@@ -216,16 +216,16 @@ const CreateBattle = () => {
             <div className="space-y-3 pt-4">
               <div className="flex justify-between items-center">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-text">Selected Players ({selectedPlayers.length})</h4>
-                {selectedPlayers.length >= 2 && (
+                {selectedPlayers.length >= 1 && (
                   <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200 uppercase">
-                    Ready to Battle
+                    Ready to Invite
                   </span>
                 )}
               </div>
               
               {selectedPlayers.length === 0 && (
                 <div className="p-8 border-2 border-dashed border-base2 rounded-xl text-center text-text opacity-40 italic text-sm">
-                  No players selected yet. Search and add at least 2 players.
+                  No players selected yet. Search and add at least one player.
                 </div>
               )}
               
@@ -266,11 +266,11 @@ const CreateBattle = () => {
             </button>
             <button
               type="submit"
-              disabled={loading || selectedPlayers.length < 2}
+              disabled={loading || selectedPlayers.length < 1}
               className="bg-primary text-base3 px-12 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-all active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
             >
               {loading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
-              Send Battle Invites
+              Send Invite{selectedPlayers.length === 1 ? '' : 's'}
             </button>
           </div>
         </form>

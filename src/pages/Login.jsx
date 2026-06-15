@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Trophy, Mail, Lock, LogIn, Loader2 } from 'lucide-react';
+import { Mail, Lock, LogIn, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -9,7 +9,6 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,10 +18,9 @@ const Login = () => {
       const user = await login(email, password);
       console.log('✅ Login successful, user:', user);
       console.log('👤 User role:', user.role);
-      
+
       toast.success(`Welcome back, ${user.fullName}!`);
 
-      // Redirect based on role - using window.location for reliable navigation
       if (user.role === 'admin') {
         console.log('🚀 Redirecting to /admin');
         window.location.href = '/admin';
@@ -42,20 +40,43 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Brand */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-4">
-            <span className="text-3xl brand-premium">Cue Arena</span>
+    <div className="min-h-screen flex">
+      {/* Left Panel - Image */}
+      <div className="hidden md:flex md:w-1/2 relative bg-base2">
+        <img
+          src="/images/players_win.png"
+          alt="Cue Arena"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-base3/80 via-base3/60 to-primary/30" />
+        <div className="relative z-10 flex flex-col justify-center p-16">
+          <Link to="/" className="inline-flex items-center gap-3 mb-8">
+            <span className="text-4xl brand-premium drop-shadow-lg">Cue Arena</span>
           </Link>
-          <h2 className="text-2xl font-bold text-text-emphasis">Welcome Back</h2>
-          <p className="text-text">Enter your credentials to access your tournaments</p>
+          <h2 className="text-3xl font-bold text-text-light mb-4 drop-shadow-md">
+            Where Champions Are Made
+          </h2>
+          <p className="text-lg text-text-light/80 max-w-md leading-relaxed">
+            Join the premier pool tournament platform. Compete, climb the leaderboard, and claim your legacy.
+          </p>
         </div>
+      </div>
 
-        {/* Login Card */}
-        <div className="card-premium p-8 rounded-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Right Panel - Form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-background">
+        <div className="w-full max-w-md">
+          {/* Mobile Brand */}
+          <div className="md:hidden text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-3 mb-4">
+              <span className="text-3xl brand-premium">Cue Arena</span>
+            </Link>
+            <p className="text-text/60 text-sm">Where Champions Are Made</p>
+          </div>
+
+          <h2 className="text-2xl font-bold text-text-emphasis mb-2">Welcome Back</h2>
+          <p className="text-text mb-8">Enter your credentials to access your tournaments</p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-text-emphasis mb-2">Email Address</label>
               <div className="relative">
@@ -115,14 +136,13 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-8 text-center pt-6 border-t border-base2">
+          <div className="mt-8 text-center">
             <p className="text-text">
               Don't have an account?{' '}
               <Link to="/register" className="text-primary font-bold hover:underline">Create Account</Link>
             </p>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { UserPlus, Mail, Lock, User, Shield, Loader2 } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Register = () => {
@@ -36,18 +36,43 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-4">
-            <span className="text-3xl brand-premium">Cue-Arena</span>
+    <div className="min-h-screen flex">
+      {/* Left Panel - Image */}
+      <div className="hidden md:flex md:w-1/2 relative bg-base2">
+        <img
+          src="/images/trophy_app.png"
+          alt="Cue Arena"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-base3/80 via-base3/60 to-primary/30" />
+        <div className="relative z-10 flex flex-col justify-center p-16">
+          <Link to="/" className="inline-flex items-center gap-3 mb-8">
+            <span className="text-4xl brand-premium drop-shadow-lg">Cue Arena</span>
           </Link>
-          <p className="text-text">Join the premium pool community today</p>
+          <h2 className="text-3xl font-bold text-text-light mb-4 drop-shadow-md">
+            Start Your Journey
+          </h2>
+          <p className="text-lg text-text-light/80 max-w-md leading-relaxed">
+            Create your account and step into the arena. Challenge opponents, win tournaments, and rise through the ranks.
+          </p>
         </div>
+      </div>
 
-        <div className="card-premium p-8 rounded-2xl">
+      {/* Right Panel - Form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 bg-background">
+        <div className="w-full max-w-md">
+          {/* Mobile Brand */}
+          <div className="md:hidden text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-3 mb-4">
+              <span className="text-3xl brand-premium">Cue Arena</span>
+            </Link>
+            <p className="text-text/60 text-sm">Start Your Journey</p>
+          </div>
+
+          <h2 className="text-2xl font-bold text-text-emphasis mb-2">Create Account</h2>
+          <p className="text-text mb-8">Join the premium pool community today</p>
+
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Form Fields */}
             <div>
               <label className="block text-sm font-semibold text-text-emphasis mb-2">Full Name</label>
               <div className="relative">
@@ -125,13 +150,14 @@ const Register = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center pt-6 border-t border-base2">
+          <div className="mt-6 text-center">
             <p className="text-text">
               Already have an account?{' '}
               <Link to="/login" className="text-primary font-bold hover:underline">Sign In</Link>
             </p>
           </div>
-          <div className="mt-8 pt-8 border-t border-base2/50 text-center">
+
+          <div className="mt-6 pt-6 border-t border-base2/50 text-center">
             <p className="text-text/60 font-medium mb-1">Looking to manage tournaments?</p>
             <Link to="/moderator-apply" className="text-primary font-black hover:underline tracking-tight">
               APPLY AS MODERATOR

@@ -7,9 +7,7 @@ import {
   LayoutDashboard,
   Calendar,
   Users,
-  Bell,
   LogOut,
-  MessageSquare,
   Shield,
   User,
   Target,
@@ -20,7 +18,7 @@ import {
   Wallet,
   TrendingUp,
   HelpCircle,
-  Settings
+  Settings,
 } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
 
@@ -42,7 +40,6 @@ const Sidebar = () => {
         }
       };
       fetchCount();
-      // Optional: interval to keep it updated
       const interval = setInterval(fetchCount, 60000);
       return () => clearInterval(interval);
     }
@@ -53,16 +50,16 @@ const Sidebar = () => {
     navigate('/login');
   };
 
-  const dashboardPath = user?.role === 'admin' ? '/admin' :
-    user?.role === 'moderator' ? '/moderator' : '/dashboard';
+  const dashboardPath =
+    user?.role === 'admin' ? '/admin' : user?.role === 'moderator' ? '/moderator' : '/dashboard';
 
   const getLinks = () => {
     if (user.role === 'admin') {
       return [
-        { label: 'Admin Panel', path: '/admin', icon: Shield },
+        { label: 'Overview', path: '/admin', icon: Shield },
         { label: 'Users', path: '/admin/users', icon: Users },
-        { label: 'Mod Requests', path: '/admin/moderator-requests', icon: Shield },
-        { label: 'Activity Logs', path: '/admin/logs', icon: Activity },
+        { label: 'Mod requests', path: '/admin/moderator-requests', icon: Shield, badge: modRequestCount },
+        { label: 'Activity logs', path: '/admin/logs', icon: Activity },
         { label: 'Finance', path: '/admin/finance', icon: TrendingUp },
         { label: 'Analytics', path: '/admin/analytics', icon: Activity },
         { label: 'Wallet', path: '/wallet', icon: Wallet },
@@ -79,166 +76,170 @@ const Sidebar = () => {
       ];
     }
     return [
-      { label: 'Active', path: '/dashboard', icon: LayoutDashboard },
+      { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
       { label: 'History', path: '/dashboard/history', icon: Clock },
-      { label: 'Open Tournaments', path: '/tournaments', icon: Calendar },
+      { label: 'Tournaments', path: '/dashboard/tournaments', icon: Calendar },
       { label: 'Wallet', path: '/wallet', icon: Wallet },
       { label: 'Leaderboard', path: '/leaderboard', icon: Trophy },
     ];
   };
 
   const links = getLinks();
+  const firstName = user?.fullName?.split(' ')[0] || 'Player';
+
+  const NavLink = ({ link }) => {
+    const Icon = link.icon;
+    const isActive =
+      location.pathname === link.path ||
+      (link.path !== dashboardPath && location.pathname.startsWith(link.path + '/'));
+
+    return (
+      <Link
+        to={link.path}
+        title={isCollapsed ? link.label : undefined}
+        className={`dash-nav-item group ${isActive ? 'dash-nav-item-active' : ''} ${
+          isCollapsed ? 'dash-nav-item-collapsed' : ''
+        }`}
+      >
+        <span className={`dash-nav-icon ${isActive ? 'dash-nav-icon-active' : ''}`}>
+          <Icon size={16} strokeWidth={isActive ? 2.25 : 2} />
+        </span>
+        {!isCollapsed && (
+          <>
+            <span className="dash-nav-label">{link.label}</span>
+            {link.badge > 0 && (
+              <span className="dash-nav-badge">{link.badge > 9 ? '9+' : link.badge}</span>
+            )}
+          </>
+        )}
+        {isCollapsed && link.badge > 0 && <span className="dash-nav-dot" />}
+        {isCollapsed && (
+          <span className="dash-nav-tooltip">{link.label}</span>
+        )}
+      </Link>
+    );
+  };
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <aside className={`hidden md:flex bg-base3 border-r border-base2 flex-col h-screen sticky top-0 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'
-        }`}>
-        <div className={`p-6 flex items-center border-b border-base2/50 ${isCollapsed ? 'flex-col gap-4 justify-center' : 'justify-between'}`}>
-          <Link to={dashboardPath} className="flex items-center gap-3" onClick={() => navigate(dashboardPath)}>
-            {!isCollapsed && <span className="text-xl brand-premium truncate tracking-tighter text-aura">Cue-Arena</span>}
-          </Link>
+      {/* Desktop sidebar */}
+      <aside
+        className={`hidden md:flex flex-col dash-sidebar transition-all duration-300 ${
+          isCollapsed ? 'w-[76px]' : 'w-[248px]'
+        }`}
+      >
+        {/* Brand */}
+        <div className={`dash-sidebar-brand ${isCollapsed ? 'justify-center px-2' : ''}`}>
+          {!isCollapsed ? (
+            <Link to={dashboardPath} className="flex items-center gap-2.5 min-w-0">
+              <span className="dash-logo-mark">CA</span>
+              <span className="dash-logo-text truncate">Cue Arena</span>
+            </Link>
+          ) : (
+            <Link to={dashboardPath} className="dash-logo-mark mx-auto">CA</Link>
+          )}
           <button
+            type="button"
             onClick={toggleSidebar}
-            className={`hover:text-primary transition-all p-2 rounded-xl bg-base2 text-text/40 hover:bg-primary/5 ${isCollapsed ? 'w-10 h-10 flex items-center justify-center' : ''}`}
-            title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            className="dash-sidebar-toggle"
+            title={isCollapsed ? 'Expand' : 'Collapse'}
           >
-            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1 mt-4 overflow-y-auto thin-scrollbar">
-          {links.map((link) => {
-            const Icon = link.icon;
-            const isActive = location.pathname === link.path;
-            return (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all group relative ${isActive
-                  ? 'bg-primary/10 text-primary shadow-sm'
-                  : 'text-text hover:bg-base2/50 hover:text-text-emphasis'
-                  } ${isCollapsed ? 'justify-center px-0' : ''}`}
-                title={isCollapsed ? link.label : ''}
-              >
-                <Icon
-                  size={20}
-                  className={`shrink-0 transition-colors ${isActive
-                    ? 'text-primary'
-                    : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables' || link.label === 'Settings' || link.label === 'Sign Out'
-                      ? 'text-red group-hover:text-red-500'
-                      : 'text-primary group-hover:text-primary-dark'
-                    }`}
-                />
-                {!isCollapsed && <span className="truncate flex-1">{link.label}</span>}
-                {!isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
-                  <span className="bg-red text-text-light text-[10px] font-black px-1.5 py-0.5 rounded-full animate-bounce">
-                    {modRequestCount}
-                  </span>
-                )}
-                {isCollapsed && link.label === 'Mod Requests' && modRequestCount > 0 && (
-                  <div className="absolute top-2 right-2 w-2 h-2 bg-red rounded-full border border-base3 animate-pulse" />
-                )}
-                {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-3 py-2 bg-base3 border border-base2 rounded-lg text-xs font-bold text-text-emphasis opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
-                    {link.label}
-                  </div>
-                )}
-              </Link>
-            );
-          })}
+        {/* Nav */}
+        <nav className="flex-1 px-2.5 py-1 space-y-0.5 overflow-y-auto thin-scrollbar">
+          {!isCollapsed && (
+            <p className="dash-nav-section px-2.5 pt-1 pb-0.5">Menu</p>
+          )}
+          {links.map((link) => (
+            <NavLink key={link.path} link={link} />
+          ))}
         </nav>
 
-        <div className="p-4 border-t border-base2 space-y-1">
-          <Link
-            to="/support"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${isCollapsed ? 'justify-center px-0' : ''
-              }`}
-            title={isCollapsed ? 'Support' : ''}
-          >
-            <HelpCircle size={20} className="shrink-0 text-primary group-hover:scale-110 transition-transform" />
-            {!isCollapsed && <span className="truncate">Support</span>}
-          </Link>
+        {/* User + utilities */}
+        <div className="dash-sidebar-footer">
+          {!isCollapsed && (
+            <p className="dash-nav-section px-2.5 pb-1">Account</p>
+          )}
+          {!isCollapsed && (
+            <div className="dash-user-chip mb-3">
+              <div className="dash-user-avatar">
+                {user?.profilePhoto ? (
+                  <img src={user.profilePhoto} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <User size={16} />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-text-emphasis truncate">{firstName}</p>
+                <p className="text-[11px] text-text-muted capitalize">{user?.role}</p>
+              </div>
+            </div>
+          )}
 
-          <Link
-            to="/profile"
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-text hover:bg-base2/50 transition-all group ${isCollapsed ? 'justify-center px-0' : ''
+          <div className="space-y-1">
+            <Link
+              to="/support"
+              className={`dash-nav-item dash-nav-item-muted ${isCollapsed ? 'dash-nav-item-collapsed' : ''}`}
+              title={isCollapsed ? 'Support' : undefined}
+            >
+              <span className="dash-nav-icon"><HelpCircle size={18} /></span>
+              {!isCollapsed && <span className="dash-nav-label">Support</span>}
+            </Link>
+            <Link
+              to="/profile"
+              className={`dash-nav-item dash-nav-item-muted ${isCollapsed ? 'dash-nav-item-collapsed' : ''} ${
+                location.pathname === '/profile' ? 'dash-nav-item-active' : ''
               }`}
-            title={isCollapsed ? 'Profile Settings' : ''}
-          >
-            <Settings size={20} className="shrink-0 text-red group-hover:scale-110 transition-transform" />
-            {!isCollapsed && <span className="truncate">Settings</span>}
-          </Link>
-
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red hover:bg-red/5 transition-all group ${isCollapsed ? 'justify-center px-0' : ''
-              }`}
-            title={isCollapsed ? 'Sign Out' : ''}
-          >
-            <LogOut size={20} className="shrink-0 text-red group-hover:translate-x-1 transition-transform" />
-            {!isCollapsed && <span className="truncate">Sign Out</span>}
-          </button>
+              title={isCollapsed ? 'Settings' : undefined}
+            >
+              <span className="dash-nav-icon"><Settings size={18} /></span>
+              {!isCollapsed && <span className="dash-nav-label">Settings</span>}
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className={`dash-nav-item dash-nav-item-muted w-full ${isCollapsed ? 'dash-nav-item-collapsed' : ''}`}
+              title={isCollapsed ? 'Sign out' : undefined}
+            >
+              <span className="dash-nav-icon text-red/80"><LogOut size={18} /></span>
+              {!isCollapsed && <span className="dash-nav-label text-red/90">Sign out</span>}
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-6 left-4 right-4 h-16 aura-card backdrop-blur-xl border-none shadow-2xl z-[100] flex justify-around items-center px-2 safe-bottom">
-        {links.map((link) => {
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-4 left-3 right-3 h-[62px] dash-mobile-nav z-[100] flex justify-around items-center px-1 safe-bottom">
+        {links.slice(0, 4).map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;
           return (
             <Link
               key={link.path}
               to={link.path}
-              className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${isActive ? 'text-primary' : 'text-text/40'
-                }`}
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 rounded-2xl transition-all ${
+                isActive ? 'text-white' : 'text-text-muted'
+              }`}
             >
-              <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-primary/10' : 'group-hover:bg-base2'}`}>
-                <Icon
-                  size={20}
-                  className={
-                    isActive
-                      ? 'text-primary'
-                      : link.label === 'Wallet' || link.label === 'History' || link.label === 'Tables'
-                        ? 'text-red/60'
-                        : 'text-primary/60'
-                  }
-                />
+              <div className={`p-2 rounded-xl ${isActive ? 'bg-white/15' : ''}`}>
+                <Icon size={20} />
               </div>
-              <span className={`text-[9px] font-black uppercase tracking-tighter ${isActive ? 'opacity-100' : 'opacity-0'}`}>
-                {link.label.split(' ')[0]}
-              </span>
-              {isActive && <div className="absolute -top-1 w-1 h-1 bg-primary rounded-full" />}
             </Link>
           );
         })}
-        {/* Mobile Profile Link */}
         <Link
           to="/profile"
-          className={`flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all ${location.pathname === '/profile' ? 'text-primary' : 'text-text/40'
-            }`}
+          className={`flex flex-col items-center justify-center flex-1 py-2 rounded-2xl ${
+            location.pathname === '/profile' ? 'text-white' : 'text-text-muted'
+          }`}
         >
-          <div className={`p-2 rounded-xl transition-all ${location.pathname === '/profile' ? 'bg-primary/10' : 'group-hover:bg-base3'}`}>
-            <User size={20} className={location.pathname === '/profile' ? 'text-primary' : 'text-primary/60'} />
+          <div className={`p-2 rounded-xl ${location.pathname === '/profile' ? 'bg-white/15' : ''}`}>
+            <User size={20} />
           </div>
-          <span className={`text-[9px] font-black uppercase tracking-tighter ${location.pathname === '/profile' ? 'opacity-100' : 'opacity-0'}`}>
-            Me
-          </span>
         </Link>
-
-        {/* Mobile Logout Action */}
-        <button
-          onClick={handleLogout}
-          className="flex flex-col items-center justify-center gap-1 w-full h-full relative group transition-all text-red/60 hover:text-red"
-        >
-          <div className="p-2 rounded-xl transition-all group-hover:bg-red/5">
-            <LogOut size={20} />
-          </div>
-          <span className="text-[9px] font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
-            Exit
-          </span>
-        </button>
       </nav>
     </>
   );

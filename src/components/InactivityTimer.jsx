@@ -6,14 +6,15 @@ import { AlertCircle, Clock, LogOut } from 'lucide-react';
 const InactivityTimer = () => {
   const { user, logout } = useAuth();
   const [showWarning, setShowWarning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds warning countdown
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes warning countdown
 
   const lastActivityRef = useRef(Date.now());
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
 
-  const TIMEOUT = 3 * 60 * 1000; // 3 minutes in ms
-  const WARNING_TIME = (3 * 60 - 30) * 1000; // 2.5 minutes in ms (30s before timeout)
+  const TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours
+  const WARNING_COUNTDOWN = 5 * 60; // 5 minutes
+  const WARNING_TIME = TIMEOUT - (WARNING_COUNTDOWN * 1000);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -24,7 +25,7 @@ const InactivityTimer = () => {
     lastActivityRef.current = Date.now();
     if (showWarning) {
       setShowWarning(false);
-      setTimeLeft(30);
+      setTimeLeft(WARNING_COUNTDOWN);
     }
   }, [showWarning]);
 
@@ -34,7 +35,7 @@ const InactivityTimer = () => {
     // Reset activity timer when user state changes (on login)
     lastActivityRef.current = Date.now();
     setShowWarning(false);
-    setTimeLeft(30);
+    setTimeLeft(WARNING_COUNTDOWN);
 
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
 
@@ -115,7 +116,7 @@ const InactivityTimer = () => {
                 <span className="font-medium text-slate-700 dark:text-slate-300">Logging out in</span>
               </div>
               <span className="text-2xl font-black text-primary tabular-nums">
-                {timeLeft}s
+                {Math.ceil(timeLeft / 60)}m
               </span>
             </div>
 

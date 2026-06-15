@@ -33,7 +33,7 @@ const PlayerHistory = () => {
     try {
       const { data } = await api.get('/direct-matches/player/history');
       setData(data);
-    } catch (err) {
+    } catch {
       toast.error('Failed to load history');
     } finally {
       setLoading(false);
@@ -158,8 +158,6 @@ const PlayerHistory = () => {
                 const isP2Winner = winnerIdObj && winnerIdObj.toString() === p2IdObj?.toString();
                 const isCancelled = match.status === 'cancelled';
 
-                const winnerName = match.winnerId?.fullName || (isP1Winner ? match.player1Id?.fullName : isP2Winner ? match.player2Id?.fullName : null);
-
                 const myWon = winnerIdObj?.toString() === userId?.toString();
                 const winLossText = myWon ? 'You Won!' : 'You Lost!';
                 const winLossColor = myWon ? 'text-green' : 'text-red';
@@ -184,7 +182,7 @@ const PlayerHistory = () => {
                         {(match.stakeAmount > 0 || (match.isTournamentMatch && match.tournamentId?.stakePerPlayer > 0)) && (
                           <>
                             <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border-[1.5px] border-emerald-100 whitespace-nowrap shrink-0 drop-shadow-sm">
-                              STAKE: KES {(match.isTournamentMatch ? match.tournamentId?.stakePerPlayer : match.stakeAmount).toLocaleString()}
+                              STAKE: KES {(match.isTournamentMatch ? (match.tournamentId?.stakePerPlayer || 0) : (match.stakeAmount || 0)).toLocaleString()}
                             </span>
                             <span className="text-[clamp(7.5px,0.85vw,9.5px)] font-bold text-blue bg-blue/5 px-1.5 py-0.5 rounded-md border-[1.5px] border-blue/10 flex items-center gap-1 whitespace-nowrap shrink-0 drop-shadow-sm">
                               <AwardIcon size={10} />

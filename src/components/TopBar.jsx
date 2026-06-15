@@ -79,41 +79,40 @@ const TopBar = ({ title }) => {
 
 
   return (
-    <header className="h-16 md:h-20 bg-base3/80 backdrop-blur-md border-b border-base2 px-4 md:px-8 flex items-center justify-between sticky top-0 z-40 safe-top">
-      <div className="flex-1 min-w-0 pr-4">
-        <h2 className="text-lg md:text-2xl font-black text-text-emphasis tracking-tight truncate">
+    <header className="dash-topbar sticky top-0 z-40 safe-top">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium text-text-muted hidden sm:block">
+          Welcome back, {user?.fullName?.split(' ')[0] || 'Player'}
+        </p>
+        <h2 className="text-lg md:text-[1.35rem] font-bold text-text-emphasis tracking-tight truncate leading-tight">
           {title}
         </h2>
       </div>
 
-      <div className="flex items-center gap-2 md:gap-4 shrink-0">
+      <div className="flex items-center gap-2 md:gap-3 shrink-0">
         <div className="relative hidden lg:block">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base1">
-            <Search size={18} />
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-muted">
+            <Search size={16} />
           </div>
           <input
             type="text"
-            className="bg-base2/40 border border-base2 rounded-full pl-10 pr-4 py-1.5 text-sm focus:ring-2 focus:ring-primary outline-none w-48 xl:w-64"
-            placeholder="Search..."
+            className="dash-search"
+            placeholder="Search…"
           />
         </div>
 
         <div className="flex items-center gap-1.5">
           {(user?.role === 'player' || user?.role === 'moderator' || user?.role === 'admin') && (
-            <div className="flex items-center gap-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full px-2 py-1 transition-all shadow-[0_0_10px_rgba(16,185,129,0.1)]">
-              <WalletIcon size={12} className="fill-emerald-500/20" />
-              <span className="text-[10px] md:text-xs font-black tabular-nums">
-                {liveBalance.toLocaleString()}
-              </span>
+            <div className="dash-pill dash-pill-green">
+              <WalletIcon size={12} />
+              <span className="tabular-nums">{liveBalance.toLocaleString()}</span>
             </div>
           )}
 
           {user?.role === 'player' && (
-            <div className="hidden sm:flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-full px-2 py-1 shadow-[0_0_10px_rgba(38,139,210,0.1)]">
-              <Star size={12} className="fill-primary/20" />
-              <span className="text-[10px] md:text-xs font-black tabular-nums">
-                {livePoints}
-              </span>
+            <div className="hidden sm:flex dash-pill dash-pill-magenta">
+              <Star size={12} />
+              <span className="tabular-nums">{livePoints}</span>
             </div>
           )}
         </div>
@@ -234,16 +233,14 @@ const TopBar = ({ title }) => {
           )}
         </div>
 
-        <div className="flex items-center gap-2 md:gap-3 pl-2 sm:pl-3 border-l border-base2 ml-1">
-          <div className="flex flex-col items-end justify-center py-1">
-            <p className="text-[10px] md:text-xs font-black text-text-emphasis tracking-tight truncate max-w-[80px] md:max-w-[100px] leading-tight">
+        <div className="flex items-center gap-2 pl-2 border-l border-base2/60 ml-1">
+          <div className="hidden sm:flex flex-col items-end">
+            <p className="text-xs font-semibold text-text-emphasis truncate max-w-[100px] leading-tight">
               {user?.fullName?.split(' ')[0]}
             </p>
-            <p className="text-[7px] md:text-[8px] font-black text-primary uppercase tracking-widest leading-none bg-primary/5 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md border border-primary/10 mt-0.5">
-              {user?.role}
-            </p>
+            <p className="text-[10px] text-magenta font-medium capitalize">{user?.role}</p>
           </div>
-          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-base1/30 flex items-center justify-center text-primary font-bold overflow-hidden border-2 border-base3 ring-1 ring-base2 shadow-sm shrink-0">
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden ring-2 ring-base2/80 bg-surface shrink-0">
             {user?.profilePhoto ? (
               <img src={user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
             ) : (

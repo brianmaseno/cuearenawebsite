@@ -455,10 +455,32 @@ const Landing = () => {
       {/* Formats */}
       <section className="py-24 bg-base3/30 text-left">
         <div className="container mx-auto px-6 text-center">
-          <div className="mb-16"><h2 className="text-3xl font-black text-text-emphasis tracking-tight">Diverse game formats</h2><p className="text-text/60 font-medium">Tournament-ready for every discipline.</p></div>
-          <div className="flex flex-wrap justify-center gap-8">
-            {[{ name: "8-Ball", color: "bg-black" }, { name: "9-Ball", color: "bg-yellow" }, { name: "10-Ball", color: "bg-blue" }, { name: "Straight Pool", color: "bg-red" }].map((game, i) => (
-              <motion.div key={i} whileHover={{ y: -5 }} className="flex flex-col items-center gap-4 bg-base3 p-6 rounded-3xl border border-base2 shadow-sm min-w-[140px]"><div className={`w-12 h-12 rounded-full ${game.color} shadow-lg flex items-center justify-center text-base3 font-black italic`}>{game.name.charAt(0)}</div><span className="font-black text-sm text-text-emphasis">{game.name}</span></motion.div>
+          <div className="mb-16">
+            <h3 className="text-primary font-black text-[10px] uppercase tracking-[0.3em] mb-4">Game types</h3>
+            <h2 className="text-4xl sm:text-5xl font-black text-text-emphasis tracking-tight mb-4">Diverse game formats</h2>
+            <p className="text-lg text-text/60 font-medium">Tournament-ready for every discipline.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { name: "8-Ball", balls: "8", desc: "Call-shot classic", accent: "from-black to-neutral-800" },
+              { name: "9-Ball", balls: "9", desc: "Fast rotation game", accent: "from-yellow to-amber-600" },
+              { name: "10-Ball", balls: "10", desc: "Precision call-shot", accent: "from-blue to-cyan-600" },
+              { name: "Straight Pool", balls: "14.1", desc: "Endless run challenge", accent: "from-special-red to-rose-600" }
+            ].map((game, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -6, scale: 1.02 }}
+                className="metric-card group cursor-default text-center"
+              >
+                <div className="metric-card-grid" />
+                <div className="relative z-10 flex flex-col items-center py-3">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${game.accent} shadow-lg flex items-center justify-center text-white font-black text-xl mb-4 group-hover:scale-110 transition-transform`}>
+                    {game.balls}
+                  </div>
+                  <p className="metric-card-value text-base">{game.name}</p>
+                  <p className="metric-card-foot text-center">{game.desc}</p>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>

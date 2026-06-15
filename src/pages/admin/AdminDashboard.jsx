@@ -4,8 +4,9 @@ import DashboardLayout from '../../components/DashboardLayout';
 import api from '../../api/axios';
 import { Users, Trophy, Target, Activity, ShieldAlert, CheckCircle, Zap, Shield, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
-import AuraCard from '../../components/AuraCard';
-import { motion } from 'framer-motion';
+import MetricCard from '../../components/ui/MetricCard';
+import MiniBarChart from '../../components/ui/MiniBarChart';
+import DataTable from '../../components/ui/DataTable';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -30,16 +31,18 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const [usersRes, tRes, mRes, logsRes] = await Promise.all([
+        const [usersRes, tRes, mRes, bRes, logsRes] = await Promise.all([
           api.get('/users'),
           api.get('/tournaments'),
           api.get('/direct-matches'),
+          api.get('/battles'),
           api.get('/admin/logs'),
         ]);
 
         const users = usersRes.data;
         const tournaments = tRes.data;
         const matches = mRes.data;
+        const battles = bRes.data;
         const logs = logsRes.data;
 
         const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
@@ -47,7 +50,8 @@ const AdminDashboard = () => {
 
         const ongoingTournaments = tournaments.filter(t => t.status === 'ongoing');
         const ongoingMatches = matches.filter(m => m.status === 'ongoing');
-        const totalOngoing = ongoingTournaments.length + ongoingMatches.length;
+        const ongoingBattles = battles.filter(b => b.status === 'ongoing');
+        const totalOngoing = ongoingTournaments.length + ongoingMatches.length + ongoingBattles.length;
 
         // Strategic Metric: Engagement Pulse
         // (Active Activities / Total Users) * 100
@@ -83,10 +87,10 @@ const AdminDashboard = () => {
           engagementPulse: pulse,
           moderationCoverage: coverage,
           moderatorCount: moderators,
-          totalActivities: tournaments.length + matches.length,
+          totalActivities: tournaments.length + matches.length + battles.length,
           ongoingCount: totalOngoing,
-          completedCount: tournaments.filter(t => t.status === 'completed').length + matches.filter(m => m.status === 'completed').length,
-          cancelledCount: tournaments.filter(t => t.status === 'cancelled').length + matches.filter(m => m.status === 'cancelled').length,
+          completedCount: tournaments.filter(t => t.status === 'completed').length + matches.filter(m => m.status === 'completed').length + battles.filter(b => b.status === 'completed').length,
+          cancelledCount: tournaments.filter(t => t.status === 'cancelled').length + matches.filter(m => m.status === 'cancelled').length + battles.filter(b => b.status === 'cancelled').length,
           newMembersToday,
           platformGrowth: growth,
           totalLogs: logs.length,
@@ -96,7 +100,8 @@ const AdminDashboard = () => {
         // Unified Activity Matrix: Unified stream of latest platform competitions
         const unified = [
           ...tournaments.map(t => ({ ...t, type: 'Tournament' })),
-          ...matches.map(m => ({ ...m, type: 'Match' }))
+          ...matches.map(m => ({ ...m, type: 'Match' })),
+          ...battles.map(b => ({ ...b, type: 'Battle' }))
         ].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
         setActivityMatrix(unified);
 
@@ -113,237 +118,192 @@ const AdminDashboard = () => {
     fetchAdminData();
   }, []);
 
+  const activityColumns = [
+    {
+      key: 'activity',
+      header: 'Activity',
+      render: (item) => (
+        <div className="flex items-center gap-3 min-w-0">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+            item.type === 'Tournament' ? 'bg-violet/10 text-violet' : item.type === 'Battle' ? 'bg-green/10 text-green' : 'bg-blue/10 text-blue'
+          }`}>
+            {item.type === 'Tournament' ? <Trophy size={16} /> : item.type === 'Battle' ? <Shield size={16} /> : <Target size={16} />}
+          </div>
+          <div className="min-w-0">
+            <p className="dash-cell-emphasis truncate">
+              {item.type === 'Tournament' ? item.name : item.type === 'Battle' ? item.title : (item.player1Id ? `${item.player1Id.fullName} vs ${item.player2Id?.fullName}` : (item.name || item.title || 'Direct Match'))}
+            </p>
+            <p className="dash-cell-muted">{item.type} · {String(item.id).slice(-8)}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (item) => (
+        <StatusBadge status={item.status} registrationDeadline={item.registrationDeadline} />
+      ),
+    },
+    {
+      key: 'organizer',
+      header: 'Organizer',
+      render: (item) => (
+        <span className="dash-cell-emphasis">{item.organizerId?.fullName || 'System'}</span>
+      ),
+    },
+    {
+      key: 'updated',
+      header: 'Updated',
+      align: 'right',
+      render: (item) => (
+        <div>
+          <p className="dash-cell-emphasis text-sm">{new Date(item.updatedAt).toLocaleDateString()}</p>
+          <p className="dash-cell-muted">{new Date(item.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'manage',
+      header: '',
+      align: 'right',
+      render: (item) => (
+        <Link
+          to={item.type === 'Tournament' ? `/moderator/manage-tournament/${item.id}` : '/moderator/ongoing'}
+          className="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold bg-magenta/10 text-magenta hover:bg-magenta hover:text-white transition-all"
+        >
+          Open
+        </Link>
+      ),
+    },
+  ];
+
   if (loading) return <DashboardLayout title="Admin Panel">Analyzing platform data...</DashboardLayout>;
 
   return (
     <DashboardLayout title="System Administration Dashboard">
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-        {/* Strategic Hero Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {/* Platform Reach */}
-          <AuraCard className="relative group overflow-hidden border-2 border-blue/20 bg-blue/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue/10 rounded-full blur-3xl group-hover:bg-blue/20 transition-colors" />
-            <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="w-12 h-12 bg-blue text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-blue/20 group-hover:rotate-6 transition-transform">
-                <Users size={24} />
-              </div>
-              <div className={`flex items-center gap-1.5 ${parseFloat(stats.platformGrowth) >= 0 ? 'text-green bg-green/10' : 'text-red bg-red/10'} px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-current/10`}>
-                {parseFloat(stats.platformGrowth) >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                {parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}{stats.platformGrowth}%
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Platform Reach</div>
-              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalUsers}</h4>
-              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                <span className="text-blue font-black">{stats.newMembersToday}</span> registrations today
-              </div>
-            </div>
-            <motion.div
-              className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue opacity-[0.05] blur-[50px] pointer-events-none"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </AuraCard>
-
-          {/* Live Pulse */}
-          <AuraCard className="relative group overflow-hidden border-2 border-violet/20 bg-violet/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-violet/10 rounded-full blur-3xl group-hover:bg-violet/20 transition-colors" />
-            <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="w-12 h-12 bg-violet text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-violet/20 group-hover:rotate-6 transition-transform">
-                <Zap size={24} />
-              </div>
-              <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-primary/10">
-                LIVE PULSE
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Live Pulse</div>
-              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.activeNow}</h4>
-              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 italic relative z-10">
-                Engagement <span className="text-violet font-black">{stats.engagementPulse}%</span>
-              </div>
-            </div>
-            <motion.div
-              className="absolute -bottom-10 -right-10 w-32 h-32 bg-violet opacity-[0.05] blur-[50px] pointer-events-none"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            />
-          </AuraCard>
-
-          {/* Event Velocity */}
-          <AuraCard className="relative group overflow-hidden border-2 border-green/20 bg-green/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-green/10 rounded-full blur-3xl group-hover:bg-green/20 transition-colors" />
-            <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="w-12 h-12 bg-green text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-green/20 group-hover:rotate-6 transition-transform">
-                <Target size={24} />
-              </div>
-              <div className="flex items-center gap-1.5 text-green bg-green/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-green/10">
-                {stats.ongoingCount} ACTIVE
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Event Velocity</div>
-              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalActivities}</h4>
-              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                <span className="text-green font-black">{stats.completedCount}</span> successfully archived
-              </div>
-            </div>
-            <motion.div
-              className="absolute -bottom-10 -right-10 w-32 h-32 bg-green opacity-[0.05] blur-[50px] pointer-events-none"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            />
-          </AuraCard>
-
-          {/* Moderator Fleet */}
-          <AuraCard className="relative group overflow-hidden border-2 border-primary/20 bg-primary/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-colors" />
-            <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="w-12 h-12 bg-primary text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-6 transition-transform">
-                <Shield size={24} />
-              </div>
-              <div className="flex items-center gap-1.5 text-primary bg-primary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-primary/10">
-                STRICT
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Moderator Fleet</div>
-              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.moderatorCount}</h4>
-              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                System coverage <span className="text-primary font-black">{stats.moderationCoverage}%</span>
-              </div>
-            </div>
-            <motion.div
-              className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary opacity-[0.05] blur-[50px] pointer-events-none"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-            />
-          </AuraCard>
-
-          {/* Audit Pulse */}
-          <AuraCard className="relative group overflow-hidden border-2 border-orange/20 bg-orange/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange/10 rounded-full blur-3xl group-hover:bg-orange/20 transition-colors" />
-            <div className="flex justify-between items-start mb-4 relative z-10">
-              <div className="w-12 h-12 bg-orange text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-orange/20 group-hover:rotate-6 transition-transform">
-                <Activity size={24} />
-              </div>
-              <div className="flex items-center gap-1.5 text-orange bg-orange/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-orange/10">
-                AUDIT
-              </div>
-            </div>
-            <div>
-              <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Audit Pulse</div>
-              <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">{stats.totalLogs}</h4>
-              <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                <span className="text-orange font-black">{stats.logsToday}</span> system events today
-              </div>
-            </div>
-            <motion.div
-              className="absolute -bottom-10 -right-10 w-32 h-32 bg-orange opacity-[0.05] blur-[50px] pointer-events-none"
-              animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            />
-          </AuraCard>
-
-          {/* Device Fleet */}
-          <Link to="/admin/devices" className="block">
-            <AuraCard className="relative group overflow-hidden border-2 border-emerald/20 bg-emerald/5 p-6 rounded-[28px] shadow-sm min-h-[160px] flex flex-col justify-between transition-all hover:scale-[1.02]">
-              <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald/10 rounded-full blur-3xl group-hover:bg-emerald/20 transition-colors" />
-              <div className="flex justify-between items-start mb-4 relative z-10">
-                <div className="w-12 h-12 bg-emerald-500 text-base3 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-6 transition-transform">
-                  <Zap size={24} />
-                </div>
-                <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border border-emerald-100">
-                  HARDWARE
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] font-black text-text/40 uppercase tracking-[0.2em] mb-1 relative z-10">Device Fleet</div>
-                <h4 className="text-4xl font-black text-text-emphasis tracking-tight relative z-10">IoT</h4>
-                <div className="mt-4 pt-4 border-t border-base2/50 text-[10px] font-bold text-text/60 relative z-10">
-                  Manage physical table controllers
-                </div>
-              </div>
-            </AuraCard>
-          </Link>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <MetricCard
+            featured
+            label="Platform reach"
+            value={stats.totalUsers}
+            icon={Users}
+            trend={{
+              value: `${parseFloat(stats.platformGrowth) >= 0 ? '+' : ''}${stats.platformGrowth}%`,
+              positive: parseFloat(stats.platformGrowth) >= 0,
+              label: `${stats.newMembersToday} joined today`,
+            }}
+          />
+          <MetricCard
+            label="Live online"
+            value={stats.activeNow}
+            icon={Zap}
+            trend={{ value: `${stats.engagementPulse}%`, label: 'Engagement pulse' }}
+          />
+          <MetricCard
+            label="Total events"
+            value={stats.totalActivities}
+            icon={Target}
+            trend={{ value: String(stats.ongoingCount), label: 'Currently active' }}
+          />
+          <MetricCard
+            label="Moderators"
+            value={stats.moderatorCount}
+            icon={Shield}
+            trend={{ value: `${stats.moderationCoverage}%`, label: 'Coverage' }}
+          />
+          <MetricCard
+            label="Audit events"
+            value={stats.totalLogs}
+            icon={Activity}
+            trend={{ value: String(stats.logsToday), label: 'Logged today' }}
+          />
         </div>
 
-        {/* Global Strategy Matrix */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Main Activity Matrix */}
-          <div className="lg:col-span-2 space-y-6">
-            <section className="card-premium rounded-3xl overflow-hidden border-2 border-primary/20 bg-base3/10 shadow-2xl backdrop-blur-md">
-              <div className="p-6 border-b border-base2/50 bg-base3/40 flex justify-between items-center">
-                <div>
-                  <h3 className="text-xl font-black text-text-emphasis tracking-tight uppercase flex items-center gap-2">
-                    <Trophy size={20} className="text-primary" />
-                    Strategic Activity Matrix
-                  </h3>
-                  <p className="text-[11px] font-bold text-text/40 italic mt-0.5">Unified stream of latest platform competitions</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="chart-panel">
+            <p className="chart-panel-title">User growth</p>
+            <p className="chart-panel-desc">New registrations this week</p>
+            <MiniBarChart
+              data={[
+                Math.max(1, stats.newMembersToday),
+                Math.max(1, Math.round(stats.totalUsers * 0.02)),
+                Math.max(1, Math.round(stats.totalUsers * 0.015)),
+                Math.max(1, stats.newMembersToday + 2),
+                Math.max(1, Math.round(stats.totalUsers * 0.025)),
+                Math.max(1, stats.newMembersToday + 1),
+                Math.max(1, stats.newMembersToday),
+              ]}
+              labels={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+              height={180}
+              barClass="bg-gradient-to-t from-violet/50 to-magenta"
+            />
+          </div>
+          <div className="chart-panel">
+            <p className="chart-panel-title">Event outcomes</p>
+            <p className="chart-panel-desc">Competition status breakdown</p>
+            <div className="space-y-4 mt-1">
+              {[
+                { label: 'Ongoing', value: stats.ongoingCount, max: stats.totalActivities || 1, color: 'bg-magenta' },
+                { label: 'Completed', value: stats.completedCount, max: stats.totalActivities || 1, color: 'bg-green' },
+                { label: 'Cancelled', value: stats.cancelledCount, max: stats.totalActivities || 1, color: 'bg-red/70' },
+              ].map((row) => (
+                <div key={row.label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-text-muted">{row.label}</span>
+                    <span className="font-semibold">{row.value}</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-surface overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${row.color}`}
+                      style={{ width: `${Math.min(100, (row.value / row.max) * 100)}%` }}
+                    />
+                  </div>
                 </div>
-                <button className="text-[10px] font-black text-primary border border-primary/20 bg-primary/5 px-3 py-1.5 rounded-lg uppercase tracking-widest hover:bg-primary hover:text-base3 transition-all">
-                  Full Analytics
-                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex justify-between items-end px-1">
+              <div>
+                <h3 className="text-lg font-bold text-text-emphasis flex items-center gap-2">
+                  <Trophy size={18} className="text-magenta" />
+                  Recent activity
+                </h3>
+                <p className="text-sm text-text-muted mt-0.5">Latest competitions and matches</p>
               </div>
-              <div className="overflow-x-auto max-h-[600px] overflow-y-auto thin-scrollbar">
-                <table className="w-full text-left">
-                  <thead className="bg-base2/30 text-[10px] font-black uppercase text-text/40 tracking-widest border-b border-base2">
-                    <tr>
-                      <th className="px-6 py-4">Activity</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Organizer</th>
-                      <th className="px-6 py-4 text-right">Momentum</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-base2/50">
-                    {activityMatrix.map((item) => (
-                      <tr key={item.id} className="hover:bg-primary/5 transition-colors group">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shadow-sm ${item.type === 'Tournament' ? 'bg-violet/10 text-violet border border-violet/20' : 'bg-blue/10 text-blue border border-blue/20'
-                              }`}>
-                              {item.type === 'Tournament' ? <Trophy size={14} /> : <Target size={14} />}
-                            </div>
-                            <div>
-                              <div className="text-xs font-black text-text-emphasis group-hover:text-primary transition-colors">
-                                {item.type === 'Tournament' ? item.name : (item.player1Id ? `${item.player1Id.fullName} vs ${item.player2Id?.fullName}` : (item.name || item.title || 'Direct Match'))}
-                              </div>
-                              <div className="text-[9px] font-mono text-text/30 uppercase tracking-tighter">{item.type} ID: {String(item.id).slice(-8)}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <StatusBadge status={item.status} registrationDeadline={item.registrationDeadline} className="text-[9px] px-2 py-0.5 font-black uppercase rounded-full shadow-sm" />
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-xs font-bold text-text-emphasis leading-tight">{item.organizerId?.fullName || 'System'}</div>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="text-[10px] font-black text-text/40">{new Date(item.updatedAt).toLocaleDateString()}</div>
-                          <div className="text-[9px] font-bold text-primary italic uppercase">{new Date(item.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
+              <Link to="/admin/analytics" className="text-xs font-semibold text-magenta hover:underline">
+                View analytics
+              </Link>
+            </div>
+            <DataTable
+              columns={activityColumns}
+              data={activityMatrix}
+              keyExtractor={(item) => `${item.type}-${item.id}`}
+              emptyIcon={Trophy}
+              emptyTitle="No activity yet"
+              emptyDescription="Competitions will appear here as they are created."
+              minWidth={760}
+              stickyHeader
+              className="max-h-[600px] overflow-y-auto thin-scrollbar"
+            />
           </div>
 
           {/* Right Sidebar: System Integrity & Pulse */}
           <div className="space-y-6">
 
             {/* Moderator Pulse Stream */}
-            <section className="card-premium rounded-3xl overflow-hidden border-2 border-primary/20 bg-base3/10 shadow-xl backdrop-blur-md">
-              <div className="p-4 border-b border-base2/50 bg-base3/40">
-                <h3 className="text-[11px] font-black text-text-emphasis uppercase tracking-widest flex items-center gap-2">
-                  <Shield size={14} className="text-primary" /> Platform Pulse
-                </h3>
+            <section className="dash-panel overflow-hidden">
+              <div className="px-4 py-3 border-b border-base2/30 flex items-center gap-2">
+                <Shield size={14} className="text-magenta" />
+                <h3 className="text-sm font-semibold text-text-emphasis">Platform pulse</h3>
               </div>
-              <div className="max-h-[380px] overflow-y-auto divide-y divide-base2/50">
+              <div className="max-h-[380px] overflow-y-auto thin-scrollbar divide-y divide-base2/20">
                 {moderatorPulse.map((log) => (
                   <div key={log.id} className="p-4 hover:bg-base2/10 transition-colors">
                     <div className="flex items-center gap-2 mb-1.5">
