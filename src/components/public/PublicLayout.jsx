@@ -20,7 +20,7 @@ const dashboardPath = (user) => {
   return '/dashboard';
 };
 
-const PublicLayout = ({ children }) => {
+const PublicLayout = ({ children, showFooter = true }) => {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -98,12 +98,14 @@ const PublicLayout = ({ children }) => {
 
       <main>{children}</main>
 
+      {showFooter && (
       <footer className="border-t border-base2 bg-surface">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-text-muted md:flex-row md:items-center md:justify-between">
           <p className="font-bold text-text-emphasis">Cue Arena</p>
           <p>Public competitions, live fixtures, rankings, and results for cue sports.</p>
         </div>
       </footer>
+      )}
     </div>
   );
 };

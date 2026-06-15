@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, Menu, X, LogIn, ChevronUp, ChevronDown, Minus, Info } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowRight, Target, MapPin, Shield, Zap, Globe, Star, Send, Loader2, ChevronUp, ChevronDown, Minus, Info } from 'lucide-react';
 import { animate } from 'framer-motion';
 import api from '../api/axios';
 import StatusBadge from '../components/StatusBadge';
+import PublicLayout from '../components/public/PublicLayout';
 import toast from 'react-hot-toast';
 
 const AnimatedCounter = ({ value, duration = 2, suffix = "" }) => {
@@ -65,7 +66,6 @@ const Landing = () => {
   const [loading, setLoading] = useState(true);
   const [footerForm, setFooterForm] = useState({ fullName: '', email: '', phone: '' });
   const [footerSubmitting, setFooterSubmitting] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -156,7 +156,8 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background selection:bg-primary/30 relative">
+    <PublicLayout showFooter={false}>
+      <div className="selection:bg-primary/30 relative">
       {/* Global Cursor Glow */}
       <div
         className="fixed pointer-events-none z-[9999] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 hidden lg:block"
@@ -171,44 +172,7 @@ const Landing = () => {
         />
       </div>
 
-      <nav className="border-b border-base2/50 bg-base3/70 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group relative">
-            <span className="text-xl md:text-2xl brand-premium font-black tracking-tight">Cue-Arena</span>
-          </Link>
-
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden p-2 text-text/60 hover:text-primary transition-colors">
-            <Menu size={24} />
-          </button>
-
-          <div className="hidden md:flex items-center gap-10">
-            <Link to="/login" className="text-text hover:text-primary font-bold transition-all relative group">
-              Login
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
-            </Link>
-            <Link to="/register" className="aura-btn px-8 py-3 text-sm">
-              Get started
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMobileMenuOpen(false)} className="fixed inset-0 bg-background/5 backdrop-blur-[1px] z-[100] md:hidden" />
-            <motion.div initial={{ x: 20, y: -20, opacity: 0 }} animate={{ x: 0, y: 0, opacity: 1 }} exit={{ x: 20, y: -20, opacity: 0 }} className="fixed top-0 right-0 w-[200px] bg-transparent backdrop-blur-md border-l border-b border-base3/10 z-[110] md:hidden p-5 rounded-bl-[32px] flex flex-col items-center pt-8">
-              <button onClick={() => setIsMobileMenuOpen(false)} className="absolute top-4 right-4 p-2 text-text/40 hover:text-text transition-colors"><X size={16} /></button>
-              <div className="w-full space-y-2 mt-2">
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-base2/50 text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-base2 transition-all active:scale-95 shadow-md">Login <LogIn size={16} /></Link>
-                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center justify-between bg-base2/50 text-primary h-11 px-4 font-black text-sm rounded-xl hover:bg-base2 transition-all active:scale-95 shadow-md">Get started <ArrowRight size={16} /></Link>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      <header className="relative min-h-[90vh] flex items-center pt-20 pb-16 overflow-hidden">
+      <header className="relative min-h-[90vh] flex items-center pt-12 pb-16 overflow-hidden">
         {/* 3D Parallax Ornaments */}
         <ParallaxIcon icon={Trophy} color="text-yellow" size={40} top="15%" left="10%" delay={0.2} speed={1.2} />
         <ParallaxIcon icon={Target} color="text-primary" size={32} top="65%" left="5%" delay={0.4} speed={0.8} />
@@ -571,7 +535,8 @@ const Landing = () => {
         </div>
         <div className="container mx-auto px-6 pt-12 border-t border-base2/30 flex justify-between items-center text-sm font-bold text-text/40 text-left"><p>© 2026 Cue-Arena. Designed for champions.</p><div className="flex gap-8 uppercase tracking-widest text-[10px] text-left"><a>Twitter</a><a>Discord</a></div></div>
       </footer>
-    </div>
+      </div>
+    </PublicLayout>
   );
 };
 
