@@ -26,7 +26,6 @@ import {
 import BracketCanvas from "../../components/Tournament/BracketCanvas";
 import StatusBadge from '../../components/StatusBadge';
 import toast from 'react-hot-toast';
-import { winnerPrize } from '../../utils/potSplit';
 import { useSocket } from '../../context/SocketContext';
 import { useAuth } from '../../context/AuthContext';
 import { maskEmail } from '../../utils/emailHelper';
