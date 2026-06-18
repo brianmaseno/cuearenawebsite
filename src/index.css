@@ -2423,3 +2423,9 @@
     font-size: 1.25rem;
 }
 
+/* Landing page — pool felt accent */
+.landing-pool {
+    --landing-felt: #0b1612;
+    --landing-accent: #10b981;
+}
+
